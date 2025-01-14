@@ -172,6 +172,14 @@ int main(int, char**)
                 done = true;
             if (event.type == SDL_EVENT_WINDOW_CLOSE_REQUESTED && event.window.windowID == SDL_GetWindowID(window))
                 done = true;
+            if (event.type == SDL_EVENT_MOUSE_WHEEL)
+                scene.camera->handle_mouse_scroll(event);
+            if (event.type == SDL_EVENT_MOUSE_BUTTON_DOWN && event.window.windowID == SDL_GetWindowID(window))
+                scene.camera->enable_move = true;
+            if (event.type == SDL_EVENT_MOUSE_BUTTON_UP && event.window.windowID == SDL_GetWindowID(window))
+                scene.camera->enable_move = false;
+            if (event.type == SDL_EVENT_MOUSE_MOTION)
+                scene.camera->handle_mouse_move(event);
         }
         if (SDL_GetWindowFlags(window) & SDL_WINDOW_MINIMIZED)
         {

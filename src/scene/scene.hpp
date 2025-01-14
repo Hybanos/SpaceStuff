@@ -19,6 +19,8 @@
 
 #include <vector>
 
+class Camera;
+
 class Scene {
     private:
         std::vector<Object *> objects;
@@ -30,7 +32,7 @@ class Scene {
         GLuint matrix_id;
 
         SDL_Window *window;
-        Camera camera;
+        Camera *camera = nullptr;
 
         float get_ratio();
         int get_width();
