@@ -36,8 +36,8 @@ void Camera::handle_mouse_move(SDL_Event& event) {
 }
 
 void Camera::handle_mouse_scroll(SDL_Event& event) {
+    if (event.wheel.y == 0) return;
     distance *= abs(event.wheel.y) * (1 - 0.1 * event.wheel.y / abs(event.wheel.y));
-
     update_pos();
 }
 

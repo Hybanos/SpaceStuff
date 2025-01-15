@@ -1,4 +1,5 @@
 .vscode
+build
 imgui/docs
 imgui/examples
 imgui.ini

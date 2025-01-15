@@ -15,13 +15,17 @@
 
 class Sphere : public Object {
     private:
-        static const int verticesCount = 363;
-        GLuint colorBuffer;
-        GLuint vertexBuffer;
-        GLfloat colors[verticesCount];
-        // GLfloat vertices[verticesCount];
+        GLuint triangles_buffer;
+        GLuint triangles_color_buffer;
+        std::vector<glm::vec3> triangles;
+        std::vector<glm::vec3> triangles_colors;
+
+        GLuint lines_buffer;
+        GLuint lines_color_buffer;
+        std::vector<glm::vec3> lines;
+        std::vector<glm::vec3> lines_colors;
+
         void manageBuffers();
-        std::vector<glm::vec3> vertices;
     public:
         Sphere(int);
         void draw();
