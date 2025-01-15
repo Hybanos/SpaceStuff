@@ -83,6 +83,7 @@ class Cube : public Object {
         Cube(int, float, float, float);
         ~Cube();
         void draw();
+        void debug() {}
         void move(glm::vec3);
 };
 

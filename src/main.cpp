@@ -154,6 +154,7 @@ int main(int, char**)
 
     glewInit();
     glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
     Scene scene(window);
 
     while (!done)
@@ -233,12 +234,6 @@ int main(int, char**)
 
         // Rendering
         ImGui::Render();
-
-        // glClearColor(0.45f, 0.55f, 0.60f, 1.00f); // Set clear color
-        // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear the screen
-
-        // Custom OpenGL rendering code (e.g., drawing a triangle)
-
 
         glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
         glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);

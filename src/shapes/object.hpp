@@ -4,6 +4,7 @@
 class Object {
     public:
         virtual void draw() = 0;
+        virtual void debug() = 0;
 };
 
 #endif

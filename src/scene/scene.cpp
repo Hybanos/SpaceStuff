@@ -64,5 +64,8 @@ void Scene::debug() {
     ImGui::Text("Ratio: %.3f.", get_ratio());
     ImGui::SeparatorText("CAMERA");
     camera->debug();
+    for (auto &o : objects) {
+        o->debug();
+    }
     ImGui::End();
 }
