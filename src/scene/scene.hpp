@@ -4,6 +4,7 @@
 #include "scene/camera.hpp"
 #include "shapes/object.hpp"
 #include "shapes/cube.hpp"
+#include "shapes/sphere.hpp"
 
 #include "glm/glm.hpp"
 #include "glm/gtx/transform.hpp"

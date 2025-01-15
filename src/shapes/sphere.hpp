@@ -1,16 +1,19 @@
-#define GLM_ENABLE_EXPERIMENTAL
-# define PI           3.14159265358979323846
+#include "shapes/object.hpp"
 
 #include <iostream>
 #include <vector>
 
 #include "GL/glew.h"
-#include "SFML/OpenGL.hpp"
-#include "../../glm/glm.hpp"
-#include "../../glm/gtx/transform.hpp"
-#include "../../glm/gtc/matrix_transform.hpp"
+#include "GL/gl.h"
 
-class Sphere {
+#include "glm/glm.hpp"
+
+#include "SDL3/SDL.h"
+#include "SDL3/SDL_opengl.h"
+#include "imgui_impl_opengl3.h"
+#include "imgui_impl_sdl3.h"
+
+class Sphere : public Object {
     private:
         static const int verticesCount = 363;
         GLuint colorBuffer;
@@ -18,7 +21,7 @@ class Sphere {
         GLfloat colors[verticesCount];
         // GLfloat vertices[verticesCount];
         void manageBuffers();
-        vector<GLfloat> vertices;
+        std::vector<glm::vec3> vertices;
     public:
         Sphere(int);
         void draw();

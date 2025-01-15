@@ -10,7 +10,8 @@ Scene::Scene(SDL_Window *_window) {
     matrix_id = glGetUniformLocation(program_id, "MVP");
 
     // objects.push_back(new Cube(1));
-    objects.push_back(new Cube(1000, -0.5, -0.5, -0.5));
+    // objects.push_back(new Cube(1, -0.5, -0.5, -0.5));
+    objects.push_back(new Sphere(1));
 
     camera->look_at(glm::vec3(0, 0, 0));
     camera->update_pos();
