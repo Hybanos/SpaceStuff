@@ -1,7 +1,7 @@
 #ifndef SPACESTUFF_CUBE_HPP
 #define SPACESTUFF_CUBE_HPP
 
-#include "shapes/object.hpp"
+#include "objects/object.hpp"
 
 #include <iostream>
 

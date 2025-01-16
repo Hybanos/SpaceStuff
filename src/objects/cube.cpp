@@ -1,4 +1,4 @@
-#include "shapes/cube.hpp"
+#include "objects/cube.hpp"
 
 using namespace std;
 

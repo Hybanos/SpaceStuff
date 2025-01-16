@@ -12,7 +12,6 @@ void Sphere::build() {
     lines.clear();
     lines_colors.clear();
 
-
     std::vector<glm::vec3> v;
     int n = resolution;
 
@@ -100,14 +99,17 @@ void Sphere::build() {
 }
 
 void Sphere::draw() {
-
     if (rebuild) {
         build();
         manageBuffers();
     }
 
+    draw_f();
+    draw_m();
+}
+
+void Sphere::draw_f() {
     if (draw_faces) {
-        // TRIANGLES
         glEnable(GL_POLYGON_OFFSET_FILL);
         glPolygonOffset(1.0f, 1.0f);
 
@@ -124,8 +126,12 @@ void Sphere::draw() {
         glDisable(GL_POLYGON_OFFSET_FILL);
     }
 
+    glDisableVertexAttribArray(0);
+    glDisableVertexAttribArray(1);
+}
+
+void Sphere::draw_m() {
     if (draw_mesh) {
-        // LINES
         glEnableVertexAttribArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, lines_buffer);
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
@@ -136,7 +142,6 @@ void Sphere::draw() {
         
         glDrawArrays(GL_LINES, 0, lines.size());
     }
-
 
     glDisableVertexAttribArray(0);
     glDisableVertexAttribArray(1);

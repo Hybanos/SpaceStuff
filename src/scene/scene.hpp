@@ -2,9 +2,9 @@
 #define SPACESTUFF_SCENE_HPP
 
 #include "scene/camera.hpp"
-#include "shapes/object.hpp"
-#include "shapes/cube.hpp"
-#include "shapes/sphere.hpp"
+#include "objects/object.hpp"
+#include "objects/cube.hpp"
+#include "objects/sphere.hpp"
 
 #include "glm/glm.hpp"
 #include "glm/gtx/transform.hpp"
