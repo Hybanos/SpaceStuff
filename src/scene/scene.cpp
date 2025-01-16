@@ -40,7 +40,7 @@ float Scene::get_ratio() {
 }
 
 void Scene::render() {
-    glm::mat4 projection = glm::perspective(glm::radians(90.0f), get_ratio(), 1.0f, 100.0f);
+    glm::mat4 projection = glm::perspective(glm::radians(90.0f), get_ratio(), 1.0f, 100000.0f);
     glm::mat4 view = camera->get_view();
     glm::mat4 model = glm::mat4(1.0);
     glm::mat4 mvp = projection * view * model;

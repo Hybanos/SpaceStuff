@@ -12,6 +12,7 @@ void Sphere::build() {
     lines.clear();
     lines_colors.clear();
 
+
     std::vector<glm::vec3> v;
     int n = resolution;
 
@@ -88,15 +89,14 @@ void Sphere::build() {
     }) {
         for (int i = 0; i < size_triangles; i++) {
             triangles.push_back(triangles[i] * q);
-            triangles_colors.push_back(glm::vec3(1.0f, 1.0f, 1.0f));
+            triangles_colors.push_back(triangles_colors[i]);
         }
 
         for (int i = 0; i < size_lines; i++) {
             lines.push_back(lines[i] * q);
-            lines_colors.push_back(glm::vec3(0.0f, 0.0f, 0.0f));
+            lines_colors.push_back(lines_colors[i]);
         }
     }
-
 }
 
 void Sphere::draw() {
