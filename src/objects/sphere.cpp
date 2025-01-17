@@ -1,4 +1,7 @@
 #include "sphere.hpp"
+// fuck this
+#define STB_IMAGE_IMPLEMENTATION
+#include "src/shaders/stb_image.h"
 
 Sphere::Sphere(int size) {
     build();
@@ -106,6 +109,7 @@ void Sphere::draw() {
 
     draw_f();
     draw_m();
+    draw_t();
 }
 
 void Sphere::draw_f() {
@@ -124,10 +128,10 @@ void Sphere::draw_f() {
         glDrawArrays(GL_TRIANGLES, 0, triangles.size());
 
         glDisable(GL_POLYGON_OFFSET_FILL);
-    }
 
-    glDisableVertexAttribArray(0);
-    glDisableVertexAttribArray(1);
+        glDisableVertexAttribArray(0);
+        glDisableVertexAttribArray(1);
+    }
 }
 
 void Sphere::draw_m() {
@@ -141,10 +145,28 @@ void Sphere::draw_m() {
         glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
         
         glDrawArrays(GL_LINES, 0, lines.size());
+ 
+        glDisableVertexAttribArray(0);
+        glDisableVertexAttribArray(1);
     }
+}
 
-    glDisableVertexAttribArray(0);
-    glDisableVertexAttribArray(1);
+void Sphere::draw_t() {
+    float v[12] = {
+        1.0f, 1.0f, 1.0f,
+        0.0f, 1.0f, 1.0f,
+        0.0f, 0.0f, 1.0f,
+        1.0f, 0.0f, 1.0f
+    };
+
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 12 * sizeof(float), (void *)0);
+    glEnableVertexAttribArray(2);
+
+    glBindTexture(GL_TEXTURE_2D, texture_id);
+    glBindVertexArray(triangles_buffer);
+    glDrawElements(GL_TRIANGLES, triangles.size(), GL_FLOAT, 0);
+
+    glDisableVertexAttribArray(2);
 }
 
 void Sphere::manageBuffers() {
@@ -159,7 +181,6 @@ void Sphere::manageBuffers() {
     glBindBuffer(GL_ARRAY_BUFFER, triangles_color_buffer);
     glBufferData(GL_ARRAY_BUFFER, triangles_colors.size() * 3 * sizeof(float), (float *)triangles_colors.data(), GL_STATIC_DRAW);
 
-
     // LINES
     // buffer
     glGenBuffers(1, &lines_buffer);
@@ -170,6 +191,23 @@ void Sphere::manageBuffers() {
     glGenBuffers(1, &lines_color_buffer);
     glBindBuffer(GL_ARRAY_BUFFER, lines_color_buffer);
     glBufferData(GL_ARRAY_BUFFER, lines_colors.size() * 3 * sizeof(float), (float *)lines_colors.data(), GL_STATIC_DRAW);
+
+    // TEXTURE
+    glGenTextures(1, &texture_id);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, texture_id);
+
+    int width, height, nb_channels;
+    unsigned char *data;
+    data = stbi_load("/home/gautier/Pictures/pfp.png", &width, &height, &nb_channels, 0);
+
+    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+    stbi_image_free(data);
 }
 
 void Sphere::debug() {

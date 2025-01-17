@@ -1,8 +1,8 @@
 #include "object_mesh.hpp"
 #include "object_faces.hpp"
-#include "object.hpp"
+#include "object_texture.hpp"
 
-class Sphere : public ObjectMesh, public ObjectFaces {
+class Sphere : public ObjectMesh, public ObjectFaces, public ObjectTexture {
     private:
         bool rebuild = false;
         int resolution = 4;
@@ -15,6 +15,7 @@ class Sphere : public ObjectMesh, public ObjectFaces {
         void draw();
         void draw_m();
         void draw_f();
+        void draw_t();
         void build();
         void debug();
 };
