@@ -10,7 +10,7 @@ class ObjectMesh : virtual public Object {
         std::vector<glm::vec3> lines;
         std::vector<glm::vec3> lines_colors;
 
-        bool draw_mesh = true;
+        bool draw_mesh = false;
     public:
         virtual void draw_m() = 0;
 };

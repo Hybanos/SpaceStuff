@@ -1,12 +1,11 @@
 #include "scene/scene.hpp"
-#include "shaders/shader.hpp"
 
 Scene::Scene(SDL_Window *_window) {
     window = _window;
     camera = new Camera;
     camera->scene = this;
 
-    program_id = LoadShaders("src/shaders/vertexShader.glsl", "src/shaders/fragmentShader.glsl");
+    program_id = LoadShaders("src/shaders/base.vs", "src/shaders/base.fs");
     matrix_id = glGetUniformLocation(program_id, "MVP");
 
     // objects.push_back(new Cube(1));
@@ -40,7 +39,7 @@ float Scene::get_ratio() {
 }
 
 void Scene::render() {
-    glm::mat4 projection = glm::perspective(glm::radians(90.0f), get_ratio(), 1.0f, 100000.0f);
+    glm::mat4 projection = glm::perspective(glm::radians(90.0f), get_ratio(), 0.1f, 100000.0f);
     glm::mat4 view = camera->get_view();
     glm::mat4 model = glm::mat4(1.0);
     glm::mat4 mvp = projection * view * model;
@@ -49,10 +48,8 @@ void Scene::render() {
     glUniformMatrix4fv(matrix_id, 1, GL_FALSE, &mvp[0][0]);
 
     for (Object * obj : objects) {
-        obj->draw();
+        obj->draw(mvp);
     }
-
-    // camera->translate(glm::vec3(sin((float) frames / 500) * 3, 3, cos((float) frames / 500) * 3));
 
     frames++;
 }

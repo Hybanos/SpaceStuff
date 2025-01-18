@@ -1,9 +1,10 @@
 #include "sphere.hpp"
-// fuck this
-#define STB_IMAGE_IMPLEMENTATION
-#include "src/shaders/stb_image.h"
 
 Sphere::Sphere(int size) {
+    program_id = LoadShaders("src/shaders/texture.vs", "src/shaders/texture.fs");
+
+
+
     build();
     manageBuffers();
 }
@@ -101,7 +102,7 @@ void Sphere::build() {
     }
 }
 
-void Sphere::draw() {
+void Sphere::draw(glm::mat4 mvp) {
     if (rebuild) {
         build();
         manageBuffers();
@@ -109,7 +110,7 @@ void Sphere::draw() {
 
     draw_f();
     draw_m();
-    draw_t();
+    draw_t(mvp);
 }
 
 void Sphere::draw_f() {
@@ -151,22 +152,22 @@ void Sphere::draw_m() {
     }
 }
 
-void Sphere::draw_t() {
-    float v[12] = {
-        1.0f, 1.0f, 1.0f,
-        0.0f, 1.0f, 1.0f,
-        0.0f, 0.0f, 1.0f,
-        1.0f, 0.0f, 1.0f
-    };
+void Sphere::draw_t(glm::mat4 mvp) {
+    glEnable(GL_POLYGON_OFFSET_FILL);
+    glPolygonOffset(1.0f, 1.0f);
 
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 12 * sizeof(float), (void *)0);
-    glEnableVertexAttribArray(2);
+    glUseProgram(program_id);
+    glUniformMatrix4fv(matrix_id, 1, GL_FALSE, &mvp[0][0]);
+    glUniform1i(cubemap_id, 0);
 
-    glBindTexture(GL_TEXTURE_2D, texture_id);
-    glBindVertexArray(triangles_buffer);
-    glDrawElements(GL_TRIANGLES, triangles.size(), GL_FLOAT, 0);
-
-    glDisableVertexAttribArray(2);
+    glEnableVertexAttribArray(0);
+    glBindVertexArray(vao);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, texture_id);
+    glDrawArrays(GL_TRIANGLES, 0, triangles.size() * 3);
+    glBindVertexArray(0);
+    glDisable(GL_POLYGON_OFFSET_FILL);
+    glDisableVertexAttribArray(0);
 }
 
 void Sphere::manageBuffers() {
@@ -198,14 +199,30 @@ void Sphere::manageBuffers() {
 
     int width, height, nb_channels;
     unsigned char *data;
-    data = stbi_load("/home/gautier/Pictures/pfp.png", &width, &height, &nb_channels, 0);
+    data = stbi_load("/home/gautier/Documents/Code/c++/SpaceStuff/assets/moi.png", &width, &height, &nb_channels, 0);
 
     glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+    glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+    glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+    glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+    cubemap_id = glGetUniformLocation(program_id, "cubemap");
+    matrix_id = glGetUniformLocation(program_id, "MVP");
+
+    glGenBuffers(1, &vbo);
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferData(GL_ARRAY_BUFFER, triangles.size() * 3 * sizeof(float), (float *)triangles.data(), GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
 
     stbi_image_free(data);
 }

@@ -3,17 +3,22 @@ LIBS =  -lGL `pkg-config sdl3  --libs` -lGLEW -lm
 CXXFLAGS = `pkg-config sdl3 --cflags` -g -DGLM_ENABLE_EXPERIMENTAL
 IMGUI_DIR = imgui
 
-SOURCES = src/main.cpp src/objects/cube.cpp src/objects/sphere.cpp src/scene/camera.cpp src/scene/scene.cpp 
-SOURCES += $(IMGUI_DIR)/imgui.cpp $(IMGUI_DIR)/imgui_demo.cpp $(IMGUI_DIR)/imgui_draw.cpp $(IMGUI_DIR)/imgui_tables.cpp $(IMGUI_DIR)/imgui_widgets.cpp
-SOURCES += $(IMGUI_DIR)/backends/imgui_impl_sdl3.cpp $(IMGUI_DIR)/backends/imgui_impl_opengl3.cpp
+PROG_SOURCES = src/main.cpp src/objects/sphere.cpp src/scene/camera.cpp src/scene/scene.cpp 
+LIBS_SOURCES = $(IMGUI_DIR)/imgui.o $(IMGUI_DIR)/imgui_demo.o $(IMGUI_DIR)/imgui_draw.o $(IMGUI_DIR)/imgui_tables.o $(IMGUI_DIR)/imgui_widgets.o
+LIBS_SOURCES += $(IMGUI_DIR)/backends/imgui_impl_sdl3.o $(IMGUI_DIR)/backends/imgui_impl_opengl3.o
 
 all: build run
 
-build:
-	g++ $(SOURCES) -o out $(HEADERS) $(CXXFLAGS) $(LIBS)
+build: libs
+	g++ $(PROG_SOURCES) $(LIBS_SOURCES) -o out $(HEADERS) $(CXXFLAGS) $(LIBS)
+
+libs: $(LIBS_SOURCES)
+
+%.o: %.cpp
+	g++ $< -c $(HEADERS) $(CXXFLAGS) $(LIBS) -o $@
 
 run:
 	./out
 
 clean:
-	rm out imgui.ini
+	rm out imgui.ini *.o $(LIBS_SOURCES)

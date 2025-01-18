@@ -1,6 +1,8 @@
 #ifndef SPACESTUFF_OBJECT_HPP
 #define SPACESTUFF_OBJECT_HPP
 
+// #include "scene/scene.hpp"
+
 #include <iostream>
 #include <vector>
 
@@ -8,6 +10,7 @@
 #include "GL/gl.h"
 
 #include "glm/glm.hpp"
+#include "glm/gtx/transform.hpp"
 #include "glm/gtx/quaternion.hpp"
 
 #include "SDL3/SDL.h"
@@ -16,8 +19,9 @@
 #include "imgui_impl_sdl3.h"
 
 class Object {
+    private:
     public:
-        virtual void draw() = 0;
+        virtual void draw(glm::mat4) = 0;
         virtual void debug() = 0;
 };
 

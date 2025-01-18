@@ -3,7 +3,6 @@
 
 #include "scene/camera.hpp"
 #include "objects/object.hpp"
-#include "objects/cube.hpp"
 #include "objects/sphere.hpp"
 
 #include "glm/glm.hpp"

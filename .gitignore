@@ -4,3 +4,4 @@ imgui/docs
 imgui/examples
 imgui.ini
 out
+*.o

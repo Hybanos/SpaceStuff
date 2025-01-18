@@ -24,7 +24,7 @@ class ObjectFaces : virtual public Object {
         std::vector<glm::vec3> triangles;
         std::vector<glm::vec3> triangles_colors;
 
-        bool draw_faces = true;
+        bool draw_faces = false;
     public:
         virtual void draw_f() = 0;
 };
