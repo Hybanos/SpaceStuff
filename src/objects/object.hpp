@@ -18,9 +18,12 @@
 #include "imgui_impl_opengl3.h"
 #include "imgui_impl_sdl3.h"
 
+class Scene;
+
 class Object {
     private:
     public:
+        Scene *scene = nullptr;
         virtual void draw(glm::mat4) = 0;
         virtual void debug() = 0;
 };

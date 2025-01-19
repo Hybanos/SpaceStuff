@@ -2,8 +2,8 @@
 #define SPACESTUFF_SCENE_HPP
 
 #include "scene/camera.hpp"
-#include "objects/object.hpp"
 #include "objects/sphere.hpp"
+#include "objects/skybox.hpp"
 
 #include "glm/glm.hpp"
 #include "glm/gtx/transform.hpp"
@@ -20,6 +20,7 @@
 #include <vector>
 
 class Camera;
+class Object;
 
 class Scene {
     private:
@@ -33,6 +34,10 @@ class Scene {
 
         SDL_Window *window;
         Camera *camera = nullptr;
+
+        glm::mat4 projection;
+        glm::mat4 view;
+        glm::mat4 model;
 
         float get_ratio();
         int get_width();
