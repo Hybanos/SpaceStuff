@@ -1,26 +1,24 @@
 #ifndef SPACESTUFF_OBJECT_CUBEMAP_HPP
 #define SPACESTUFF_OBJECT_CUBEMAP_HPP
 
-#include "object.hpp"
+#include "object_faces.hpp"
 #include "shaders/shader.hpp"
 #define STB_IMAGE_IMPLEMENTATION
 #include "src/shaders/stb_image.h"
 
-class ObjectCubeMap : virtual public Object {
+class ObjectCubeMap : virtual public ObjectFaces {
     protected:
-        GLuint vbo, vao;
-        GLuint program_id;
+        std::vector<std::string> files;
+
         GLuint texture_id;
+        GLuint cubemap_id;
         GLuint matrix_id;
 
         bool draw_texture = true;
-        virtual void manage_texture() = 0;
+        virtual void manage_texture();
     public:
-        ObjectCubeMap() {
-            glGenBuffers(1, &vbo);
-            glGenVertexArrays(1, &vao);
-        }
-        virtual void draw_t(glm::mat4) = 0;
+        ObjectCubeMap(std::string[6]);
+        virtual void draw_t();
 };
 
 #endif

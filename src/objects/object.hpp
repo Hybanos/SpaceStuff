@@ -1,7 +1,7 @@
 #ifndef SPACESTUFF_OBJECT_HPP
 #define SPACESTUFF_OBJECT_HPP
 
-// #include "scene/scene.hpp"
+#include "shaders/shader.hpp"
 
 #include <iostream>
 #include <vector>
@@ -21,10 +21,11 @@
 class Scene;
 
 class Object {
-    private:
-    public:
+    protected:
         Scene *scene = nullptr;
-        virtual void draw(glm::mat4) = 0;
+    public:
+        Object(Scene *s) : scene{s} {}
+        virtual void draw() = 0;
         virtual void debug() = 0;
 };
 

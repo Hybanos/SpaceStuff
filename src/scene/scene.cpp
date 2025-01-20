@@ -1,17 +1,24 @@
 #include "scene/scene.hpp"
 
+std::string earth_files[6] = {
+    "assets/cubemaps/earth/front.jpg",
+    "assets/cubemaps/earth/back.jpg",
+    "assets/cubemaps/earth/top.jpg",
+    "assets/cubemaps/earth/bottom.jpg",
+    "assets/cubemaps/earth/left.jpg",
+    "assets/cubemaps/earth/right.jpg"
+};
+
 Scene::Scene(SDL_Window *_window) {
-    window = _window;
     camera = new Camera;
     camera->scene = this;
+    window = _window;
 
-    program_id = LoadShaders("src/shaders/base.vs", "src/shaders/base.fs");
-    matrix_id = glGetUniformLocation(program_id, "MVP");
+    base_program_id = LoadShaders("src/shaders/base.vs", "src/shaders/base.fs");
+    texture_program_id = LoadShaders("src/shaders/texture.vs", "src/shaders/texture.fs");
 
-    objects.push_back(new SkyBox());
-    objects.push_back(new Sphere(1));
-
-    for (auto o : objects) o->scene = this;
+    objects.push_back(new SkyBox(this));
+    objects.push_back(new Sphere(this, earth_files));
 
     camera->look_at(glm::vec3(0, 0, 0));
     camera->update_pos();
@@ -43,15 +50,10 @@ void Scene::render() {
     projection = glm::perspective(glm::radians(90.0f), get_ratio(), 0.1f, 100000.0f);
     view = camera->get_view();
     model = glm::mat4(1.0);
-    glm::mat4 mvp = projection * view * model;
-
-
+    mvp = projection * view * model;
     for (Object * obj : objects) {
-        glUseProgram(program_id);
-        glUniformMatrix4fv(matrix_id, 1, GL_FALSE, &mvp[0][0]);
-        obj->draw(mvp);
+        obj->draw();
     }
-
     frames++;
 }
 

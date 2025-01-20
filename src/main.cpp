@@ -156,6 +156,7 @@ int main(int, char**)
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
     glDisable(GL_CULL_FACE);
+
     Scene scene(window);
 
     while (!done)

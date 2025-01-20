@@ -9,7 +9,7 @@
 #include "GL/glew.h"
 #include "GL/gl.h"
 
-inline GLuint LoadShaders(const char * vertex_file_path,const char * fragment_file_path){
+inline GLuint LoadShaders(const char * vertex_file_path,const char * fragment_file_path) {
 
 	// Create the shaders
 	GLuint VertexShaderID = glCreateShader(GL_VERTEX_SHADER);
@@ -71,7 +71,6 @@ inline GLuint LoadShaders(const char * vertex_file_path,const char * fragment_fi
 		glGetShaderInfoLog(FragmentShaderID, InfoLogLength, NULL, &FragmentShaderErrorMessage[0]);
 		printf("%s\n", &FragmentShaderErrorMessage[0]);
 	}
-
 	// Link the program
 	printf("Linking program\n");
 	GLuint ProgramID = glCreateProgram();
@@ -87,7 +86,6 @@ inline GLuint LoadShaders(const char * vertex_file_path,const char * fragment_fi
 		glGetProgramInfoLog(ProgramID, InfoLogLength, NULL, &ProgramErrorMessage[0]);
 		printf("%s\n", &ProgramErrorMessage[0]);
 	}
-	
 	glDetachShader(ProgramID, VertexShaderID);
 	glDetachShader(ProgramID, FragmentShaderID);
 	

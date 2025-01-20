@@ -3,20 +3,6 @@
 
 #include "object.hpp"
 
-#include <iostream>
-#include <vector>
-
-#include "GL/glew.h"
-#include "GL/gl.h"
-
-#include "glm/glm.hpp"
-#include "glm/gtx/quaternion.hpp"
-
-#include "SDL3/SDL.h"
-#include "SDL3/SDL_opengl.h"
-#include "imgui_impl_opengl3.h"
-#include "imgui_impl_sdl3.h"
-
 class ObjectFaces : virtual public Object {
     protected:
         GLuint triangles_buffer;
@@ -24,9 +10,15 @@ class ObjectFaces : virtual public Object {
         std::vector<glm::vec3> triangles;
         std::vector<glm::vec3> triangles_colors;
 
-        bool draw_faces = false;
+        bool draw_faces = true;
+        void manage_f_buffers();
     public:
-        virtual void draw_f() = 0;
+        ObjectFaces() {
+            glGenBuffers(1, &triangles_buffer);
+            glGenBuffers(1, &triangles_color_buffer);
+        }
+
+        virtual void draw_f();
 };
 
 #endif

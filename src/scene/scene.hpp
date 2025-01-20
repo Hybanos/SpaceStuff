@@ -27,17 +27,18 @@ class Scene {
         std::vector<Object *> objects;
         size_t frames = 0;
     public:
-        Scene(SDL_Window*);
+        Scene(SDL_Window *);
 
-        GLuint program_id;
-        GLuint matrix_id;
-
-        SDL_Window *window;
+        SDL_Window *window = nullptr;
         Camera *camera = nullptr;
 
         glm::mat4 projection;
         glm::mat4 view;
         glm::mat4 model;
+        glm::mat4 mvp;
+
+        GLuint base_program_id;
+        GLuint texture_program_id;
 
         float get_ratio();
         int get_width();

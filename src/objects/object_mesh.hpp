@@ -10,9 +10,15 @@ class ObjectMesh : virtual public Object {
         std::vector<glm::vec3> lines;
         std::vector<glm::vec3> lines_colors;
 
-        bool draw_mesh = false;
+        bool draw_mesh = true;
+        void manage_m_buffers();
     public:
-        virtual void draw_m() = 0;
+        ObjectMesh() {
+            glGenBuffers(1, &lines_buffer);
+            glGenBuffers(1, &lines_color_buffer);
+        }
+
+        virtual void draw_m();
 };
 
 #endif
