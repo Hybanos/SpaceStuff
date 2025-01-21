@@ -13,7 +13,7 @@ void ObjectCubeMap::manage_texture() {
     glBindTexture(GL_TEXTURE_CUBE_MAP, texture_id);
 
     int width, height, nb_channels;
-    
+
     for (int i = 0; i < 6; i++) {
         unsigned char *data = nullptr;
         data = stbi_load(files[i].c_str(), &width, &height, &nb_channels, 0);
@@ -48,6 +48,9 @@ void ObjectCubeMap::draw_t() {
     glBindTexture(GL_TEXTURE_CUBE_MAP, texture_id);
     glDrawArrays(GL_TRIANGLES, 0, triangles.size() * 3);
     
+    glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
     glDisable(GL_POLYGON_OFFSET_FILL);
     glDisableVertexAttribArray(0);
+
+    scene->triangles_t_drawn += triangles.size() / 3;
 }

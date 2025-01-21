@@ -29,7 +29,7 @@ void Sphere::build() {
 
     // normalise point distance
     for (auto &point : v) {
-        point = (glm::normalize(point) * normalise_amount + point * (1 - normalise_amount)) / 2.0f;
+        point = (glm::normalize(point) * normalise_amount + point * (1 - normalise_amount));
         point = point * size;
     }
 

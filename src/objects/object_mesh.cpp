@@ -1,4 +1,5 @@
 #include "object_mesh.hpp"
+#include "scene/scene.hpp"
 
 void ObjectMesh::manage_m_buffers() {
     glBindBuffer(GL_ARRAY_BUFFER, lines_buffer);
@@ -19,7 +20,10 @@ void ObjectMesh::draw_m() {
 
     glDrawArrays(GL_LINES, 0, lines.size());
 
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
     glDisableVertexAttribArray(0);
     glDisableVertexAttribArray(1);
 
+    scene->lines_drawn += lines.size() / 2;
 }

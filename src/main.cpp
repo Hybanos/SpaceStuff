@@ -29,6 +29,7 @@
 #endif
 
 #include "src/scene/scene.hpp"
+#include "data/tle.hpp"
 
 // Main code
 int main(int, char**)
@@ -175,7 +176,7 @@ int main(int, char**)
                 done = true;
             if (event.type == SDL_EVENT_WINDOW_CLOSE_REQUESTED && event.window.windowID == SDL_GetWindowID(window))
                 done = true;
-            if (event.type == SDL_EVENT_MOUSE_WHEEL)
+            if (event.type == SDL_EVENT_MOUSE_WHEEL && event.window.windowID == SDL_GetWindowID(window))
                 scene.camera->handle_mouse_scroll(event);
             if (event.type == SDL_EVENT_MOUSE_BUTTON_DOWN && event.window.windowID == SDL_GetWindowID(window))
                 scene.camera->enable_move = true;

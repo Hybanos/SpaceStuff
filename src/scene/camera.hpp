@@ -17,7 +17,7 @@ class Camera {
     private:
         double yaw = M_PI_4;
         double pitch = M_PI_4;
-        double distance = 3;
+        double distance = 10000;
 
         glm::vec3 position;
         glm::vec3 center;

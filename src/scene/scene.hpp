@@ -4,18 +4,9 @@
 #include "scene/camera.hpp"
 #include "objects/sphere.hpp"
 #include "objects/skybox.hpp"
+#include "objects/orbit_line.hpp"
 
-#include "glm/glm.hpp"
-#include "glm/gtx/transform.hpp"
-#include "glm/gtc/matrix_transform.hpp"
-
-#include "imgui.h"
-#include "imgui_impl_sdl3.h"
-#include "imgui_impl_opengl3.h"
-
-#include <SDL3/SDL.h>
-#include <GL/gl.h>
-#include <GL/glew.h>
+#include "data/tle.hpp"
 
 #include <vector>
 
@@ -36,6 +27,10 @@ class Scene {
         glm::mat4 view;
         glm::mat4 model;
         glm::mat4 mvp;
+        
+        size_t lines_drawn = 0;
+        size_t triangles_drawn = 0;
+        size_t triangles_t_drawn = 0;
 
         GLuint base_program_id;
         GLuint texture_program_id;

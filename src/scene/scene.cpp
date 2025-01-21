@@ -20,6 +20,12 @@ Scene::Scene(SDL_Window *_window) {
     objects.push_back(new SkyBox(this));
     objects.push_back(new Sphere(this, earth_files));
 
+    std::vector<TLE> t = read_tle_file("haha.tle");
+
+    for (auto tle : t) {
+        objects.push_back(new OrbitLine(this, tle));
+    }
+
     camera->look_at(glm::vec3(0, 0, 0));
     camera->update_pos();
 }
@@ -47,10 +53,15 @@ float Scene::get_ratio() {
 }
  
 void Scene::render() {
-    projection = glm::perspective(glm::radians(90.0f), get_ratio(), 0.1f, 100000.0f);
+    projection = glm::perspective(glm::radians(90.0f), get_ratio(), 0.1f, 100000000.0f);
     view = camera->get_view();
     model = glm::mat4(1.0);
     mvp = projection * view * model;
+
+    lines_drawn = 0;
+    triangles_drawn = 0;
+    triangles_t_drawn = 0;
+
     for (Object * obj : objects) {
         obj->draw();
     }
@@ -61,8 +72,11 @@ void Scene::debug() {
     int id = 0;
     ImGui::Begin("Scene debug");
     ImGui::SeparatorText("SCENE");
-    ImGui::Text("Frames: %d.", frames);
+    ImGui::Text("Frames: %ld.", frames);
     ImGui::Text("Ratio: %.3f.", get_ratio());
+    ImGui::Text("Lines drawn %ld.", lines_drawn);
+    ImGui::Text("Triangles drawn %ld.", triangles_drawn);
+    ImGui::Text("Texture triangles drawn %ld.", triangles_t_drawn);
     ImGui::SeparatorText("CAMERA");
     camera->debug();
     for (auto &o : objects) {

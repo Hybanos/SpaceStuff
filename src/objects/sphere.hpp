@@ -10,7 +10,7 @@ class Sphere : public ObjectMesh, public ObjectCubeMap {
         GLuint cubemap_id;
         bool rebuild = false;
         int resolution = 25;
-        float size = 1;
+        float size = 6371;
         float normalise_amount = 1.0f;
         void manageBuffers();
     public:
