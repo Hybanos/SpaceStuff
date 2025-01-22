@@ -8,7 +8,7 @@ class ObjectFaces : virtual public Object {
         GLuint triangles_buffer;
         GLuint triangles_color_buffer;
         std::vector<glm::vec3> triangles;
-        std::vector<glm::vec3> triangles_colors;
+        std::vector<glm::vec4> triangles_colors;
 
         bool draw_faces = true;
         void manage_f_buffers();

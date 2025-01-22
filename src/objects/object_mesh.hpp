@@ -8,7 +8,7 @@ class ObjectMesh : virtual public Object {
         GLuint lines_buffer;
         GLuint lines_color_buffer;
         std::vector<glm::vec3> lines;
-        std::vector<glm::vec3> lines_colors;
+        std::vector<glm::vec4> lines_colors;
 
         bool draw_mesh = true;
         void manage_m_buffers();

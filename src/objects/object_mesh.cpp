@@ -6,7 +6,7 @@ void ObjectMesh::manage_m_buffers() {
     glBufferData(GL_ARRAY_BUFFER, lines.size() * 3 * sizeof(float), (float *)lines.data(), GL_STATIC_DRAW);
 
     glBindBuffer(GL_ARRAY_BUFFER, lines_color_buffer);
-    glBufferData(GL_ARRAY_BUFFER, lines_colors.size() * 3 * sizeof(float), (float *)lines_colors.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, lines_colors.size() * 4 * sizeof(float), (float *)lines_colors.data(), GL_STATIC_DRAW);
 }
 
 void ObjectMesh::draw_m() {
@@ -16,7 +16,7 @@ void ObjectMesh::draw_m() {
 
     glEnableVertexAttribArray(1);
     glBindBuffer(GL_ARRAY_BUFFER, lines_color_buffer);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
     glDrawArrays(GL_LINES, 0, lines.size());
 

@@ -42,6 +42,22 @@ void OrbitLine::build() {
     float linear_eccentricity = sqrt(semi_major_axis * semi_major_axis - semi_minor_axis * semi_minor_axis);
     glm::vec3 offset = glm::vec3(-linear_eccentricity, 0, 0) * base;
 
+    glm::vec4 color_1 = glm::vec4(
+            0.6f,
+            0.6f,
+            1.0f,
+            1.0f
+    );
+
+    glm::vec4 color_2 = glm::vec4(
+        0.6f,
+        0.6f,
+        1.0f,
+        0.0f
+    );
+
+    float orbit_line_length = glm::min((float) 2 / tle.revloutions_per_day * 90, 180.0f);
+
     for (int i = 0; i < 360; i++) {
 
         float i_rad = glm::radians((float) i);
@@ -50,8 +66,11 @@ void OrbitLine::build() {
         lines.push_back(glm::vec3(semi_major_axis * cos(i_rad), semi_minor_axis * sin(i_rad), 0) * base + offset);
         lines.push_back(glm::vec3(semi_major_axis * cos(ip1_rad), semi_minor_axis * sin(ip1_rad), 0) * base + offset);
 
-        lines_colors.push_back(glm::vec3((float) i / 360, (float) i / 360, 1.0f));
-        lines_colors.push_back(glm::vec3((float) i / 360, (float) i / 360, 1.0f));
+        float ratio = (float) i / orbit_line_length;
+        glm::vec4 color = color_2 * ratio + color_1 * (1.0f -ratio);
+
+        lines_colors.push_back(color);
+        lines_colors.push_back(color);
     }
 }
 
@@ -60,7 +79,9 @@ void OrbitLine::draw() {
 
     // build();
     // manage_m_buffers();
+    // glDisable(GL_DEPTH_TEST);
     draw_m();
+    // glEnable(GL_DEPTH_TEST);
 }
 
 void OrbitLine::debug() {

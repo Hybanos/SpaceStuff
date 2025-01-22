@@ -44,12 +44,12 @@ void Sphere::build() {
             triangles.push_back(v[(i + 1) * n + j + 1]);
             triangles.push_back(v[(i + 1) * n + j]);
 
-            triangles_colors.push_back(glm::vec3(1.0f, 1.0f, 1.0f));
-            triangles_colors.push_back(glm::vec3(1.0f, 1.0f, 1.0f));
-            triangles_colors.push_back(glm::vec3(1.0f, 1.0f, 1.0f));
-            triangles_colors.push_back(glm::vec3(1.0f, 1.0f, 1.0f));
-            triangles_colors.push_back(glm::vec3(1.0f, 1.0f, 1.0f));
-            triangles_colors.push_back(glm::vec3(1.0f, 1.0f, 1.0f));
+            triangles_colors.push_back(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+            triangles_colors.push_back(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+            triangles_colors.push_back(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+            triangles_colors.push_back(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+            triangles_colors.push_back(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+            triangles_colors.push_back(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 
             lines.push_back(v[i * n + j]);
             lines.push_back(v[i * n + j + 1]);
@@ -66,16 +66,16 @@ void Sphere::build() {
             lines.push_back(v[i * n + j + 1]);
             lines.push_back(v[(i + 1) * n + j]);
 
-            lines_colors.push_back(glm::vec3(0.0f, 0.0f, 0.0f));
-            lines_colors.push_back(glm::vec3(0.0f, 0.0f, 0.0f));
-            lines_colors.push_back(glm::vec3(0.0f, 0.0f, 0.0f));
-            lines_colors.push_back(glm::vec3(0.0f, 0.0f, 0.0f));
-            lines_colors.push_back(glm::vec3(0.0f, 0.0f, 0.0f));
-            lines_colors.push_back(glm::vec3(0.0f, 0.0f, 0.0f));
-            lines_colors.push_back(glm::vec3(0.0f, 0.0f, 0.0f));
-            lines_colors.push_back(glm::vec3(0.0f, 0.0f, 0.0f));
-            lines_colors.push_back(glm::vec3(0.0f, 0.0f, 0.0f));
-            lines_colors.push_back(glm::vec3(0.0f, 0.0f, 0.0f));
+            lines_colors.push_back(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+            lines_colors.push_back(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+            lines_colors.push_back(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+            lines_colors.push_back(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+            lines_colors.push_back(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+            lines_colors.push_back(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+            lines_colors.push_back(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+            lines_colors.push_back(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+            lines_colors.push_back(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+            lines_colors.push_back(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
         }
     }
 

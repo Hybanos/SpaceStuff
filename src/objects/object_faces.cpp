@@ -6,7 +6,7 @@ void ObjectFaces::manage_f_buffers() {
     glBufferData(GL_ARRAY_BUFFER, triangles.size() * 3 * sizeof(float), (float *)triangles.data(), GL_STATIC_DRAW);
 
     glBindBuffer(GL_ARRAY_BUFFER, triangles_color_buffer);
-    glBufferData(GL_ARRAY_BUFFER, triangles_colors.size() * 3 * sizeof(float), (float *)triangles_colors.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, triangles_colors.size() * 4 * sizeof(float), (float *)triangles_colors.data(), GL_STATIC_DRAW);
 }
 
 void ObjectFaces::draw_f() {
@@ -19,7 +19,7 @@ void ObjectFaces::draw_f() {
 
     glEnableVertexAttribArray(1);
     glBindBuffer(GL_ARRAY_BUFFER, triangles_color_buffer);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
     glDrawArrays(GL_TRIANGLES, 0, triangles.size());
 

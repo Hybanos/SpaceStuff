@@ -57,7 +57,7 @@ SkyBox::SkyBox(Scene *s) : ObjectCubeMap(f), Object(s) {
         glm::vec3(1.0f, -1.0f,  1.0f)
     };
 
-    for (int i = 0; i < triangles.size(); i++) triangles_colors.push_back(glm::vec3(1.0f, 1.0f, 1.0f));
+    for (int i = 0; i < triangles.size(); i++) triangles_colors.push_back(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 
     manage_texture();
     manage_f_buffers();
