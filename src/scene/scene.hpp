@@ -16,7 +16,6 @@ class Object;
 class Scene {
     private:
         std::vector<Object *> objects;
-        size_t frames = 0;
     public:
         Scene(SDL_Window *);
 
@@ -31,9 +30,11 @@ class Scene {
         size_t lines_drawn = 0;
         size_t triangles_drawn = 0;
         size_t triangles_t_drawn = 0;
+        size_t frames = 0;
 
         GLuint base_program_id;
         GLuint texture_program_id;
+        GLuint orbit_program_id;
 
         float get_ratio();
         int get_width();

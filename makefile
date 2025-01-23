@@ -1,6 +1,6 @@
 HEADERS = -Iimgui -Iimgui/backends  -I. -Isrc
 LIBS =  -lGL `pkg-config sdl3  --libs` -lGLEW -lm
-CXXFLAGS = `pkg-config sdl3 --cflags` -g -DGLM_ENABLE_EXPERIMENTAL
+CXXFLAGS = `pkg-config sdl3 --cflags` -g -DGLM_ENABLE_EXPERIMENTAL -O3 -march=native
 IMGUI_DIR = imgui
 
 PROG_SOURCES = src/main.cpp \

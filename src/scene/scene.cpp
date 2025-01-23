@@ -16,6 +16,7 @@ Scene::Scene(SDL_Window *_window) {
 
     base_program_id = LoadShaders("src/shaders/base.vs", "src/shaders/base.fs");
     texture_program_id = LoadShaders("src/shaders/texture.vs", "src/shaders/texture.fs");
+    orbit_program_id = LoadShaders("src/shaders/orbit.vs", "src/shaders/orbit.fs");
 
     objects.push_back(new SkyBox(this));
     objects.push_back(new Sphere(this, earth_files));
