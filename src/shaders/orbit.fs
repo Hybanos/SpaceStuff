@@ -27,6 +27,8 @@ void main() {
         alpha = 1 + (xx - aa);
     }
 
+    alpha = max(alpha * alpha * alpha, 0.3);
+
     color = vec4(0.6, 0.6, 1.0, alpha);
     // color = vec4(alpha, 0.0, 0.0, 1.0);
 

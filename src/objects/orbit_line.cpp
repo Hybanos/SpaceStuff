@@ -55,8 +55,8 @@ void OrbitLine::build() {
     float orbit_line_length = glm::min((float) 2 / tle.revloutions_per_day * 90, 180.0f);
 
     for (int i = 0; i < 360; i++) {
-        float i_rad = glm::radians((float) i) + true_anomaly;
-        float ip1_rad = glm::radians((float) i + 1) + true_anomaly;
+        float i_rad = glm::radians((float) i);
+        float ip1_rad = glm::radians((float) i + 1);
 
         lines.push_back(glm::vec3(semi_major_axis * cos(i_rad), semi_minor_axis * sin(i_rad), 0));
         lines.push_back(glm::vec3(semi_major_axis * cos(ip1_rad), semi_minor_axis * sin(ip1_rad), 0));
@@ -71,12 +71,21 @@ void OrbitLine::draw() {
     glUniformMatrix4fv(matrix_id, 1, GL_FALSE, &(scene->mvp)[0][0]);
     glUniformMatrix3fv(base_id, 1, GL_FALSE, &base[0][0]);
     glUniform3fv(offset_id, 1, &offset[0]);
-    glUniform1f(a_id, true_anomaly);
+
+    float back = tle.mean_anomaly;
+    double timestamp = time(NULL); // + scene->frames;
+    double days_since_epoch = timestamp / (24 * 3600);
+    days_since_epoch -= (double) (tle.epoch_year - 1970) * 365.25 + tle.epoch_day + tle.epoch_frac;
+    tle.mean_anomaly += days_since_epoch * tle.revloutions_per_day * M_PI * 2;
+    tle.mean_anomaly = fmod(tle.mean_anomaly, M_PI * 2);
 
     // build_orbit();
     // build();
     // manage_m_buffers();
+    compute_true_anomaly();
+    glUniform1f(a_id, true_anomaly);
     draw_m();
+    tle.mean_anomaly = back;
 }
 
 void OrbitLine::debug() {
@@ -128,5 +137,5 @@ void OrbitLine::compute_true_anomaly() {
         }
     }
 
-    true_anomaly = anm_ecc;
+    true_anomaly = anm_ecc + M_PI * 2;
 }

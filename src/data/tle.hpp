@@ -39,6 +39,7 @@ inline TLE read_tle(std::string &title, std::string &l_1, std::string &l_2) {
     t.classification = l_1[7];
     t.international_designator = l_1.substr(9, 7);
     t.epoch_year = stoi(l_1.substr(18, 2));
+    t.epoch_year += t.epoch_year < 50 ? 2000 : 1900;
     t.epoch_day = stoi(l_1.substr(20, 3));
     t.epoch_frac = stof(l_1.substr(24, 8)) / 100000000;
     

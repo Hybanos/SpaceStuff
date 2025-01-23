@@ -15,5 +15,4 @@ void main() {
     gl_Position =  MVP * vec4(vertexPosition_modelspace * base + offset, 1);
     fragment_coords = vertexPosition_modelspace;
     fragment_color = vertex_color;
-
 }
