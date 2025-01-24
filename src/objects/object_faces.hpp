@@ -1,9 +1,9 @@
 #ifndef SPACESTUFF_OBJECT_FACES_HPP
 #define SPACESTUFF_OBJECT_FACES_HPP
 
-#include "object.hpp"
+#include "object_mesh.hpp"
 
-class ObjectFaces : virtual public Object {
+class ObjectFaces : virtual public ObjectMesh {
     protected:
         GLuint triangles_buffer;
         GLuint triangles_color_buffer;
@@ -11,12 +11,10 @@ class ObjectFaces : virtual public Object {
         std::vector<glm::vec4> triangles_colors;
 
         bool draw_faces = true;
+        void build_default_mesh();
         void manage_f_buffers();
     public:
-        ObjectFaces() {
-            glGenBuffers(1, &triangles_buffer);
-            glGenBuffers(1, &triangles_color_buffer);
-        }
+        ObjectFaces();
 
         virtual void draw_f();
 };

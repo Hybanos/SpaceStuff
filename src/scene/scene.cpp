@@ -17,15 +17,18 @@ Scene::Scene(SDL_Window *_window) {
     base_program_id = LoadShaders("src/shaders/base.vs", "src/shaders/base.fs");
     texture_program_id = LoadShaders("src/shaders/texture.vs", "src/shaders/texture.fs");
     orbit_program_id = LoadShaders("src/shaders/orbit.vs", "src/shaders/orbit.fs");
+    grid_program_id = LoadShaders("src/shaders/grid.vs", "src/shaders/grid.fs");
 
     objects.push_back(new SkyBox(this));
     objects.push_back(new Sphere(this, earth_files));
+    objects.push_back(new Grid(this));
 
     std::vector<TLE> t = read_tle_file("haha.tle");
 
     for (auto tle : t) {
         objects.push_back(new OrbitLine(this, tle));
     }
+    
 
     camera->look_at(glm::vec3(0, 0, 0));
     camera->update_pos();

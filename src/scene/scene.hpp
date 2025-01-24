@@ -4,6 +4,7 @@
 #include "scene/camera.hpp"
 #include "objects/sphere.hpp"
 #include "objects/skybox.hpp"
+#include "objects/grid.hpp"
 #include "objects/orbit_line.hpp"
 
 #include "data/tle.hpp"
@@ -35,6 +36,7 @@ class Scene {
         GLuint base_program_id;
         GLuint texture_program_id;
         GLuint orbit_program_id;
+        GLuint grid_program_id;
 
         float get_ratio();
         int get_width();

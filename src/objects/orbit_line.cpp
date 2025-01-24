@@ -137,5 +137,5 @@ void OrbitLine::compute_true_anomaly() {
         }
     }
 
-    true_anomaly = anm_ecc + M_PI * 2;
+    true_anomaly = fmod(anm_ecc + M_PI * 2, M_PI * 2);
 }

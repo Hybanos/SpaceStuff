@@ -1,6 +1,31 @@
 #include "object_faces.hpp"
 #include "scene/scene.hpp"
 
+ObjectFaces::ObjectFaces() {
+    glGenBuffers(1, &triangles_buffer);
+    glGenBuffers(1, &triangles_color_buffer);
+}
+
+void ObjectFaces::build_default_mesh() {
+    for (int i = 0; i < triangles.size(); i += 3) {
+        lines.push_back(triangles[i]);
+        lines.push_back(triangles[i+1]);
+
+        lines.push_back(triangles[i+1]);
+        lines.push_back(triangles[i+2]);
+    
+        lines.push_back(triangles[i+2]);
+        lines.push_back(triangles[i]);
+
+        lines_colors.push_back(glm::vec4(0,0,0,1));
+        lines_colors.push_back(glm::vec4(0,0,0,1));
+        lines_colors.push_back(glm::vec4(0,0,0,1));
+        lines_colors.push_back(glm::vec4(0,0,0,1));
+        lines_colors.push_back(glm::vec4(0,0,0,1));
+        lines_colors.push_back(glm::vec4(0,0,0,1));
+    }
+}
+
 void ObjectFaces::manage_f_buffers() {
     glBindBuffer(GL_ARRAY_BUFFER, triangles_buffer);
     glBufferData(GL_ARRAY_BUFFER, triangles.size() * 3 * sizeof(float), (float *)triangles.data(), GL_STATIC_DRAW);

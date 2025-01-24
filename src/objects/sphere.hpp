@@ -5,7 +5,7 @@
 #include "object_faces.hpp"
 #include "object_cubemap.hpp"
 
-class Sphere : public ObjectMesh, public ObjectCubeMap {
+class Sphere : public ObjectCubeMap {
     private:
         GLuint cubemap_id;
         bool rebuild = false;

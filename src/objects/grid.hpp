@@ -6,6 +6,8 @@
 class Grid : public ObjectFaces {
     private:
         GLuint matrix_id;
+
+        float scale = 10010;
     public:
         Grid(Scene *);
         void draw();
