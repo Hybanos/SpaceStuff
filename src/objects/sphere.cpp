@@ -5,6 +5,9 @@ Sphere::Sphere(Scene *s, std::string files[6]) : ObjectCubeMap(files), Object(s)
     draw_faces = false;
     draw_mesh = false;
 
+    rota_id = glGetUniformLocation(scene->texture_program_id, "rota");
+    flip_id = glGetUniformLocation(scene->texture_program_id, "flip");
+
     build();
     manageBuffers();
     manage_texture();
@@ -104,6 +107,13 @@ void Sphere::build() {
 }
 
 void Sphere::draw() {
+    float angle = (float) ((time(NULL) + scene->frames * 10) % (3600 * 24)) / (3600 * 24) * (M_PI * 2);
+    glm::mat3 rota(
+        glm::vec3(cos(angle), 0, -sin(angle)),
+        glm::vec3(0, 1, 0),
+        glm::vec3(sin(angle), 0, cos(angle))
+    );
+
     if (rebuild) {
         build();
         manageBuffers();
@@ -115,8 +125,11 @@ void Sphere::draw() {
     glUniformMatrix4fv(matrix_id, 1, GL_FALSE, &mvp[0][0]);
     if (draw_faces) draw_f();
     if (draw_mesh) draw_m();
+
     glUseProgram(scene->texture_program_id);
     glUniformMatrix4fv(matrix_id, 1, GL_FALSE, &mvp[0][0]);
+    glUniformMatrix3fv(rota_id, 1, GL_FALSE, &rota[0][0]);
+    glUniform1i(flip_id, 0);
     if (draw_texture) draw_t();
 }
 

@@ -2,6 +2,7 @@
 layout(location = 0) in vec3 vertexPosition_modelspace;
 
 uniform mat4 MVP;
+uniform mat3 rota;
 
 out vec3 vertex_coords;
 

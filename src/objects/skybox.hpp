@@ -6,6 +6,7 @@
 class SkyBox : public ObjectCubeMap {
     private:
         GLuint cubemap_id;
+        glm::mat3 rota;
     public:
         SkyBox(Scene *);
         void draw();

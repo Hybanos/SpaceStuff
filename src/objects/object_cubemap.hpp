@@ -14,6 +14,9 @@ class ObjectCubeMap : virtual public ObjectFaces {
         GLuint cubemap_id;
         GLuint matrix_id;
 
+        GLuint rota_id;
+        GLuint flip_id;
+
         bool draw_texture = true;
         virtual void manage_texture();
     public:

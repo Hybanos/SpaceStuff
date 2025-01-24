@@ -11,6 +11,9 @@ std::string f[6] = {
 };
 
 SkyBox::SkyBox(Scene *s) : ObjectCubeMap(f), Object(s) {
+    rota_id = glGetUniformLocation(scene->texture_program_id, "rota");
+    flip_id = glGetUniformLocation(scene->texture_program_id, "flip");
+
     draw_faces = false;
 
     triangles = {
@@ -59,6 +62,12 @@ SkyBox::SkyBox(Scene *s) : ObjectCubeMap(f), Object(s) {
 
     for (int i = 0; i < triangles.size(); i++) triangles_colors.push_back(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 
+    rota = glm::mat3(
+        glm::vec3(1, 0, 0),
+        glm::vec3(0, 1, 0),
+        glm::vec3(0, 0, 1)
+    );
+
     manage_texture();
     manage_f_buffers();
 }
@@ -75,6 +84,8 @@ void SkyBox::draw() {
     if (draw_texture) {
         glUseProgram(scene->texture_program_id);
         glUniformMatrix4fv(matrix_id, 1, GL_FALSE, &mvp[0][0]);
+        glUniformMatrix3fv(rota_id, 1, GL_FALSE, &rota[0][0]);
+        glUniform1i(flip_id, 1);
         draw_t();
     }
     glDepthMask(GL_TRUE);
