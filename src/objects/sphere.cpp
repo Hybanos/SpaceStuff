@@ -107,7 +107,7 @@ void Sphere::build() {
 }
 
 void Sphere::draw() {
-    float angle = (float) ((time(NULL) + scene->frames * 10) % (3600 * 24)) / (3600 * 24) * (M_PI * 2);
+    float angle = (float) ((time(NULL)) % (3600 * 24) + (3600 * 8)) / (3600 * 24) * (M_PI * 2);
     glm::mat3 rota(
         glm::vec3(cos(angle), 0, -sin(angle)),
         glm::vec3(0, 1, 0),

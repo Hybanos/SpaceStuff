@@ -7,6 +7,6 @@ uniform mat3 rota;
 uniform int flip; // skybox needs to be flipped
 
 void main() {
-    if (flip != 0) color = texture(cubemap, vertex_coords * rota);
-    else texture(cubemap, vertex_coords.zyx * rota);
+    if (flip != 0) color = texture(cubemap, vertex_coords.zyx * rota);
+    else color = texture(cubemap, vertex_coords * rota);
 }
