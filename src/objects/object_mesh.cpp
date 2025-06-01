@@ -1,4 +1,4 @@
-#include "object_mesh.hpp"
+#include "objects/object_mesh.hpp"
 #include "scene/scene.hpp"
 
 void ObjectMesh::manage_m_buffers() {

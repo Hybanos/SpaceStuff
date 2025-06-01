@@ -1,4 +1,4 @@
-#include "object_cubemap.hpp"
+#include "objects/object_cubemap.hpp"
 #include "scene/scene.hpp"
 
 ObjectCubeMap::ObjectCubeMap(std::string _f[6]) {

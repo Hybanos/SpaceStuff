@@ -1,4 +1,4 @@
-#include "skybox.hpp"
+#include "objects/skybox.hpp"
 #include "scene/scene.hpp"
 
 std::string f[6] = {

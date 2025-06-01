@@ -9,12 +9,12 @@
 
 #define GLM_ENABLE_EXPERIMENTAL
 
-#include "GL/glew.h"
-#include "GL/gl.h"
+#include <GL/glew.h>
+#include <GL/gl.h>
 
-#include "imgui.h"
-#include "imgui_impl_sdl3.h"
-#include "imgui_impl_opengl3.h"
+#include <imgui.h>
+#include <imgui_impl_sdl3.h>
+#include <imgui_impl_opengl3.h>
 #include <stdio.h>
 #include <SDL3/SDL.h>
 #if defined(IMGUI_IMPL_OPENGL_ES2)
@@ -28,8 +28,8 @@
 #include "../libs/emscripten/emscripten_mainloop_stub.h"
 #endif
 
-#include "src/scene/scene.hpp"
-#include "data/tle.hpp"
+#include "scene/scene.hpp"
+#include "tle.hpp"
 
 // Main code
 int main(int, char**)

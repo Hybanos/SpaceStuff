@@ -1,4 +1,4 @@
-#include "grid.hpp"
+#include "objects/grid.hpp"
 #include "scene/scene.hpp"
 
 Grid::Grid(Scene * s) : Object{s} {

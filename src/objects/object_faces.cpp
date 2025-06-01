@@ -1,4 +1,4 @@
-#include "object_faces.hpp"
+#include "objects/object_faces.hpp"
 #include "scene/scene.hpp"
 
 ObjectFaces::ObjectFaces() {

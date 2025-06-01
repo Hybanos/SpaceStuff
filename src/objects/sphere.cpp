@@ -1,4 +1,4 @@
-#include "sphere.hpp"
+#include "objects/sphere.hpp"
 #include "scene/scene.hpp"
 
 Sphere::Sphere(Scene *s, std::string files[6]) : ObjectCubeMap(files), Object(s) {

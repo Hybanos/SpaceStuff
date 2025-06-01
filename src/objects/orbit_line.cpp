@@ -1,4 +1,4 @@
-#include "orbit_line.hpp"
+#include "objects/orbit_line.hpp"
 #include "scene/scene.hpp"
 
 OrbitLine::OrbitLine(Scene *s, TLE t) : Object(s) {
@@ -38,7 +38,7 @@ void OrbitLine::build_orbit() {
     base = m1 * m2 * m3;
 
     // thanks https://space.stackexchange.com/questions/18289/how-to-get-semi-major-axis-from-tle
-    semi_major_axis = glm::pow(3.986004418*1e14, 1.0f / 3) / glm::pow(2.0f * tle.revloutions_per_day * M_PI / 86400, 2.0f / 3) / 1000;
+    semi_major_axis = glm::pow(3.986004418*1e14, 1.0d / 3) / glm::pow(2.0d * tle.revloutions_per_day * M_PI / 86400, 2.0d / 3) / 1000;
     semi_minor_axis = semi_major_axis * sqrt(1 - tle.eccentricity * tle.eccentricity);
 
     linear_eccentricity = sqrt(semi_major_axis * semi_major_axis - semi_minor_axis * semi_minor_axis);
