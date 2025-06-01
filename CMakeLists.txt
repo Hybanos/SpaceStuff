@@ -9,7 +9,7 @@ find_package(OpenGL REQUIRED)
 FetchContent_Declare(
     glm
     GIT_REPOSITORY https://github.com/icaven/glm
-    GIT_TAG 0.9.3.2
+    GIT_TAG master 
 )
 FetchContent_GetProperties(glm)
 
