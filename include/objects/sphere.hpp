@@ -11,6 +11,7 @@ class Sphere : public ObjectCubeMap {
         bool rebuild = false;
         int resolution = 25;
         float size = 6371;
+        glm::mat3 rota = glm::mat3(1);
         float normalise_amount = 1.0f;
         void manageBuffers();
     public:

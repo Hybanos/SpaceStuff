@@ -16,29 +16,52 @@ OrbitLine::OrbitLine(Scene *s, TLE t) : Object(s) {
 }
 
 void OrbitLine::build_orbit() {
+
+    // regular y and z
+    // glm::mat3 m1 = glm::mat3(
+    //     cos(tle.argument_of_perigee), -sin(tle.argument_of_perigee), 0.0f,
+    //     sin(tle.argument_of_perigee), cos(tle.argument_of_perigee) , 0.0f,
+    //     0.0f, 0.0f, 1.0f
+    // );
+
+    // glm::mat3 m2 = glm::mat3(
+    //     1.0f, 0.0f, 0.0f,
+    //     0.0f, cos(tle.inclination), -sin(tle.inclination),
+    //     0.0f, sin(tle.inclination), cos(tle.inclination)
+    // );
+
+    // glm::mat3 m3 = glm::mat3(
+    //     cos(tle.ascending_node_longitude), -sin(tle.ascending_node_longitude), 0.0f,
+    //     sin(tle.ascending_node_longitude), cos(tle.ascending_node_longitude) , 0.0f,  
+    //     0.0f, 0.0f, 1.0f
+    // );
+
+    // swapped y and z
     glm::mat3 m1 = glm::mat3(
-        glm::vec3(cos(tle.argument_of_perigee), -sin(tle.argument_of_perigee), 0.0f),
-        glm::vec3(sin(tle.argument_of_perigee), cos(tle.argument_of_perigee), 0.0f),
-        glm::vec3(0.0f, 0.0f, 1.0f)
+        cos(tle.argument_of_perigee), 0.0f, -sin(tle.argument_of_perigee),
+        sin(tle.argument_of_perigee), 0.0f, cos(tle.argument_of_perigee),
+        0.0f, 1.0f, 0.0f
     );
 
     glm::mat3 m2 = glm::mat3(
-        glm::vec3(1.0f, 0.0f, 0.0f),
-        glm::vec3(0.0f, cos(tle.inclination), -sin(tle.inclination)),
-        glm::vec3(0.0f, sin(tle.inclination), cos(tle.inclination))
+        1.0f, 0.0f, 0.0f,
+        0.0f, -sin(tle.inclination), cos(tle.inclination),
+        0.0f, cos(tle.inclination), sin(tle.inclination)
     );
 
     glm::mat3 m3 = glm::mat3(
-        glm::vec3(sin(tle.ascending_node_longitude), cos(tle.ascending_node_longitude), 0.0f),
-        glm::vec3(0.0f, 0.0f, 1.0f),
-        glm::vec3(cos(tle.ascending_node_longitude), -sin(tle.ascending_node_longitude), 0.0f)  
+        cos(tle.ascending_node_longitude), 0.0f, -sin(tle.ascending_node_longitude),
+        sin(tle.ascending_node_longitude), 0.0f, cos(tle.ascending_node_longitude),  
+        0.0f, 1.0f, 0.0f
     );
 
     // thanks https://en.wikipedia.org/wiki/Orbital_elements#Euler_angle_transformations
     base = m1 * m2 * m3;
 
+    std::swap(base[2], base[1]);
+
     // thanks https://space.stackexchange.com/questions/18289/how-to-get-semi-major-axis-from-tle
-    semi_major_axis = glm::pow(3.986004418*1e14, 1.0d / 3) / glm::pow(2.0d * tle.revloutions_per_day * M_PI / 86400, 2.0d / 3) / 1000;
+    semi_major_axis = glm::pow(3.986004418*1e14, 1.0f / 3) / glm::pow(2.0f * tle.revloutions_per_day * M_PI / 86400, 2.0f / 3) / 1000;
     semi_minor_axis = semi_major_axis * sqrt(1 - tle.eccentricity * tle.eccentricity);
 
     linear_eccentricity = sqrt(semi_major_axis * semi_major_axis - semi_minor_axis * semi_minor_axis);
@@ -58,8 +81,10 @@ void OrbitLine::build() {
         float i_rad = glm::radians((float) i);
         float ip1_rad = glm::radians((float) i + 1);
 
-        lines.push_back(glm::vec3(semi_major_axis * cos(i_rad), semi_minor_axis * sin(i_rad), 0));
-        lines.push_back(glm::vec3(semi_major_axis * cos(ip1_rad), semi_minor_axis * sin(ip1_rad), 0));
+        lines.push_back(glm::vec3(semi_major_axis * cos(i_rad), 0, semi_minor_axis * -sin(i_rad)));
+        lines.push_back(glm::vec3(semi_major_axis * cos(ip1_rad), 0, semi_minor_axis * -sin(ip1_rad)));
+        // lines.push_back(glm::vec3(semi_major_axis * cos(i_rad), semi_minor_axis * sin(i_rad), 0));
+        // lines.push_back(glm::vec3(semi_major_axis * cos(ip1_rad), semi_minor_axis * sin(ip1_rad), 0));
 
         lines_colors.push_back(glm::vec4(i_rad, 0.0f, 0.0f, 0.0f));
         lines_colors.push_back(glm::vec4(ip1_rad, 0.0f, 0.0f, 0.0f));
@@ -109,7 +134,11 @@ void OrbitLine::debug() {
         ImGui::Text("Semi minor axis: %f", semi_minor_axis);
         ImGui::Text("Linear eccentricity: %f", linear_eccentricity);
         ImGui::Text("True anomaly: %f", true_anomaly);
-
+        ImGui::Spacing();
+        ImGui::Text("\tx\ty\tz");
+        ImGui::Text("\t%f\t%f\t%f", base[0][0], base[1][0], base[2][0]);
+        ImGui::Text("\t%f\t%f\t%f", base[0][1], base[1][1], base[2][1]);
+        ImGui::Text("\t%f\t%f\t%f", base[0][2], base[1][2], base[2][2]);
         build_orbit();
         build();
         manage_m_buffers();

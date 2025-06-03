@@ -29,7 +29,6 @@ Scene::Scene(SDL_Window *_window) {
         objects.push_back(new OrbitLine(this, tle));
     }
     
-
     camera->look_at(glm::vec3(0, 0, 0));
     camera->update_pos();
 }

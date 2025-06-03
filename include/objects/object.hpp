@@ -1,6 +1,10 @@
 #ifndef SPACESTUFF_OBJECT_HPP
 #define SPACESTUFF_OBJECT_HPP
 
+#define SECS_DAY (24 * 3600)
+#define SECS_SIDERAL_DAY (23 * 3600 + 56 * 60 + 4)
+#define LAST_VERNAL_EQUINOX 1742424540
+
 #include "shader.hpp"
 
 #include <iostream>

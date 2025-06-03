@@ -13,10 +13,6 @@ uniform float b;
 out vec4 color;
 
 void main() {
-
-    vec4 color_1 = vec4(0.6, 0.6, 1.0, 1.0);
-    vec4 color_2 = vec4(0.6, 0.6, 1.0, 0.0);
-
     float xx = fragment_color.x / (M_PI * 2);
     float aa = a / (M_PI * 2);
     float alpha;

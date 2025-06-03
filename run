@@ -1,0 +1,14 @@
+#!/usr/bin/bash
+
+build_tool=""
+
+if [ -f "/usr/bin/ninja" ]; then
+    build_tool="-G Ninja"
+fi
+
+if [ ! -d "./build" ]; then
+    cmake -B build $build_tool || exit 
+fi
+cmake --build build || exit
+
+build/src/main

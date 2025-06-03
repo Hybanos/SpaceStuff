@@ -107,8 +107,11 @@ void Sphere::build() {
 }
 
 void Sphere::draw() {
-    float angle = (float) ((time(NULL)) % (3600 * 24) + (3600 * 8)) / (3600 * 24) * (M_PI * 2);
-    glm::mat3 rota(
+    double julian_date = (double) time(NULL) / SECS_DAY + 2440587.5;
+    double angle = (0.7790572732640 + 1.00273781191135448 * julian_date) * (M_PI * 2);
+    angle = fmod(angle, M_PI * 2);
+
+    rota = glm::mat3(
         glm::vec3(cos(angle), 0, -sin(angle)),
         glm::vec3(0, 1, 0),
         glm::vec3(sin(angle), 0, cos(angle))
@@ -147,5 +150,10 @@ void Sphere::debug() {
         ImGui::Checkbox("Draw faces:", &draw_faces);
         ImGui::Checkbox("Draw texture:", &draw_texture);
         ImGui::SliderFloat("Normalisation amound:", &normalise_amount, 0, 1);
+        ImGui::Text("Rotation matrix:");
+        ImGui::Text("\t%f\t%f\t%f", rota[0][0], rota[1][0], rota[2][0]);
+        ImGui::Text("\t%f\t%f\t%f", rota[0][1], rota[1][1], rota[2][1]);
+        ImGui::Text("\t%f\t%f\t%f", rota[0][2], rota[1][2], rota[2][2]);
+        ImGui::Text("Rotation angle (deg): %f", acos(rota[0][0]) * (180 / M_PI)); 
     }
 }
