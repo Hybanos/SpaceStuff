@@ -56,7 +56,7 @@ float Scene::get_ratio() {
 }
  
 void Scene::render() {
-    projection = glm::perspective(glm::radians(90.0f), get_ratio(), 0.1f, 100000000.0f);
+    projection = glm::perspective(glm::radians(80.0f), get_ratio(), 0.1f, 100000000.0f);
     view = camera->get_view();
     model = glm::mat4(1.0);
     mvp = projection * view * model;

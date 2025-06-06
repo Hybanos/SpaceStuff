@@ -7,6 +7,9 @@ ObjectFaces::ObjectFaces() {
 }
 
 void ObjectFaces::build_default_mesh() {
+
+    lines.clear();
+
     for (int i = 0; i < triangles.size(); i += 3) {
         lines.push_back(triangles[i]);
         lines.push_back(triangles[i+1]);

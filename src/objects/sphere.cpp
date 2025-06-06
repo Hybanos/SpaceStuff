@@ -26,7 +26,8 @@ void Sphere::build() {
     // create first face points
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            v.push_back(glm::vec3((float)i / (n-1) * 2 - 1, (float)j / (n-1) * 2 - 1, 1));
+            glm::vec3 point((float)i / (n-1) * 2 - 1, (float)j / (n-1) * 2 - 1, 1);
+            v.push_back(point);
         }
     }
 
@@ -105,10 +106,10 @@ void Sphere::build() {
         }
     }
 }
-
+#include <iomanip>
 void Sphere::draw() {
-    double julian_date = (double) time(NULL) / SECS_DAY + 2440587.5;
-    double angle = (0.7790572732640 + 1.00273781191135448 * julian_date) * (M_PI * 2);
+    double julian_date = ((double) time(NULL)) / SECS_DAY + 2440587.5;
+    double angle = (0.7790572732640 + 1.00273781191135448 * (julian_date - 2451545.0)) * (M_PI * 2);
     angle = fmod(angle, M_PI * 2);
 
     rota = glm::mat3(

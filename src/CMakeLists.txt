@@ -8,6 +8,7 @@ target_sources(main PRIVATE
     objects/orbit_line.cpp
     objects/skybox.cpp
     objects/sphere.cpp
+    objects/particle.cpp
 
     scene/camera.cpp
     scene/scene.cpp
@@ -27,6 +28,7 @@ target_sources(main PUBLIC
         ${PROJECT_SOURCE_DIR}/include/objects/orbit_line.hpp
         ${PROJECT_SOURCE_DIR}/include/objects/skybox.hpp
         ${PROJECT_SOURCE_DIR}/include/objects/sphere.hpp
+        ${PROJECT_SOURCE_DIR}/include/objects/particle.hpp
 
         ${PROJECT_SOURCE_DIR}/include/scene/camera.hpp
         ${PROJECT_SOURCE_DIR}/include/scene/scene.hpp
