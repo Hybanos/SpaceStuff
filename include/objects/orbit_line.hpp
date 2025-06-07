@@ -14,6 +14,7 @@ class OrbitLine : public ObjectMesh {
         float semi_major_axis;
         float semi_minor_axis;
         float linear_eccentricity;
+        double epoch;
         float real_time_mean_anomaly;
         float true_anomaly;
         glm::vec3 offset;
@@ -26,6 +27,7 @@ class OrbitLine : public ObjectMesh {
         GLuint a_id;
         GLuint b_id;
 
+        bool show_apsis = false;
         Particle periapsis;
         Particle apoapsis;
 

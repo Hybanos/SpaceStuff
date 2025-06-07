@@ -13,7 +13,8 @@ void Particle::build() {
     glm::vec3 right = glm::normalize(glm::cross(up, dir));
     glm::vec3 cam_up = glm::cross(dir, right);
 
-    float scale = glm::length(scene->camera->get_position()) * tan(glm::radians(80.0f) / 2) * 2 * 10 / scene->get_width();
+    // constant-ish size
+    float scale = glm::length(scene->camera->get_position()) * tan(glm::radians(80.0f) / 2) * 2 * 5 / scene->get_width();
 
     int slices = 25;
     std::vector<glm::vec3> v;

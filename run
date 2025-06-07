@@ -11,6 +11,6 @@ if [ ! -d "./build" ]; then
 fi
 cmake --build build || exit
 
-curl "https://celestrak.org/NORAD/elements/gp.php?CATNR=25544&FORMAT=tle" > haha.tle
+# curl "https://celestrak.org/NORAD/elements/gp.php?CATNR=25544&FORMAT=tle" > haha.tle
 
 build/src/main

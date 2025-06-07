@@ -15,32 +15,12 @@ OrbitLine::OrbitLine(Scene *s, TLE t) : Object(s),
     build_orbit();
     build();
     manage_m_buffers();
-
-    // periapsis = Particle(scene, glm::vec3(0, 0, 0), glm::vec4(1));
 }
 
 void OrbitLine::build_orbit() {
-
-    // regular y and z
-    // glm::mat3 m1 = glm::mat3(
-    //     cos(tle.argument_of_perigee), -sin(tle.argument_of_perigee), 0.0f,
-    //     sin(tle.argument_of_perigee), cos(tle.argument_of_perigee) , 0.0f,
-    //     0.0f, 0.0f, 1.0f
-    // );
-
-    // glm::mat3 m2 = glm::mat3(
-    //     1.0f, 0.0f, 0.0f,
-    //     0.0f, cos(tle.inclination), -sin(tle.inclination),
-    //     0.0f, sin(tle.inclination), cos(tle.inclination)
-    // );
-
-    // glm::mat3 m3 = glm::mat3(
-    //     cos(tle.ascending_node_longitude), -sin(tle.ascending_node_longitude), 0.0f,
-    //     sin(tle.ascending_node_longitude), cos(tle.ascending_node_longitude) , 0.0f,  
-    //     0.0f, 0.0f, 1.0f
-    // );
-
-    // swapped y and z
+    // ref: https://en.wikipedia.org/wiki/Orbital_elements#Euler_angle_transformations
+    // note: Y and Z axis are swapped (we are in Y-up right-handed geometry, wikipedia is Z-up)
+    // we compute the orbit base with the axis swapped, and re-swap them later
     glm::mat3 m1 = glm::mat3(
         cos(tle.argument_of_perigee), 0.0f, -sin(tle.argument_of_perigee),
         sin(tle.argument_of_perigee), 0.0f, cos(tle.argument_of_perigee),
@@ -59,9 +39,8 @@ void OrbitLine::build_orbit() {
         0.0f, 1.0f, 0.0f
     );
 
-    // thanks https://en.wikipedia.org/wiki/Orbital_elements#Euler_angle_transformations
     base = m1 * m2 * m3;
-
+    // re-swap Y and Z
     std::swap(base[2], base[1]);
 
     // thanks https://space.stackexchange.com/questions/18289/how-to-get-semi-major-axis-from-tle
@@ -70,6 +49,16 @@ void OrbitLine::build_orbit() {
 
     linear_eccentricity = sqrt(semi_major_axis * semi_major_axis - semi_minor_axis * semi_minor_axis);
     offset = glm::vec3(-linear_eccentricity, 0, 0) * base;
+
+    // jan 1 of epoch year (seconds per year isn't uniform)
+    std::tm tm = {};
+    tm.tm_year = tle.epoch_year - 1900;
+    tm.tm_mon = 0;
+    tm.tm_mday = 1;
+    tm.tm_hour = 1;
+    tm.tm_min = 0;
+    tm.tm_sec = 0;
+    epoch = ((double) std::mktime(&tm)) + (tle.epoch_day - 1 + tle.epoch_frac) * 86400;
 
     compute_true_anomaly();
 }
@@ -83,6 +72,7 @@ void OrbitLine::build() {
         float i_rad = glm::radians((float) i);
         float ip1_rad = glm::radians((float) i + 1);
 
+        // unit circle is counter-clockwise, so we invert the sin to have clockwise orbits
         lines.push_back(glm::vec3(semi_major_axis * cos(i_rad), 0, semi_minor_axis * -sin(i_rad)) * base + offset);
         lines.push_back(glm::vec3(semi_major_axis * cos(ip1_rad), 0, semi_minor_axis * -sin(ip1_rad)) * base + offset);
 
@@ -97,26 +87,9 @@ void OrbitLine::draw() {
     glUniformMatrix3fv(base_id, 1, GL_FALSE, &base[0][0]);
     glUniform3fv(offset_id, 1, &offset[0]);
 
-    // jan 1 of epoch year (seconds per year isn't uniform)
-    std::tm tm = {};
-    tm.tm_year = tle.epoch_year - 1900;
-    tm.tm_mon = 0;
-    tm.tm_mday = 1;
-    tm.tm_hour = 1;
-    tm.tm_min = 0;
-    tm.tm_sec = 0;
-    double epoch = ((double) std::mktime(&tm)) + (tle.epoch_day - 1 + tle.epoch_frac) * 86400;
-    // std::cout << "haha   " << (int) epoch << std::endl;
     double delta = (double) time(NULL) - epoch;
-    // std::cout << time(NULL) << " " << epoch << " " << delta << std::endl;
     double days_since_epoch = delta / SECS_DAY;
-    // std::cout << days_since_epoch << std::endl;
 
-    // double days_since_epoch = (double) time(NULL) / (24 * 3600);
-    // double epoch = (double) (tle.epoch_year - 1970) * 365.242189 + tle.epoch_day - 1 + tle.epoch_frac;
-    // std::cout << epoch << " " << days_since_epoch << std::endl;
-    // days_since_epoch -= epoch;
-    // std::cout << days_since_epoch << "haha " << std::endl;
     real_time_mean_anomaly = tle.mean_anomaly + days_since_epoch * tle.revloutions_per_day * M_PI * 2;
     real_time_mean_anomaly = fmod(real_time_mean_anomaly, M_PI * 2);
 
@@ -130,17 +103,15 @@ void OrbitLine::draw() {
 
     pos = inter * next + (1 - inter) * prev;
 
-    // pos = lines[(int) (true_anomaly / (M_PI * 2) * 360) * 2];
-
-    // true_anomaly = real_time_mean_anomaly;
-    // true_anomaly = tle.mean_anomaly;
     glUniform1f(a_id, true_anomaly);
     draw_m();
 
-    periapsis.pos = lines[0];
-    periapsis.draw();
-    apoapsis.pos = lines[360];
-    apoapsis.draw();
+    if (show_apsis) {
+        periapsis.pos = lines[0];
+        periapsis.draw();
+        apoapsis.pos = lines[360];
+        apoapsis.draw();
+    }
 }
 
 void OrbitLine::debug() {
@@ -174,14 +145,16 @@ void OrbitLine::debug() {
         ImGui::Text("x: %f, y:%f, z:%f", pos.x, pos.y, pos.z);
         compute_pitch_yaw();
         ImGui::Text("pitch: %f yaw: %f", angle[0], angle[1]);
-        ImGui::Text("pitch: %f yaw: %f", angle[0] / M_PI * 180, angle[1] / M_PI * 180);
-        ImGui::Text("Lat: %f°", pos.y / 6371 * 90);
+        ImGui::Text("lat: %f lon: %f", angle[0] / M_PI * 180, angle[1] / M_PI * 180);
         ImGui::Text("Altitude: %f", (float) glm::length(pos) - 6371);
         build_orbit();
         build();
         manage_m_buffers();
 
-        periapsis.debug();
+        if (ImGui::Checkbox("Show apsis", &show_apsis)) {
+            apoapsis.debug();
+            periapsis.debug();
+        }
     }
 }
 
