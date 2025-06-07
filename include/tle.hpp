@@ -44,9 +44,10 @@ inline TLE read_tle(std::string &title, std::string &l_1, std::string &l_2) {
     t.epoch_frac = stof(l_1.substr(24, 8)) / 100000000;
     
     t.inclination = glm::radians(stof(l_2.substr(8, 8)));
-    t.ascending_node_longitude = glm::radians(stof(l_2.substr(17, 9)));
+    // TODO: why offset from pi*2
+    t.ascending_node_longitude = (M_PI * 2) - glm::radians(stof(l_2.substr(17, 9)));
     t.eccentricity = stof(l_2.substr(26, 7)) / 10000000;
-    t.argument_of_perigee = glm::radians(stof(l_2.substr(34, 8)));
+    t.argument_of_perigee = (M_PI * 2) - glm::radians(stof(l_2.substr(34, 8)));
     t.mean_anomaly = glm::radians(stof(l_2.substr(43, 8)));
     t.revloutions_per_day = stof(l_2.substr(52, 11));
     t.revolutions_at_epoch = stoi(l_2.substr(63, 5));

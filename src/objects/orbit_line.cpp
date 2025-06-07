@@ -65,8 +65,8 @@ void OrbitLine::build_orbit() {
     std::swap(base[2], base[1]);
 
     // thanks https://space.stackexchange.com/questions/18289/how-to-get-semi-major-axis-from-tle
-    semi_major_axis = glm::pow(3.986004418*1e14, 1.0f / 3) / glm::pow(2.0f * tle.revloutions_per_day * M_PI / 86400, 2.0f / 3) / 1000;
-    semi_minor_axis = semi_major_axis * sqrt(1 - tle.eccentricity * tle.eccentricity);
+    semi_major_axis = glm::pow(3.986004418*1e14, 1.0f / 3) / glm::pow(2.0f * tle.revloutions_per_day * M_PI / 86400.0f, 2.0f / 3.0f) / 1000.0f;
+    semi_minor_axis = semi_major_axis * sqrt(1.0f - tle.eccentricity * tle.eccentricity);
 
     linear_eccentricity = sqrt(semi_major_axis * semi_major_axis - semi_minor_axis * semi_minor_axis);
     offset = glm::vec3(-linear_eccentricity, 0, 0) * base;
@@ -106,11 +106,11 @@ void OrbitLine::draw() {
     tm.tm_min = 0;
     tm.tm_sec = 0;
     double epoch = ((double) std::mktime(&tm)) + (tle.epoch_day - 1 + tle.epoch_frac) * 86400;
-    std::cout << "haha   " << (int) epoch << std::endl;
+    // std::cout << "haha   " << (int) epoch << std::endl;
     double delta = (double) time(NULL) - epoch;
-    std::cout << time(NULL) << " " << epoch << " " << delta << std::endl;
+    // std::cout << time(NULL) << " " << epoch << " " << delta << std::endl;
     double days_since_epoch = delta / SECS_DAY;
-    std::cout << days_since_epoch << std::endl;
+    // std::cout << days_since_epoch << std::endl;
 
     // double days_since_epoch = (double) time(NULL) / (24 * 3600);
     // double epoch = (double) (tle.epoch_year - 1970) * 365.242189 + tle.epoch_day - 1 + tle.epoch_frac;
@@ -122,7 +122,15 @@ void OrbitLine::draw() {
 
     compute_true_anomaly();
 
-    pos = lines[(int) (true_anomaly / (M_PI * 2) * 360) * 2];
+    int pos_index = (int) (true_anomaly / (M_PI * 2) * 360) * 2;
+    float inter = (true_anomaly / (M_PI * 2) * 360) - floor(true_anomaly / (M_PI * 2) * 360);
+
+    glm::vec3 prev = lines[pos_index];
+    glm::vec3 next = lines[(pos_index + 2) % (360 * 2)];
+
+    pos = inter * next + (1 - inter) * prev;
+
+    // pos = lines[(int) (true_anomaly / (M_PI * 2) * 360) * 2];
 
     // true_anomaly = real_time_mean_anomaly;
     // true_anomaly = tle.mean_anomaly;
@@ -167,6 +175,7 @@ void OrbitLine::debug() {
         compute_pitch_yaw();
         ImGui::Text("pitch: %f yaw: %f", angle[0], angle[1]);
         ImGui::Text("pitch: %f yaw: %f", angle[0] / M_PI * 180, angle[1] / M_PI * 180);
+        ImGui::Text("Lat: %f°", pos.y / 6371 * 90);
         ImGui::Text("Altitude: %f", (float) glm::length(pos) - 6371);
         build_orbit();
         build();
