@@ -5,6 +5,7 @@
 
 class ObjectMesh : virtual public Object {
     protected:
+        GLuint VAO;
         GLuint lines_buffer;
         GLuint lines_color_buffer;
         std::vector<glm::vec3> lines;
@@ -14,6 +15,7 @@ class ObjectMesh : virtual public Object {
         void manage_m_buffers();
     public:
         ObjectMesh() {
+            glGenVertexArrays(1, &VAO);
             glGenBuffers(1, &lines_buffer);
             glGenBuffers(1, &lines_color_buffer);
         }
