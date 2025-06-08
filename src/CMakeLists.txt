@@ -46,7 +46,7 @@ target_sources(
         ${imgui_SOURCE_DIR}/imgui_widgets.cpp
 )
 
-target_compile_options(main PRIVATE -DGLM_ENABLE_EXPERIMENTAL)
+target_compile_options(main PRIVATE -DGLM_ENABLE_EXPERIMENTAL -DLIBGL_DEBUG -g3) 
 target_link_libraries(main PRIVATE SDL3::SDL3 OpenGL::GL GLEW)
 target_include_directories(main PRIVATE ${glm_SOURCE_DIR} ${imgui_SOURCE_DIR} ${imgui_SOURCE_DIR}/backends)
 target_compile_features(main PRIVATE cxx_std_20)

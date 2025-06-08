@@ -17,6 +17,7 @@ class OrbitLine : public ObjectMesh {
         double epoch;
         float real_time_mean_anomaly;
         float true_anomaly;
+        float true_anomaly_index[360];
         glm::vec3 offset;
         glm::vec3 pos;
         glm::vec2 angle;
@@ -31,7 +32,8 @@ class OrbitLine : public ObjectMesh {
         Particle periapsis;
         Particle apoapsis;
 
-        void compute_true_anomaly();
+        void get_true_anomaly(bool recompute);
+        void compute_true_anomalies();
         void compute_pitch_yaw();
     public:
         OrbitLine(Scene *, TLE t);

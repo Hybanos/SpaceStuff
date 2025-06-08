@@ -60,7 +60,7 @@ void OrbitLine::build_orbit() {
     tm.tm_sec = 0;
     epoch = ((double) std::mktime(&tm)) + (tle.epoch_day - 1 + tle.epoch_frac) * 86400;
 
-    compute_true_anomaly();
+    get_true_anomaly(true);
 }
 
 void OrbitLine::build() {
@@ -93,7 +93,7 @@ void OrbitLine::draw() {
     real_time_mean_anomaly = tle.mean_anomaly + days_since_epoch * tle.revloutions_per_day * M_PI * 2;
     real_time_mean_anomaly = fmod(real_time_mean_anomaly, M_PI * 2);
 
-    compute_true_anomaly();
+    get_true_anomaly(false);
 
     int pos_index = (int) (true_anomaly / (M_PI * 2) * 360) * 2;
     float inter = (true_anomaly / (M_PI * 2) * 360) - floor(true_anomaly / (M_PI * 2) * 360);
@@ -158,28 +158,45 @@ void OrbitLine::debug() {
     }
 }
 
-// big thanks https://github.com/duncaneddy/rastro/blob/main/rastro/src/orbits.rs
-void OrbitLine::compute_true_anomaly() {
-    int max_iter = 10;
-    double e = 0.0001;
-
-    double anm_ecc = tle.eccentricity < 0.8 ? real_time_mean_anomaly : M_PI;
-
-    double f = anm_ecc - tle.eccentricity * sin(anm_ecc) - real_time_mean_anomaly;
-    int ite = 0;
-
-    while (abs(f) > e) {
-        f = anm_ecc - tle.eccentricity * sin(anm_ecc) - real_time_mean_anomaly;
-        anm_ecc = anm_ecc - f / (1.0f - tle.eccentricity * cos(anm_ecc));
-
-        ite += 1;
-        if (ite > max_iter) {
-            std::cout << "Failing to converge true anomaly calculation for " << tle.name << std::endl;
-            break;
-        }
+void OrbitLine::get_true_anomaly(bool compute) {
+    if (compute) {
+        compute_true_anomalies();
     }
 
-    true_anomaly = fmod(anm_ecc + M_PI * 2, M_PI * 2);
+    int index =  (int) glm::degrees(fmod(real_time_mean_anomaly, M_PI * 2));
+    // std::cout << real_time_mean_anomaly << " " <<  index << std::endl;
+    float delta = real_time_mean_anomaly - floor(real_time_mean_anomaly);
+
+    true_anomaly = delta * true_anomaly_index[index] + (1 - delta) * true_anomaly_index[(index+1) % 360];
+}
+
+// big thanks https://github.com/duncaneddy/rastro/blob/main/rastro/src/orbits.rs
+void OrbitLine::compute_true_anomalies() {
+    int max_iter = 20;
+    double e = 0.0001;
+    
+    for (int i = 0; i < 360; i++) {
+
+        float tmp_mean_anomaly = glm::radians((float) i);
+
+        double anm_ecc = tle.eccentricity < 0.8 ? tmp_mean_anomaly : M_PI;
+
+        double f = anm_ecc - tle.eccentricity * sin(anm_ecc) - tmp_mean_anomaly;
+        int ite = 0;
+
+        while (abs(f) > e) {
+            f = anm_ecc - tle.eccentricity * sin(anm_ecc) - tmp_mean_anomaly;
+            anm_ecc = anm_ecc - f / (1.0f - tle.eccentricity * cos(anm_ecc));
+
+            ite += 1;
+            if (ite > max_iter) {
+                std::cout << "Failing to converge true anomaly calculation for " << tle.name << std::endl;
+                break;
+            }
+        }
+
+        true_anomaly_index[i] = fmod(anm_ecc + M_PI * 2, M_PI * 2);
+    }
 }
 
 void OrbitLine::compute_pitch_yaw() {
