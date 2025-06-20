@@ -6,15 +6,41 @@ OrbitLine::OrbitLine(Scene *s, TLE t) : Object(s),
     apoapsis(scene, glm::vec3(0, 0, 0), glm::vec4(0.6, 1, 0.6, 1)) {
     tle = t;
     matrix_id = glGetUniformLocation(scene->orbit_program_id, "MVP");
-    base_id = glGetUniformLocation(scene->orbit_program_id, "base");
-    offset_id = glGetUniformLocation(scene->orbit_program_id, "offset");
-    a_id = glGetUniformLocation(scene->orbit_program_id, "a");
+    // base_id = glGetUniformLocation(scene->orbit_program_id, "base");
+    // offset_id = glGetUniformLocation(scene->orbit_program_id, "offset");
+    // a_id = glGetUniformLocation(scene->orbit_program_id, "a");
     b_id = glGetUniformLocation(scene->orbit_program_id, "b");
 
     draw_mesh = true;
     build_orbit();
     build();
-    manage_m_buffers();
+    // manage_m_buffers();
+
+    glBindVertexArray(VAO);
+
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
+
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void *) 0);
+
+    glEnableVertexAttribArray(5);
+    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 3 * sizeof(glm::vec3), (void *)0);
+    glEnableVertexAttribArray(6);
+    glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 3 * sizeof(glm::vec3), (void *) (1 * sizeof(glm::vec3)));
+    glEnableVertexAttribArray(7);
+    glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 3 * sizeof(glm::vec3), (void *) (2 * sizeof(glm::vec3)));
+
+    glVertexAttribDivisor(5, 1);
+    glVertexAttribDivisor(6, 1);
+    glVertexAttribDivisor(7, 1);
+
+    glEnableVertexAttribArray(3);
+    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, (void * ) 0);
+    glEnableVertexAttribArray(4);
+    glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, 0, (void * ) 0);
+
+    glBindVertexArray(0);
 }
 
 void OrbitLine::build_orbit() {
@@ -79,13 +105,25 @@ void OrbitLine::build() {
         lines_colors.push_back(glm::vec4(i_rad, 0.0f, 0.0f, 0.0f));
         lines_colors.push_back(glm::vec4(ip1_rad, 0.0f, 0.0f, 0.0f));
     }
+
+    glBindVertexArray(VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, lines_buffer);
+    glBufferData(GL_ARRAY_BUFFER, lines.size() * 3 * sizeof(float), (float *) lines.data(), GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ARRAY_BUFFER, lines_color_buffer);
+    glBufferData(GL_ARRAY_BUFFER, lines_colors.size() * 4 * sizeof(float), (float *) lines_colors.data(), GL_STATIC_DRAW);
+
+
+    glBindVertexArray(0);
+
 }
 
 void OrbitLine::draw() {
     glUseProgram(scene->orbit_program_id);
     glUniformMatrix4fv(matrix_id, 1, GL_FALSE, &(scene->mvp)[0][0]);
-    glUniformMatrix3fv(base_id, 1, GL_FALSE, &base[0][0]);
-    glUniform3fv(offset_id, 1, &offset[0]);
+    // glUniformMatrix3fv(base_id, 1, GL_FALSE, &base[0][0]);
+    // glUniform3fv(offset_id, 1, &offset[0]);
 
     double delta = (double) time(NULL) - epoch;
     double days_since_epoch = delta / SECS_DAY;
@@ -103,8 +141,17 @@ void OrbitLine::draw() {
 
     pos = inter * next + (1 - inter) * prev;
 
-    glUniform1f(a_id, true_anomaly);
-    draw_m();
+    // glUniform1f(a_id, true_anomaly);
+    // draw_m();
+
+    int i = ++scene->i;
+    scene->bases[i] = base;
+    scene->offsets[i] = offset;
+    scene->true_anomalies[i] = true_anomaly;
+    
+    glBindVertexArray(VAO);
+    glDrawArraysInstanced(GL_LINES, 0, lines.size(), scene->bases.size());
+    glBindVertexArray(0);
 
     if (show_apsis) {
         periapsis.pos = lines[0];
@@ -149,7 +196,7 @@ void OrbitLine::debug() {
         ImGui::Text("Altitude: %f", (float) glm::length(pos) - 6371);
         build_orbit();
         build();
-        manage_m_buffers();
+        // manage_m_buffers();
 
         if (ImGui::Checkbox("Show apsis", &show_apsis)) {
             apoapsis.debug();

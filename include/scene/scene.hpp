@@ -44,6 +44,17 @@ class Scene {
 
         void render();
         void debug();
+
+        GLuint bases_buffer;
+        GLuint offsets_buffer;
+        GLuint true_anomalies_buffer;
+
+        std::vector<glm::mat3> bases;
+        std::vector<glm::vec3> offsets;
+        std::vector<float> true_anomalies;
+        int i;
+        int amount;
+        
 };
 
 #endif

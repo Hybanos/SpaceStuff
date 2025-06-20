@@ -25,6 +25,15 @@ Scene::Scene(SDL_Window *_window) {
 
     std::vector<TLE> t = read_tle_file("haha.tle");
 
+    glGenBuffers(1, &bases_buffer);
+    glGenBuffers(1, &offsets_buffer);
+    glGenBuffers(1, &true_anomalies_buffer);
+
+    bases.resize(t.size());
+    offsets.resize(t.size());
+    true_anomalies.resize(t.size());
+    amount = t.size();
+
     for (auto tle : t) {
         objects.push_back(new OrbitLine(this, tle));
     }
@@ -64,6 +73,15 @@ void Scene::render() {
     lines_drawn = 0;
     triangles_drawn = 0;
     triangles_t_drawn = 0;
+
+    glBindBuffer(GL_ARRAY_BUFFER, bases_buffer);
+    glBufferData(GL_ARRAY_BUFFER, bases.size() * 3 * sizeof(glm::mat3), (float *) bases.data(), GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ARRAY_BUFFER, offsets_buffer);
+    glBufferData(GL_ARRAY_BUFFER, offsets.size() * 3 * sizeof(float), (float *) offsets.data(), GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ARRAY_BUFFER, true_anomalies_buffer);
+    glBufferData(GL_ARRAY_BUFFER, true_anomalies.size() * sizeof(float), (float *) true_anomalies.data(), GL_STATIC_DRAW);
 
     for (Object * obj : objects) {
         obj->draw();

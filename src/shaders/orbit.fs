@@ -3,11 +3,14 @@
 
 in vec3 fragment_coords;
 in vec4 fragment_color;
+in mat3 base;
+in vec3 offset;
+in float a;
 
 uniform mat4 MVP;
-uniform mat3 base;
-uniform vec3 offset;
-uniform float a;
+// uniform mat3 base;
+// uniform vec3 offset;
+// uniform float a;
 uniform float b;
 
 out vec4 color;

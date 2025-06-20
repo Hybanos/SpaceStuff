@@ -35,6 +35,7 @@ class OrbitLine : public ObjectMesh {
         void get_true_anomaly(bool recompute);
         void compute_true_anomalies();
         void compute_pitch_yaw();
+
     public:
         OrbitLine(Scene *, TLE t);
 
