@@ -16,7 +16,8 @@ Scene::Scene(SDL_Window *_window) {
 
     base_program_id = LoadShaders("src/shaders/base.vs", "src/shaders/base.fs");
     texture_program_id = LoadShaders("src/shaders/texture.vs", "src/shaders/texture.fs");
-    orbit_program_id = LoadShaders("src/shaders/orbit.vs", "src/shaders/orbit.fs");
+    orbit_line_program_id = LoadShaders("src/shaders/orbit_line.vs", "src/shaders/orbit_line.fs");
+    orbits_program_id = LoadShaders("src/shaders/orbit_line.vs", "src/shaders/orbit_line.fs");
     grid_program_id = LoadShaders("src/shaders/grid.vs", "src/shaders/grid.fs");
 
     objects.push_back(new SkyBox(this));
@@ -25,9 +26,11 @@ Scene::Scene(SDL_Window *_window) {
 
     std::vector<TLE> t = read_tle_file("haha.tle");
 
-    for (auto tle : t) {
-        objects.push_back(new OrbitLine(this, tle));
-    }
+    // for (auto tle : t) {
+    //     objects.push_back(new Orbit_line(this, tle));
+    // }
+
+    objects.push_back(new Orbits(this, t));
     
     camera->look_at(glm::vec3(0, 0, 0));
     camera->update_pos();

@@ -6,6 +6,7 @@
 #include "objects/skybox.hpp"
 #include "objects/grid.hpp"
 #include "objects/orbit_line.hpp"
+#include "objects/orbits.hpp"
 
 #include "tle.hpp"
 
@@ -35,7 +36,8 @@ class Scene {
 
         GLuint base_program_id;
         GLuint texture_program_id;
-        GLuint orbit_program_id;
+        GLuint orbit_line_program_id;
+        GLuint orbits_program_id;
         GLuint grid_program_id;
 
         float get_ratio();

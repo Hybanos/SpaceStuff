@@ -5,11 +5,11 @@ OrbitLine::OrbitLine(Scene *s, TLE t) : Object(s),
     periapsis(scene, glm::vec3(0, 0, 0), glm::vec4(0.6, 0.6, 1, 1)),
     apoapsis(scene, glm::vec3(0, 0, 0), glm::vec4(0.6, 1, 0.6, 1)) {
     tle = t;
-    matrix_id = glGetUniformLocation(scene->orbit_program_id, "MVP");
-    base_id = glGetUniformLocation(scene->orbit_program_id, "base");
-    offset_id = glGetUniformLocation(scene->orbit_program_id, "offset");
-    a_id = glGetUniformLocation(scene->orbit_program_id, "a");
-    b_id = glGetUniformLocation(scene->orbit_program_id, "b");
+    matrix_id = glGetUniformLocation(scene->orbit_line_program_id, "MVP");
+    base_id = glGetUniformLocation(scene->orbit_line_program_id, "base");
+    offset_id = glGetUniformLocation(scene->orbit_line_program_id, "offset");
+    a_id = glGetUniformLocation(scene->orbit_line_program_id, "a");
+    b_id = glGetUniformLocation(scene->orbit_line_program_id, "b");
 
     draw_mesh = true;
     build_orbit();
@@ -82,7 +82,7 @@ void OrbitLine::build() {
 }
 
 void OrbitLine::draw() {
-    glUseProgram(scene->orbit_program_id);
+    glUseProgram(scene->orbit_line_program_id);
     glUniformMatrix4fv(matrix_id, 1, GL_FALSE, &(scene->mvp)[0][0]);
     glUniformMatrix3fv(base_id, 1, GL_FALSE, &base[0][0]);
     glUniform3fv(offset_id, 1, &offset[0]);
