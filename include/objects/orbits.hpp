@@ -8,10 +8,11 @@
 #include <glm/gtx/polar_coordinates.hpp>
 #include <array>
 
-class Orbits : public ObjectMesh {
+class Orbits : virtual public Object {
     private:
         std::vector<TLE> tle;
         std::vector<glm::mat3> base;
+        std::vector<glm::mat4> transform;
         std::vector<float> semi_major_axis;
         std::vector<float> semi_minor_axis;
         std::vector<float> linear_eccentricity;
@@ -24,16 +25,25 @@ class Orbits : public ObjectMesh {
         std::vector<glm::vec2> angle;
 
         GLuint matrix_id;
-        GLuint base_id;
-        GLuint offset_id;
-        GLuint a_id;
-        GLuint b_id;
+        GLuint base_buffer;
+        GLuint transform_buffer;
+        // GLuint offset_id;
+        // GLuint a_id;
+        // GLuint b_id;
 
         // std::vector<bool> show_apsis;
+
+        GLuint VAO;
+        GLuint lines_buffer;
+        GLuint lines_color_buffer;
+        std::vector<glm::vec3> lines;
+        std::vector<glm::vec4> lines_colors;
 
         void get_true_anomaly(int i, bool recompute);
         void compute_true_anomalies(int i);
         void compute_pitch_yaw(int i);
+
+        void manage_buffers();
     public:
         Orbits(Scene *, std::vector<TLE>& t);
 

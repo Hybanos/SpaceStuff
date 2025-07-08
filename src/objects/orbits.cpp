@@ -4,14 +4,18 @@
 Orbits::Orbits(Scene *s, std::vector<TLE>& t) : Object(s) { 
     tle = t;
     matrix_id = glGetUniformLocation(scene->orbits_program_id, "MVP");
-    base_id = glGetUniformLocation(scene->orbits_program_id, "base");
-    offset_id = glGetUniformLocation(scene->orbits_program_id, "offset");
-    a_id = glGetUniformLocation(scene->orbits_program_id, "a");
-    b_id = glGetUniformLocation(scene->orbits_program_id, "b");
+    // base_id = glGetUniformLocation(scene->orbits_program_id, "base");
+    // offset_id = glGetUniformLocation(scene->orbits_program_id, "offset");
+    // a_id = glGetUniformLocation(scene->orbits_program_id, "a");
+    // b_id = glGetUniformLocation(scene->orbits_program_id, "b");
 
-    draw_mesh = true;
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &lines_buffer);
+    glGenBuffers(1, &lines_color_buffer);
+    glGenBuffers(1, &base_buffer);
+    glGenBuffers(1, &transform_buffer);
 
-    int size = t.size();
+    int size = tle.size();
     base.resize(size);
     semi_major_axis.resize(size);
     semi_minor_axis.resize(size);
@@ -26,10 +30,43 @@ Orbits::Orbits(Scene *s, std::vector<TLE>& t) : Object(s) {
 
     for (int i = 0; i < size; i++) {
         build_orbit(i);
-        build(i);
     }
+    build(0);
 
-    manage_m_buffers();
+    // manage_m_buffers();
+    manage_buffers();
+}
+
+void Orbits::manage_buffers() {
+
+    glBindVertexArray(VAO);
+    
+    glBindBuffer(GL_ARRAY_BUFFER, lines_buffer);
+    glBufferData(GL_ARRAY_BUFFER, lines.size() * 3 * sizeof(float), (float *)lines.data(), GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, lines_color_buffer);
+    glBufferData(GL_ARRAY_BUFFER, lines_colors.size() * 4 * sizeof(float), (float *)lines_colors.data(), GL_STATIC_DRAW);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void *) 0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, base_buffer);
+    glBufferData(GL_ARRAY_BUFFER, tle.size() * sizeof(glm::mat3), (float *) &base[0], GL_STATIC_DRAW);
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(glm::mat3), (void *) (0 * sizeof(glm::vec3)));
+    glEnableVertexAttribArray(3);
+    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(glm::mat3), (void *) (1 * sizeof(glm::vec3)));
+    glEnableVertexAttribArray(4);
+    glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(glm::mat3), (void *) (2 * sizeof(glm::vec3)));
+
+    glVertexAttribDivisor(2, 1);
+    glVertexAttribDivisor(3, 1);
+    glVertexAttribDivisor(4, 1);
+
+    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    std::cout << glGetError() << std::endl;
 }
 
 void Orbits::build_orbit(int i) {
@@ -75,6 +112,9 @@ void Orbits::build_orbit(int i) {
     tm.tm_sec = 0;
     epoch[i] = ((double) std::mktime(&tm)) + (tle[i].epoch_day - 1 + tle[i].epoch_frac) * 86400;
 
+    transform[i] = glm::mat4(1.0);
+    // glm::rotate()
+
     get_true_anomaly(i, true);
 }
 
@@ -88,8 +128,8 @@ void Orbits::build(int i) {
         float ip1_rad = glm::radians((float) j + 1);
 
         // unit circle is counter-clockwise, so we invert the sin to have clockwise orbits
-        lines.push_back(glm::vec3(semi_major_axis[i] * cos(i_rad), 0, semi_minor_axis[i] * -sin(i_rad)) * base[i] + offset[i]);
-        lines.push_back(glm::vec3(semi_major_axis[i] * cos(ip1_rad), 0, semi_minor_axis[i] * -sin(ip1_rad)) * base[i] + offset[i]);
+        lines.push_back(glm::vec3(cos(i_rad), 0, -sin(i_rad)));
+        lines.push_back(glm::vec3(cos(ip1_rad), 0, -sin(ip1_rad)));
 
         lines_colors.push_back(glm::vec4(i_rad, 0.0f, 0.0f, 0.0f));
         lines_colors.push_back(glm::vec4(ip1_rad, 0.0f, 0.0f, 0.0f));
@@ -100,28 +140,34 @@ void Orbits::draw() {
     glUseProgram(scene->orbits_program_id);
     glUniformMatrix4fv(matrix_id, 1, GL_FALSE, &(scene->mvp)[0][0]);
 
-    for (int i = 0; i < tle.size(); i++) {
-        glUniformMatrix3fv(base_id, 1, GL_FALSE, &base[i][0][0]);
-        glUniform3fv(offset_id, 1, &offset[i][0]);
+    glBindVertexArray(VAO);
+    glDrawArraysInstanced(GL_LINES, 0, lines.size(), tle.size());
+    glBindVertexArray(0);
+    scene->lines_drawn += lines.size() / 2 * tle.size();
+    // for (int i = 0; i < tle.size(); i++) {
 
-        double delta = (double) time(NULL) - epoch[i];
-        double days_since_epoch = delta / SECS_DAY;
 
-        real_time_mean_anomaly[i] = tle[i].mean_anomaly + days_since_epoch * tle[i].revloutions_per_day * M_PI * 2;
-        real_time_mean_anomaly[i] = fmod(real_time_mean_anomaly[i], M_PI * 2);
+        // glUniformMatrix3fv(base_id, 1, GL_FALSE, &base[i][0][0]);
+        // glUniform3fv(offset_id, 1, &offset[i][0]);
 
-        get_true_anomaly(i, false);
+        // double delta = (double) time(NULL) - epoch[i];
+        // double days_since_epoch = delta / SECS_DAY;
 
-        int pos_index = (int) (true_anomaly[i] / (M_PI * 2) * 360) * 2;
-        float inter = (true_anomaly[i] / (M_PI * 2) * 360) - floor(true_anomaly[i] / (M_PI * 2) * 360);
+        // real_time_mean_anomaly[i] = tle[i].mean_anomaly + days_since_epoch * tle[i].revloutions_per_day * M_PI * 2;
+        // real_time_mean_anomaly[i] = fmod(real_time_mean_anomaly[i], M_PI * 2);
 
-        glm::vec3 prev = lines[pos_index];
-        glm::vec3 next = lines[(pos_index + 2) % (360 * 2)];
+        // get_true_anomaly(i, false);
 
-        pos[i] = inter * next + (1 - inter) * prev;
+        // int pos_index = (int) (true_anomaly[i] / (M_PI * 2) * 360) * 2;
+        // float inter = (true_anomaly[i] / (M_PI * 2) * 360) - floor(true_anomaly[i] / (M_PI * 2) * 360);
 
-        glUniform1f(a_id, true_anomaly[i]);
-        draw_m();
+        // glm::vec3 prev = lines[pos_index];
+        // glm::vec3 next = lines[(pos_index + 2) % (360 * 2)];
+
+        // pos[i] = inter * next + (1 - inter) * prev;
+
+        // glUniform1f(a_id, true_anomaly[i]);
+        // draw_m();
 
         // if (show_apsis) {
         //     periapsis.pos = lines[0];
@@ -129,7 +175,7 @@ void Orbits::draw() {
         //     apoapsis.pos = lines[360];
         //     apoapsis.draw();
         // }
-    }
+    // }
 }
 
 void Orbits::debug() {
@@ -168,7 +214,7 @@ void Orbits::debug() {
             ImGui::Text("Altitude: %f", (float) glm::length(pos[i]) - 6371);
             build_orbit(i);
             build(i);
-            manage_m_buffers();
+            // manage_m_buffers();
 
             // if (ImGui::Checkbox("Show apsis", &show_apsis)) {
             //     apoapsis.debug();
