@@ -25,8 +25,8 @@ class Orbits : virtual public Object {
         std::vector<glm::vec2> angle;
 
         GLuint matrix_id;
-        GLuint base_buffer;
         GLuint transform_buffer;
+        GLuint anomaly_buffer;
         // GLuint offset_id;
         // GLuint a_id;
         // GLuint b_id;
@@ -48,7 +48,7 @@ class Orbits : virtual public Object {
         Orbits(Scene *, std::vector<TLE>& t);
 
         void build_orbit(int i);
-        void build(int i);
+        void build();
         void draw();
         void debug();
 };
