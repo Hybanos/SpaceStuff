@@ -24,7 +24,7 @@ Orbits::Orbits(Scene *s, std::vector<TLE>& t) : Object(s) {
     pos.resize(size);
     angle.resize(size);
 
-    for (int i = 0; i < tle.size(); i++) {
+    for (int i = 0; i < size; i++) {
         build_orbit(i);
         build(i);
     }
@@ -83,9 +83,9 @@ void Orbits::build(int i) {
     lines.clear();
     lines_colors.clear();
 
-    for (int i = 0; i < 360; i++) {
-        float i_rad = glm::radians((float) i);
-        float ip1_rad = glm::radians((float) i + 1);
+    for (int j = 0; j < 360; j++) {
+        float i_rad = glm::radians((float) j);
+        float ip1_rad = glm::radians((float) j + 1);
 
         // unit circle is counter-clockwise, so we invert the sin to have clockwise orbits
         lines.push_back(glm::vec3(semi_major_axis[i] * cos(i_rad), 0, semi_minor_axis[i] * -sin(i_rad)) * base[i] + offset[i]);
