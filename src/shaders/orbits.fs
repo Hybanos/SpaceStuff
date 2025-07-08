@@ -1,15 +1,10 @@
 #version 400 core
 #define M_PI 3.1415926535897932384626433832795
 
-// in vec3 fragment_coords;
 in vec4 fragment_color;
-in float a;
+flat in float a;
 
 uniform mat4 MVP;
-// uniform mat3 base;
-// uniform vec3 offset;
-// uniform float a;
-// uniform float b;
 
 out vec4 color;
 
@@ -26,7 +21,4 @@ void main() {
 
     alpha = max(alpha * alpha * alpha, 0.5);
     color = vec4(0.6, 0.6, 1.0, alpha);
-
-    // color = vec4(0.6, 0.6, 1.0, 1.0);
-    // color = vec4(fragment_color.rgb, 1.0);
 }

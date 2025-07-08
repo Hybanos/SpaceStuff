@@ -6,13 +6,14 @@
 #include "tle.hpp"
 
 #include <glm/gtx/polar_coordinates.hpp>
+
 #include <array>
+#include <chrono>
 
 class Orbits : virtual public Object {
     private:
         std::vector<TLE> tle;
         std::vector<glm::mat3> base;
-        std::vector<glm::mat4> transform;
         std::vector<float> semi_major_axis;
         std::vector<float> semi_minor_axis;
         std::vector<float> linear_eccentricity;
@@ -25,13 +26,11 @@ class Orbits : virtual public Object {
         std::vector<glm::vec2> angle;
 
         GLuint matrix_id;
-        GLuint transform_buffer;
+        GLuint base_buffer;
+        GLuint offset_buffer;
+        GLuint major_buffer;
+        GLuint minor_buffer;
         GLuint anomaly_buffer;
-        // GLuint offset_id;
-        // GLuint a_id;
-        // GLuint b_id;
-
-        // std::vector<bool> show_apsis;
 
         GLuint VAO;
         GLuint lines_buffer;
@@ -39,9 +38,11 @@ class Orbits : virtual public Object {
         std::vector<glm::vec3> lines;
         std::vector<glm::vec4> lines_colors;
 
+        size_t ttr;
+
         void get_true_anomaly(int i, bool recompute);
         void compute_true_anomalies(int i);
-        void compute_pitch_yaw(int i);
+        void compute_along_orbit(int i);
 
         void manage_buffers();
     public:
