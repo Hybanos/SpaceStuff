@@ -94,6 +94,7 @@ void Scene::debug() {
     ImGui::Text("Texture triangles drawn %ld.", triangles_t_drawn);
     ImGui::SeparatorText("CAMERA");
     camera->debug();
+    ImGui::SeparatorText("OBJECTS");
     for (auto &o : objects) {
         ImGui::PushID(id++);
         o->debug();

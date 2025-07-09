@@ -3,12 +3,18 @@
 
 in vec4 fragment_color;
 flat in float a;
+flat in float f;
 
 uniform mat4 MVP;
 
 out vec4 color;
 
 void main() {
+
+    vec3 normal_color = vec3(0.6, 0.6, 1.0);
+    vec3 filtered_color = vec3(0.8, 0.6, 0.6);
+    vec3 selected_color = vec3(1.0, 0.6, 0.6);
+
     float xx = fragment_color.x / (M_PI * 2);
     float aa = a / (M_PI * 2);
     float alpha;
@@ -20,5 +26,11 @@ void main() {
     }
 
     alpha = max(alpha * alpha * alpha, 0.5);
-    color = vec4(0.6, 0.6, 1.0, alpha);
+
+    vec4 c;
+
+    c = vec4(normal_color, alpha);
+    if (f == 1) c = vec4(filtered_color, alpha);
+    if (f == 2) c = vec4(selected_color, alpha);
+    color = c;
 }

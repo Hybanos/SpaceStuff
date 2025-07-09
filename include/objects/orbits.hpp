@@ -9,6 +9,7 @@
 
 #include <array>
 #include <chrono>
+#include <cstdint>
 
 class Orbits : virtual public Object {
     private:
@@ -24,6 +25,8 @@ class Orbits : virtual public Object {
         std::vector<glm::vec3> offset;
         std::vector<glm::vec3> pos;
         std::vector<glm::vec2> angle;
+        // TODO: switch flags to a proper bitmap
+        std::vector<float> flag;
 
         GLuint matrix_id;
         GLuint base_buffer;
@@ -31,6 +34,7 @@ class Orbits : virtual public Object {
         GLuint major_buffer;
         GLuint minor_buffer;
         GLuint anomaly_buffer;
+        GLuint flag_buffer;
 
         GLuint VAO;
         GLuint lines_buffer;
@@ -39,6 +43,7 @@ class Orbits : virtual public Object {
         std::vector<glm::vec4> lines_colors;
 
         size_t ttr;
+        ImGuiTextFilter filter;
 
         void get_true_anomaly(int i, bool recompute);
         void compute_true_anomalies(int i);

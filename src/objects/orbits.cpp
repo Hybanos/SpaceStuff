@@ -16,6 +16,7 @@ Orbits::Orbits(Scene *s, std::vector<TLE>& t) : Object(s) {
     glGenBuffers(1, &major_buffer);
     glGenBuffers(1, &minor_buffer);
     glGenBuffers(1, &anomaly_buffer);
+    glGenBuffers(1, &flag_buffer);
 
     int size = tle.size();
     base.resize(size);
@@ -29,10 +30,12 @@ Orbits::Orbits(Scene *s, std::vector<TLE>& t) : Object(s) {
     offset.resize(size);
     pos.resize(size);
     angle.resize(size);
+    flag.resize(size);
 
     build();
     for (int i = 0; i < size; i++) {
         build_orbit(i);
+        flag[i] = 0;
     }
 
     manage_buffers();
@@ -179,6 +182,7 @@ void Orbits::draw() {
     }
     manage_buffers();
 
+
     glUseProgram(scene->orbits_program_id);
     glUniformMatrix4fv(matrix_id, 1, GL_FALSE, &(scene->mvp)[0][0]);
 
@@ -194,7 +198,7 @@ void Orbits::draw() {
 void Orbits::manage_buffers() {
 
     glBindVertexArray(VAO);
-   
+
     // LINES
     glBindBuffer(GL_ARRAY_BUFFER, lines_buffer);
     glBufferData(GL_ARRAY_BUFFER, lines.size() * 3 * sizeof(float), (float *)lines.data(), GL_STATIC_DRAW);
@@ -253,6 +257,14 @@ void Orbits::manage_buffers() {
 
     glVertexAttribDivisor(8, 1);
 
+    // FLAGS
+    glBindBuffer(GL_ARRAY_BUFFER, flag_buffer);
+    glBufferData(GL_ARRAY_BUFFER, tle.size() * sizeof(float), &flag[0], GL_STATIC_DRAW);
+    glEnableVertexAttribArray(9);
+    glVertexAttribPointer(9, 1, GL_FLOAT, GL_FALSE, 0, (void *) 0);
+
+    glVertexAttribDivisor(9, 1);
+
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
@@ -261,8 +273,23 @@ void Orbits::debug() {
     if (ImGui::CollapsingHeader("Orbits")) {
         ImGui::Text("Time to render: %fms", ttr / 1e6);
         ImGui::Text("Total orbits: %d", tle.size());
+        
+        if (ImGui::InputTextWithHint("##Filter", "filter", filter.InputBuf, IM_ARRAYSIZE(filter.InputBuf))) {
+            filter.Build();
+        }
+        
         for (int i = 0; i < tle.size(); i++) {
+            
+            if (filter.PassFilter(tle[i].name.data()) && filter.InputBuf[0] != 0) {
+                flag[i] = 1;
+            } else {
+                flag[i] = 0;
+            }
+
+            if (! filter.PassFilter(tle[i].name.data())) continue;
+
             if (ImGui::CollapsingHeader(tle[i].name.data())) {
+                flag[i] = 2;
                 ImGui::Text("Catalog number: %d", tle[i].cat_number);
                 ImGui::Text("Catalog class: %c", tle[i].classification);
                 ImGui::Text("Int. designator: %s", tle[i].international_designator.c_str());
