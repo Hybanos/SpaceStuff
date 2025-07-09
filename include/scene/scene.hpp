@@ -11,6 +11,7 @@
 #include "tle.hpp"
 
 #include <vector>
+#include <chrono>
 
 class Camera;
 class Object;
@@ -39,6 +40,8 @@ class Scene {
         GLuint orbit_line_program_id;
         GLuint orbits_program_id;
         GLuint grid_program_id;
+
+        size_t ttr;
 
         float get_ratio();
         int get_width();

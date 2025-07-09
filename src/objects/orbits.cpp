@@ -1,10 +1,8 @@
 #include "objects/orbits.hpp"
 #include "scene/scene.hpp"
 
-using std::chrono::duration_cast;
 using std::chrono::nanoseconds;
 using std::chrono::high_resolution_clock;
-
 
 Orbits::Orbits(Scene *s, std::vector<TLE>& t) : Object(s) { 
     tle = t;
@@ -47,14 +45,11 @@ void Orbits::build() {
 
     for (int j = 0; j < 360; j++) {
         float i_rad = glm::radians((float) j);
-        float ip1_rad = glm::radians((float) j + 1);
 
         // unit circle is counter-clockwise, so we invert the sin to have clockwise orbits
         lines.push_back(glm::vec3(cos(i_rad), 0, -sin(i_rad)));
-        lines.push_back(glm::vec3(cos(ip1_rad), 0, -sin(ip1_rad)));
 
         lines_colors.push_back(glm::vec4(i_rad, 0.0f, 0.0f, 0.0f));
-        lines_colors.push_back(glm::vec4(ip1_rad, 0.0f, 0.0f, 0.0f));
     }
 }
 
@@ -102,6 +97,7 @@ void Orbits::build_orbit(int i) {
     epoch[i] = ((double) std::mktime(&tm)) + (tle[i].epoch_day - 1 + tle[i].epoch_frac) * 86400;
 
     get_true_anomaly(i, true);
+    compute_along_orbit(i);
 }
 
 void Orbits::compute_along_orbit(int i) {
@@ -121,7 +117,7 @@ void Orbits::compute_along_orbit(int i) {
     float inter = (true_anomaly[i] / (M_PI * 2) * 360) - floor(true_anomaly[i] / (M_PI * 2) * 360);
 
     glm::vec3 prev = lines[pos_index] * glm::vec3(semi_major_axis[i], 0, semi_minor_axis[i]) * base[i] + offset[i];
-    glm::vec3 next = lines[(pos_index + 2) % (360 * 2)] * glm::vec3(semi_major_axis[i], 0, semi_minor_axis[i]) * base[i] + offset[i];
+    glm::vec3 next = lines[(pos_index + 1) % (360 * 2)] * glm::vec3(semi_major_axis[i], 0, semi_minor_axis[i]) * base[i] + offset[i];
     
     // compute actual 3D position
     pos[i] = inter * next + (1 - inter) * prev;
@@ -179,7 +175,7 @@ void Orbits::draw() {
 
     // TODO: opti buffers
     for (int i = 0; i < tle.size(); i++) {
-        compute_along_orbit(i);
+        get_true_anomaly(i, false);
     }
     manage_buffers();
 
@@ -187,9 +183,9 @@ void Orbits::draw() {
     glUniformMatrix4fv(matrix_id, 1, GL_FALSE, &(scene->mvp)[0][0]);
 
     glBindVertexArray(VAO);
-    glDrawArraysInstanced(GL_LINES, 0, lines.size(), tle.size());
+    glDrawArraysInstanced(GL_LINE_LOOP, 0, lines.size(), tle.size());
     glBindVertexArray(0);
-    scene->lines_drawn += lines.size() / 2 * tle.size();
+    scene->lines_drawn += lines.size() * tle.size();
 
     auto t2 = high_resolution_clock::now();
     ttr = (t2 - t1).count();
@@ -264,6 +260,7 @@ void Orbits::manage_buffers() {
 void Orbits::debug() {
     if (ImGui::CollapsingHeader("Orbits")) {
         ImGui::Text("Time to render: %fms", ttr / 1e6);
+        ImGui::Text("Total orbits: %d", tle.size());
         for (int i = 0; i < tle.size(); i++) {
             if (ImGui::CollapsingHeader(tle[i].name.data())) {
                 ImGui::Text("Catalog number: %d", tle[i].cat_number);
