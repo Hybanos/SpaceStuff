@@ -105,6 +105,7 @@ int main(int, char**)
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
     //io.ConfigViewportsNoAutoMerge = true;
     //io.ConfigViewportsNoTaskBarIcon = true;
+    io.Fonts->AddFontFromFileTTF("build/_deps/imgui-src/misc/fonts/Cousine-Regular.ttf");
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();

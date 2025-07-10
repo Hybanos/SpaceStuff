@@ -5,6 +5,7 @@ include(FetchContent)
 include(ExternalProject)
 
 find_package(OpenGL REQUIRED)
+find_package(SQLite3 REQUIRED)
 
 FetchContent_Declare(
     glm
@@ -20,7 +21,7 @@ endif()
 FetchContent_Declare(
     imgui 
     GIT_REPOSITORY https://github.com/ocornut/imgui
-    GIT_TAG v1.91.9-docking 
+    GIT_TAG v1.92.1-docking 
     GIT_SHALLOW 1
 )
 FetchContent_GetProperties(imgui)

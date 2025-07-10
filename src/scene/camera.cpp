@@ -9,13 +9,14 @@ void Camera::go_to(glm::vec3 _position) {
 }
 
 void Camera::look_at(glm::vec3 _center) {
-    center = _center;
+    def.look_at(_center);
+    anchor = &def;
 }
 
 glm::mat4 Camera::get_view() {
     return glm::lookAt(
         position,
-        center,
+        anchor->get_camera_center(),
         glm::vec3(0,1,0)
     );
 }
@@ -47,11 +48,22 @@ void Camera::update_pos() {
     position[2] = sin(yaw) * cos(pitch);
 
     position *= distance;
+    position += anchor->get_camera_center();
+}
+
+void Camera::set_anchor(CameraAnchor *a) {
+    anchor = a;
+    update_pos();
 }
 
 void Camera::debug() {
-    ImGui::InputFloat3("Camera center", (float*)&center);
+    ImGui::InputFloat3("Camera center", (float*) &anchor->get_camera_center());
     ImGui::InputFloat3("Camera position", (float*)&position);
+    if (ImGui::Button("RESET")) {
+        def.look_at(glm::vec3(0));
+        anchor = &def;
+        distance = 10000;
+    }
     ImGui::Checkbox("clicked", &enable_move);
     ImGui::Text("yaw: %.3f.", yaw);
     ImGui::Text("pitch: %.3f.", pitch);

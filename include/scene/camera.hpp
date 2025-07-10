@@ -2,6 +2,7 @@
 #define SPACESTUFF_CAMERA_HPP
 
 #include "scene/scene.hpp"
+#include "scene/camera_anchor.hpp"
 
 #include "glm/glm.hpp"
 #include "glm/gtx/transform.hpp"
@@ -20,11 +21,12 @@ class Camera {
         double distance = 10000;
 
         glm::vec3 position;
-        glm::vec3 center;
+
+        SimpleAnchor def;
+        CameraAnchor *anchor = nullptr;
 
     public:
         bool enable_move = false;
-        
 
         Scene *scene = nullptr;
 
@@ -36,11 +38,13 @@ class Camera {
         void handle_mouse_scroll(SDL_Event&);
         void update_pos();
 
+        void set_anchor(CameraAnchor *a);
+
         void debug();        
  
         glm::mat4 get_view();
-        glm::vec3& get_position() {return position;}
-        glm::vec3& get_center() {return center;}
+        glm::vec3 &get_position() {return position;}
+        glm::vec3 &get_center() {return anchor->get_camera_center();}
         
 };
 

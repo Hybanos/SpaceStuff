@@ -35,7 +35,7 @@ Orbits::Orbits(Scene *s, std::vector<TLE>& t) : Object(s) {
     build();
     for (int i = 0; i < size; i++) {
         build_orbit(i);
-        flag[i] = 0;
+        flag[i] = 1;
     }
 
     manage_buffers();
@@ -105,22 +105,15 @@ void Orbits::build_orbit(int i) {
 
 void Orbits::compute_along_orbit(int i) {
 
-    // compute time delta with TLE
-    double delta = (double) time(NULL) - epoch[i];
-    double days_since_epoch = delta / SECS_DAY;
-
     // get the current anomalies 
-    real_time_mean_anomaly[i] = tle[i].mean_anomaly + days_since_epoch * tle[i].revloutions_per_day * M_PI * 2;
-    real_time_mean_anomaly[i] = fmod(real_time_mean_anomaly[i], M_PI * 2);
-
     get_true_anomaly(i, false);
 
     // get point in orbit lines
-    int pos_index = (int) (true_anomaly[i] / (M_PI * 2) * 360) * 2;
+    int pos_index = (int) (true_anomaly[i] / (M_PI * 2) * 360);
     float inter = (true_anomaly[i] / (M_PI * 2) * 360) - floor(true_anomaly[i] / (M_PI * 2) * 360);
 
     glm::vec3 prev = lines[pos_index] * glm::vec3(semi_major_axis[i], 0, semi_minor_axis[i]) * base[i] + offset[i];
-    glm::vec3 next = lines[(pos_index + 1) % (360 * 2)] * glm::vec3(semi_major_axis[i], 0, semi_minor_axis[i]) * base[i] + offset[i];
+    glm::vec3 next = lines[(pos_index + 1) % (360)] * glm::vec3(semi_major_axis[i], 0, semi_minor_axis[i]) * base[i] + offset[i];
     
     // compute actual 3D position
     pos[i] = inter * next + (1 - inter) * prev;
@@ -137,6 +130,11 @@ void Orbits::get_true_anomaly(int i, bool compute) {
     if (compute) {
         compute_true_anomalies(i);
     }
+
+    double days_since_epoch = ((double) time(NULL) - epoch[i]) / SECS_DAY;
+
+    real_time_mean_anomaly[i] = tle[i].mean_anomaly + days_since_epoch * tle[i].revloutions_per_day * M_PI * 2;
+    real_time_mean_anomaly[i] = fmod(real_time_mean_anomaly[i], M_PI * 2);
 
     int index =  (int) glm::degrees(fmod(real_time_mean_anomaly[i], M_PI * 2));
     float delta = real_time_mean_anomaly[i] - floor(real_time_mean_anomaly[i]);
@@ -178,10 +176,9 @@ void Orbits::draw() {
 
     // TODO: opti buffers
     for (int i = 0; i < tle.size(); i++) {
-        get_true_anomaly(i, false);
+        if (flag[i] > 0) get_true_anomaly(i, false);
     }
     manage_buffers();
-
 
     glUseProgram(scene->orbits_program_id);
     glUniformMatrix4fv(matrix_id, 1, GL_FALSE, &(scene->mvp)[0][0]);
@@ -280,7 +277,7 @@ void Orbits::debug() {
         
         for (int i = 0; i < tle.size(); i++) {
             
-            if (filter.PassFilter(tle[i].name.data()) && filter.InputBuf[0] != 0) {
+            if (filter.PassFilter(tle[i].name.data())) {
                 flag[i] = 1;
             } else {
                 flag[i] = 0;
@@ -290,6 +287,14 @@ void Orbits::debug() {
 
             if (ImGui::CollapsingHeader(tle[i].name.data())) {
                 flag[i] = 2;
+                build_orbit(i);
+                manage_buffers();
+
+                if (ImGui::Button("Follow")) {
+                    following = i;
+                    scene->camera->set_anchor(this);
+                }
+
                 ImGui::Text("Catalog number: %d", tle[i].cat_number);
                 ImGui::Text("Catalog class: %c", tle[i].classification);
                 ImGui::Text("Int. designator: %s", tle[i].international_designator.c_str());
@@ -317,13 +322,15 @@ void Orbits::debug() {
                 ImGui::Text("\t%f\t%f\t%f", base[i][0][2], base[i][1][2], base[i][2][2]);
                 ImGui::Spacing();
                 ImGui::Text("x: %f, y:%f, z:%f", pos[i].x, pos[i].y, pos[i].z);
-                compute_along_orbit(i);
                 ImGui::Text("pitch: %f yaw: %f", angle[i][0], angle[i][1]);
                 ImGui::Text("lat: %f lon: %f", angle[i][0] / M_PI * 180, angle[i][1] / M_PI * 180);
                 ImGui::Text("Altitude: %f", (float) glm::length(pos[i]) - 6371);
-                build_orbit(i);
-                manage_buffers();
             }
         }
     }
+}
+
+glm::vec3 &Orbits::get_camera_center() {
+    compute_along_orbit(following);
+    return pos[following];
 }

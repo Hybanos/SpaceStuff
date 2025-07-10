@@ -4,6 +4,7 @@
 #include "object_mesh.hpp"
 #include "particle.hpp"
 #include "tle.hpp"
+#include "scene/camera_anchor.hpp"
 
 #include <glm/gtx/polar_coordinates.hpp>
 
@@ -11,7 +12,7 @@
 #include <chrono>
 #include <cstdint>
 
-class Orbits : virtual public Object {
+class Orbits : virtual public Object, virtual public CameraAnchor {
     private:
         std::vector<TLE> tle;
         std::vector<glm::mat3> base;
@@ -44,6 +45,8 @@ class Orbits : virtual public Object {
 
         size_t ttr;
         ImGuiTextFilter filter;
+        // index of the satelite to anchor camera on
+        int following = 0; 
 
         void get_true_anomaly(int i, bool recompute);
         void compute_true_anomalies(int i);
@@ -57,6 +60,7 @@ class Orbits : virtual public Object {
         void build();
         void draw();
         void debug();
+        glm::vec3 &get_camera_center();
 };
 
 #endif

@@ -27,10 +27,7 @@ void main() {
 
     alpha = max(alpha * alpha * alpha, 0.5);
 
-    vec4 c;
-
-    c = vec4(normal_color, alpha);
-    if (f == 1) c = vec4(filtered_color, alpha);
-    if (f == 2) c = vec4(selected_color, alpha);
-    color = c;
+    if (f == 0) discard;
+    if (f == 1) color = vec4(normal_color, alpha);
+    if (f == 2) color = vec4(selected_color, alpha);
 }
