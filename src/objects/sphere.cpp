@@ -108,7 +108,7 @@ void Sphere::build() {
 }
 
 void Sphere::draw() {
-    double julian_date = ((double) time(NULL)) / SECS_DAY + 2440587.5;
+    double julian_date = ((double) scene->time.get().time_since_epoch().count() / 1e9) / SECS_DAY + 2440587.5;
     double angle = (0.7790572732640 + 1.00273781191135448 * (julian_date - 2451545.0)) * (M_PI * 2);
     angle = fmod(angle, M_PI * 2);
 

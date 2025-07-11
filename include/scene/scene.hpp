@@ -1,6 +1,7 @@
 #ifndef SPACESTUFF_SCENE_HPP
 #define SPACESTUFF_SCENE_HPP
 
+#include "scene/time.hpp"
 #include "scene/camera.hpp"
 #include "objects/sphere.hpp"
 #include "objects/skybox.hpp"
@@ -26,6 +27,7 @@ class Scene {
 
         SDL_Window *window = nullptr;
         Camera *camera = nullptr;
+        Time time;
 
         glm::mat4 projection;
         glm::mat4 view;

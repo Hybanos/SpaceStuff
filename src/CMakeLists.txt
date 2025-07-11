@@ -13,6 +13,7 @@ target_sources(main PRIVATE
 
     scene/camera.cpp
     scene/scene.cpp
+    scene/time.cpp
 
     data/db_manager.cpp
 
@@ -37,6 +38,7 @@ target_sources(main PUBLIC
         ${PROJECT_SOURCE_DIR}/include/scene/camera.hpp
         ${PROJECT_SOURCE_DIR}/include/scene/camera_anchor.hpp
         ${PROJECT_SOURCE_DIR}/include/scene/scene.hpp
+        ${PROJECT_SOURCE_DIR}/include/scene/time.hpp
 
         ${PROJECT_SOURCE_DIR}/include/data/db_manager.hpp
 )

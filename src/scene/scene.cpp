@@ -25,13 +25,9 @@ Scene::Scene(SDL_Window *_window) {
 
     objects.push_back(new SkyBox(this));
     objects.push_back(new Sphere(this, earth_files));
-    // objects.push_back(new Grid(this));
+    objects.push_back(new Grid(this));
 
     std::vector<TLE> t = read_tle_file("haha.tle");
-
-    // for (auto tle : t) {
-    //     objects.push_back(new Orbit_line(this, tle));
-    // }
 
     objects.push_back(new Orbits(this, t));
     
@@ -101,4 +97,5 @@ void Scene::debug() {
         ImGui::PopID();
     }
     ImGui::End();
+    time.debug();
 }
