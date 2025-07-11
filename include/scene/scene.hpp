@@ -6,7 +6,6 @@
 #include "objects/sphere.hpp"
 #include "objects/skybox.hpp"
 #include "objects/grid.hpp"
-#include "objects/orbit_line.hpp"
 #include "objects/orbits.hpp"
 #include "data/db_manager.hpp"
 

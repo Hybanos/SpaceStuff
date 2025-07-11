@@ -19,7 +19,6 @@ Scene::Scene(SDL_Window *_window) {
 
     base_program_id = LoadShaders("src/shaders/base.vs", "src/shaders/base.fs");
     texture_program_id = LoadShaders("src/shaders/texture.vs", "src/shaders/texture.fs");
-    orbit_line_program_id = LoadShaders("src/shaders/orbit_line.vs", "src/shaders/orbit_line.fs");
     orbits_program_id = LoadShaders("src/shaders/orbits.vs", "src/shaders/orbits.fs");
     grid_program_id = LoadShaders("src/shaders/grid.vs", "src/shaders/grid.fs");
 
