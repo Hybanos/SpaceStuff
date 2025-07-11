@@ -14,6 +14,8 @@ target_sources(main PRIVATE
     scene/camera.cpp
     scene/scene.cpp
 
+    data/db_manager.cpp
+
     main.cpp
 )
 
@@ -35,6 +37,8 @@ target_sources(main PUBLIC
         ${PROJECT_SOURCE_DIR}/include/scene/camera.hpp
         ${PROJECT_SOURCE_DIR}/include/scene/camera_anchor.hpp
         ${PROJECT_SOURCE_DIR}/include/scene/scene.hpp
+
+        ${PROJECT_SOURCE_DIR}/include/data/db_manager.hpp
 )
 
 target_sources(
@@ -50,6 +54,6 @@ target_sources(
 )
 
 target_compile_options(main PRIVATE -DGLM_ENABLE_EXPERIMENTAL -DLIBGL_DEBUG -g3) 
-target_link_libraries(main PRIVATE SDL3::SDL3 OpenGL::GL GLEW SQLite::SQLite3)
+target_link_libraries(main PRIVATE SDL3::SDL3 OpenGL::GL GLEW SQLite::SQLite3 fmt::fmt)
 target_include_directories(main PRIVATE ${glm_SOURCE_DIR} ${imgui_SOURCE_DIR} ${imgui_SOURCE_DIR}/backends)
 target_compile_features(main PRIVATE cxx_std_20)

@@ -7,6 +7,7 @@
 #include "scene/camera_anchor.hpp"
 
 #include <glm/gtx/polar_coordinates.hpp>
+#include "fmt/core.h"
 
 #include <array>
 #include <chrono>
@@ -18,9 +19,9 @@ class Orbits : virtual public Object, virtual public CameraAnchor {
         std::vector<glm::mat3> base;
         std::vector<float> semi_major_axis;
         std::vector<float> semi_minor_axis;
-        std::vector<float> linear_eccentricity;
+        // std::vector<float> linear_eccentricity;
+        // std::vector<float> real_time_mean_anomaly;
         std::vector<double> epoch;
-        std::vector<float> real_time_mean_anomaly;
         std::vector<float> true_anomaly;
         std::vector<std::array<float, 360>> true_anomaly_index;
         std::vector<glm::vec3> offset;

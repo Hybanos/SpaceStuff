@@ -31,7 +31,7 @@ class Camera {
         Scene *scene = nullptr;
 
         void translate(glm::vec3);
-        void go_to(glm::vec3);
+        // void go_to(glm::vec3);
         void look_at(glm::vec3);
 
         void handle_mouse_move(SDL_Event&);
@@ -43,7 +43,7 @@ class Camera {
         void debug();        
  
         glm::mat4 get_view();
-        glm::vec3 &get_position() {return position;}
+        glm::vec3 get_position() {return position;}
         glm::vec3 &get_center() {return anchor->get_camera_center();}
         
 };

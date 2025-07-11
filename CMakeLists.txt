@@ -47,4 +47,12 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(glew)
 
+FetchContent_Declare(
+    fmt 
+    GIT_REPOSITORY 
+    https://github.com/fmtlib/fmt 
+    GIT_TAG 11.1.4
+)
+FetchContent_MakeAvailable(fmt)
+
 add_subdirectory(src)

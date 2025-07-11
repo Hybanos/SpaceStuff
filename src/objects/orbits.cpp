@@ -22,9 +22,9 @@ Orbits::Orbits(Scene *s, std::vector<TLE>& t) : Object(s) {
     base.resize(size);
     semi_major_axis.resize(size);
     semi_minor_axis.resize(size);
-    linear_eccentricity.resize(size);
+    // linear_eccentricity.resize(size);
+    // real_time_mean_anomaly.resize(size);
     epoch.resize(size);
-    real_time_mean_anomaly.resize(size);
     true_anomaly.resize(size);
     true_anomaly_index.resize(size);
     offset.resize(size);
@@ -86,8 +86,8 @@ void Orbits::build_orbit(int i) {
     semi_major_axis[i] = glm::pow(3.986004418*1e14, 1.0f / 3) / glm::pow(2.0f * tle[i].revloutions_per_day * M_PI / 86400.0f, 2.0f / 3.0f) / 1000.0f;
     semi_minor_axis[i] = semi_major_axis[i] * sqrt(1.0f - tle[i].eccentricity * tle[i].eccentricity);
 
-    linear_eccentricity[i] = sqrt(semi_major_axis[i] * semi_major_axis[i] - semi_minor_axis[i] * semi_minor_axis[i]);
-    offset[i] = glm::vec3(-linear_eccentricity[i], 0, 0) * base[i];
+    float linear_eccentricity = sqrt(semi_major_axis[i] * semi_major_axis[i] - semi_minor_axis[i] * semi_minor_axis[i]);
+    offset[i] = glm::vec3(-linear_eccentricity, 0, 0) * base[i];
 
     // jan 1 of epoch year (seconds per year isn't uniform)
     std::tm tm = {};
@@ -131,14 +131,14 @@ void Orbits::get_true_anomaly(int i, bool compute) {
         compute_true_anomalies(i);
     }
 
-    double days_since_epoch = ((double) time(NULL) - epoch[i]) / SECS_DAY;
+    double t = (double) (high_resolution_clock::now().time_since_epoch().count() / 1e9); 
+    double days_since_epoch = (t - epoch[i]) / SECS_DAY;
 
-    real_time_mean_anomaly[i] = tle[i].mean_anomaly + days_since_epoch * tle[i].revloutions_per_day * M_PI * 2;
-    real_time_mean_anomaly[i] = fmod(real_time_mean_anomaly[i], M_PI * 2);
+    float real_time_mean_anomaly = tle[i].mean_anomaly + days_since_epoch * tle[i].revloutions_per_day * M_PI * 2;
+    real_time_mean_anomaly = fmod(real_time_mean_anomaly, M_PI * 2);
 
-    int index =  (int) glm::degrees(fmod(real_time_mean_anomaly[i], M_PI * 2));
-    float delta = real_time_mean_anomaly[i] - floor(real_time_mean_anomaly[i]);
-
+    int index =  (int) glm::degrees(real_time_mean_anomaly);
+    float delta = floor(glm::degrees(real_time_mean_anomaly)) - glm::degrees(real_time_mean_anomaly);
     true_anomaly[i] = delta * true_anomaly_index[i][index] + (1 - delta) * true_anomaly_index[i][(index+1) % 360];
 }
 
@@ -312,8 +312,8 @@ void Orbits::debug() {
                 ImGui::Spacing();
                 ImGui::Text("Semi major axis: %f", semi_major_axis[i]);
                 ImGui::Text("Semi minor axis: %f", semi_minor_axis[i]);
-                ImGui::Text("Linear eccentricity: %f", linear_eccentricity[i]);
-                ImGui::Text("Mean anomaly: %f", real_time_mean_anomaly[i]);
+                // ImGui::Text("Linear eccentricity: %f", linear_eccentricity[i]);
+                // ImGui::Text("Mean anomaly: %f", real_time_mean_anomaly[i]);
                 ImGui::Text("True anomaly: %f", true_anomaly[i]);
                 ImGui::Spacing();
                 ImGui::Text("\tx\ty\tz");

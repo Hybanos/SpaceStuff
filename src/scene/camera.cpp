@@ -4,9 +4,9 @@ void Camera::translate(glm::vec3 vec) {
     position += vec;
 }
 
-void Camera::go_to(glm::vec3 _position) {
-    position = _position;
-}
+// void Camera::go_to(glm::vec3 _position) {
+//     position = _position;
+// }
 
 void Camera::look_at(glm::vec3 _center) {
     def.look_at(_center);
@@ -14,8 +14,9 @@ void Camera::look_at(glm::vec3 _center) {
 }
 
 glm::mat4 Camera::get_view() {
+    update_pos();
     return glm::lookAt(
-        position,
+        get_position(),
         anchor->get_camera_center(),
         glm::vec3(0,1,0)
     );

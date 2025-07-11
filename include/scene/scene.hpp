@@ -7,6 +7,7 @@
 #include "objects/grid.hpp"
 #include "objects/orbit_line.hpp"
 #include "objects/orbits.hpp"
+#include "data/db_manager.hpp"
 
 #include "tle.hpp"
 
@@ -21,6 +22,7 @@ class Scene {
         std::vector<Object *> objects;
     public:
         Scene(SDL_Window *);
+        DBManager db;
 
         SDL_Window *window = nullptr;
         Camera *camera = nullptr;
