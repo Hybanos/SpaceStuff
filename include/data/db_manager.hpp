@@ -5,6 +5,9 @@
 
 #include "sqlite3.h"
 #include "fmt/core.h"
+#include "cpr/cpr.h"
+
+#include "tle.hpp"
 
 class DBManager {
     private:
@@ -13,4 +16,9 @@ class DBManager {
     public:
         DBManager();
         ~DBManager();
+
+        void set_meta(std::string key, int val);
+        int get_meta(std::string key);
+        void ingest_tle_group(std::string group_name);
+        void ingest_tle(TLE t);
 };

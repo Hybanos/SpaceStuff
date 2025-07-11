@@ -17,19 +17,15 @@ void DBManager::init() {
     query = "SELECT name FROM sqlite_master WHERE type='table' AND name='Meta';";
     sqlite3_prepare_v3(db, query.c_str(), query.size(), 0, &statement, NULL);
     if (sqlite3_step(statement) != SQLITE_ROW) {
-        sqlite3_finalize(statement);
 
-        query = "CREATE TABLE Meta (metaID INTEGER PRIMARY KEY, key TEXT NOT NULL, val INTEGER DEFAULT 0);";
-        sqlite3_prepare_v3(db, query.c_str(), query.size(), 0, &statement, NULL);
-        sqlite3_step(statement);
-        sqlite3_finalize(statement);
+        query = "CREATE TABLE Meta (key TEXT NOT NULL PRIMARY KEY, val INTEGER DEFAULT 0);";
+        sqlite3_exec(db, query.data(), NULL, NULL, NULL);
 
         query = fmt::format("INSERT INTO Meta (key, val) VALUES"
             "('CREATE_TIME', {}),"
             "('DATA_PULL_TIME', -1)"
         ";", time(NULL));
-        sqlite3_prepare_v3(db, query.c_str(), query.size(), 0, &statement, NULL);
-        sqlite3_step(statement);
+        sqlite3_exec(db, query.data(), NULL, NULL, NULL);
     }
     sqlite3_finalize(statement);
 
@@ -51,22 +47,18 @@ void DBManager::init() {
         "revolutions_per_day REAL,"
         "revolutions_at_epoch REAL"
     ");";
-    sqlite3_prepare_v3(db, query.c_str(), query.size(), 0, &statement, NULL);
-    sqlite3_step(statement);
-    sqlite3_finalize(statement);
+    sqlite3_exec(db, query.data(), NULL, NULL, NULL);
 
     // orbit_classification
     query = "SELECT name FROM sqlite_master WHERE type='table' AND name='Class';";
     sqlite3_prepare_v3(db, query.c_str(), query.size(), 0, &statement, NULL);
     if (sqlite3_step(statement) != SQLITE_ROW) {
-        sqlite3_finalize(statement);
+        
         query = "CREATE TABLE Class ("
             "classID INTEGER PRIMARY KEY,"
             "class TEXT"
         ");";
-        sqlite3_prepare_v3(db, query.c_str(), query.size(), 0, &statement, NULL);
-        sqlite3_step(statement);
-        sqlite3_finalize(statement);
+        sqlite3_exec(db, query.data(), NULL, NULL, NULL);
 
         query = "INSERT INTO Class (class) VALUES"
             "('leo'),"
@@ -78,8 +70,89 @@ void DBManager::init() {
             "('low_incl'),"
             "('high_incl')"
         ";";
-        sqlite3_prepare_v3(db, query.c_str(), query.size(), 0, &statement, NULL);
-        sqlite3_step(statement);
+        sqlite3_exec(db, query.data(), NULL, NULL, NULL);
     }
     sqlite3_finalize(statement);
+
+    ingest_tle_group("haha");
+}
+
+void DBManager::set_meta(std::string key, int val) {
+    std::string query = fmt::format("INSERT OR REPLACE into Meta (key, val) VALUES ('{}', {});", key, val);
+    sqlite3_exec(db, query.data(), NULL, NULL, NULL);
+}
+
+int DBManager::get_meta(std::string key) {
+    int ret;
+    std::string query = fmt::format("SELECT val FROM Meta WHERE key='{}';", key);
+    sqlite3_stmt *statement;
+    sqlite3_prepare_v3(db, query.c_str(), query.size(), 0, &statement, NULL);
+    if (sqlite3_step(statement) == SQLITE_ROW) {
+        ret = sqlite3_column_int(statement, 0);
+    } else {
+        fmt::print("No key {} in table Meta\n", key);
+    }
+    sqlite3_finalize(statement);
+    return ret;
+}
+
+// TODO: make good checks
+void DBManager::ingest_tle_group(std::string group_name) {
+    if (get_meta("DATA_PULL_TIME") > time(NULL) - 3600 * 24) {
+        fmt::print("TLE data too recent, using cache...\n");
+        return;
+    }
+    cpr::Response r = cpr::Get(cpr::Url{"http://141.145.210.183:30050/files/f?f=haha.tle.back"});
+    set_meta("DATA_PULL_TIME", time(NULL));
+
+    std::ofstream file;
+    std::string filename = fmt::format("/tmp/{}.tle", group_name);
+    file.open(filename);
+    file << r.text;
+    file.close();
+
+    std::vector<TLE> tles = read_tle_file(filename);
+    sqlite3_exec(db, "BEGIN TRANSACTION;", NULL, NULL, NULL);
+    for (auto t : tles) {
+        ingest_tle(t);
+    }
+    sqlite3_exec(db, "END TRANSACTION;", NULL, NULL, NULL);
+}
+
+void DBManager::ingest_tle(TLE t) {
+    std::string query = fmt::format("INSERT OR REPLACE INTO SatData ("
+        "name,"
+        "cat_number,"
+        "classification,"
+        "international_designator,"
+        "epoch_year,"
+        "epoch_day,"
+        "epoch_frac,"
+
+        "inclination,"
+        "ascending_node_longitude,"
+        "eccentricity,"
+        "argument_of_perigee,"
+        "mean_anomaly,"
+        "revolutions_per_day,"
+        "revolutions_at_epoch"
+        ") VALUES ('{}', {}, '{}', '{}', {}, {}, {}, {}, {}, {}, {}, {}, {}, {})"
+    ";",
+        t.name,
+        t.cat_number,
+        t.classification,
+        t.international_designator,
+        t.epoch_year,
+        t.epoch_day,
+        t.epoch_frac,
+
+        t.inclination,
+        t.ascending_node_longitude,
+        t.eccentricity,
+        t.argument_of_perigee,
+        t.mean_anomaly,
+        t.revloutions_per_day,
+        t.revloutions_per_day
+    );
+    sqlite3_exec(db, query.data(), NULL, NULL, NULL);
 }

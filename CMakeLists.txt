@@ -10,7 +10,8 @@ find_package(SQLite3 REQUIRED)
 FetchContent_Declare(
     glm
     GIT_REPOSITORY https://github.com/g-truc/glm
-    GIT_TAG 2d4c4b4dd31fde06cfffad7915c2b3006402322f 
+    GIT_TAG 1.0.1 
+    GIT_SHALLOW 1
 )
 FetchContent_GetProperties(glm)
 
@@ -54,5 +55,13 @@ FetchContent_Declare(
     GIT_TAG 11.1.4
 )
 FetchContent_MakeAvailable(fmt)
+
+set(CPR_USE_SYSTEM_CURL ON)
+FetchContent_Declare(
+    cpr 
+    GIT_REPOSITORY https://github.com/libcpr/cpr.git
+    GIT_TAG 1.12.0 
+)
+FetchContent_MakeAvailable(cpr)
 
 add_subdirectory(src)
