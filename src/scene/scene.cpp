@@ -26,7 +26,8 @@ Scene::Scene(SDL_Window *_window) {
     objects.push_back(new Sphere(this, earth_files));
     objects.push_back(new Grid(this));
 
-    std::vector<TLE> t = read_tle_file("haha.tle");
+    // std::vector<TLE> t = read_tle_file("haha.tle");
+    std::vector<TLE> t = db.get_all_tle();
 
     objects.push_back(new Orbits(this, t));
     

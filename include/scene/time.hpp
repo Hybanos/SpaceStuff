@@ -9,6 +9,7 @@
 #include "fmt/chrono.h"
 
 using std::chrono::nanoseconds;
+using std::chrono::seconds;
 using std::chrono::high_resolution_clock;
 using std::chrono::duration;
 using std::chrono::time_point;
@@ -19,6 +20,9 @@ class Time {
         time_point<high_resolution_clock> timestamp;
         int rate = 1;
         bool paused = false;
+
+
+        int combo_index = 0;
     public:
         Time();
         time_point<high_resolution_clock> get();

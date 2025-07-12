@@ -54,6 +54,8 @@ void Orbits::build() {
 
         lines_colors.push_back(glm::vec4(i_rad, 0.0f, 0.0f, 0.0f));
     }
+    lines.push_back(lines[0]);
+    lines_colors.push_back(glm::vec4(M_PI*2, 0.0f, 0.0f, 0.0f));
 }
 
 void Orbits::build_orbit(int i) {
@@ -137,10 +139,16 @@ void Orbits::get_true_anomaly(int i, bool compute) {
 
     float real_time_mean_anomaly = tle[i].mean_anomaly + days_since_epoch * tle[i].revloutions_per_day * M_PI * 2;
     real_time_mean_anomaly = fmod(real_time_mean_anomaly, M_PI * 2);
+    // fmt::print("{}\n", real_time_mean_anomaly);
 
     int index =  (int) glm::degrees(real_time_mean_anomaly);
     float delta = floor(glm::degrees(real_time_mean_anomaly)) - glm::degrees(real_time_mean_anomaly);
-    true_anomaly[i] = delta * true_anomaly_index[i][index] + (1 - delta) * true_anomaly_index[i][(index+1) % 360];
+
+    float ta_i = true_anomaly_index[i][index];
+    float ta_ip1 = index != 359 ? true_anomaly_index[i][(index+1) % 360] : M_PI * 2;
+
+    true_anomaly[i] = delta * ta_i + (1 - delta) * ta_ip1;
+    true_anomaly[i] = fmod(true_anomaly[i], M_PI * 2);
 }
 
 // big thanks https://github.com/duncaneddy/rastro/blob/main/rastro/src/orbits.rs
@@ -185,7 +193,7 @@ void Orbits::draw() {
     glUniformMatrix4fv(matrix_id, 1, GL_FALSE, &(scene->mvp)[0][0]);
 
     glBindVertexArray(VAO);
-    glDrawArraysInstanced(GL_LINE_LOOP, 0, lines.size(), tle.size());
+    glDrawArraysInstanced(GL_LINE_STRIP, 0, lines.size(), tle.size());
     glBindVertexArray(0);
     scene->lines_drawn += lines.size() * tle.size();
 
@@ -307,7 +315,7 @@ void Orbits::debug() {
                 ImGui::SliderFloat("Ascending node", &tle[i].ascending_node_longitude, 0, M_PI * 2);
                 ImGui::SliderFloat("Eccentricity", &tle[i].eccentricity, 0, 1);
                 ImGui::SliderFloat("Argument of perigee", &tle[i].argument_of_perigee, 0, M_PI * 2);
-                ImGui::SliderFloat("Mean anomaly", &tle[i].mean_anomaly, 0, M_PI * 2);
+                ImGui::SliderFloat("Mean anomaly (at epoch)", &tle[i].mean_anomaly, 0, M_PI * 2);
                 ImGui::DragFloat("Revs. per day", &tle[i].revloutions_per_day);
                 ImGui::DragInt("Revs at epoch", &tle[i].revolutions_at_epoch);
                 ImGui::Spacing();
@@ -316,6 +324,8 @@ void Orbits::debug() {
                 // ImGui::Text("Linear eccentricity: %f", linear_eccentricity[i]);
                 // ImGui::Text("Mean anomaly: %f", real_time_mean_anomaly[i]);
                 ImGui::Text("True anomaly: %f", true_anomaly[i]);
+                ImGui::Text("True to mean anomalies:");
+                ImGui::PlotLines("", true_anomaly_index[i].begin(), 360, 0, NULL, 0, M_PI * 2, ImVec2(0, 80));
                 ImGui::Spacing();
                 ImGui::Text("\tx\ty\tz");
                 ImGui::Text("\t%f\t%f\t%f", base[i][0][0], base[i][1][0], base[i][2][0]);

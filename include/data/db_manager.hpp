@@ -21,4 +21,5 @@ class DBManager {
         int get_meta(std::string key);
         void ingest_tle_group(std::string group_name);
         void ingest_tle(TLE t);
+        std::vector<TLE> get_all_tle();
 };

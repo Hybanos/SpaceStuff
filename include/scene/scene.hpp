@@ -45,6 +45,7 @@ class Scene {
         GLuint grid_program_id;
 
         size_t ttr;
+        bool imgui_hover;
 
         float get_ratio();
         int get_width();

@@ -156,3 +156,35 @@ void DBManager::ingest_tle(TLE t) {
     );
     sqlite3_exec(db, query.data(), NULL, NULL, NULL);
 }
+
+std::vector<TLE> DBManager::get_all_tle() {
+    std::vector<TLE> TLEs;
+
+    std::string query = "SELECT * FROM SatData;";
+    sqlite3_stmt *statement;
+    sqlite3_prepare_v3(db, query.c_str(), query.size(), 0, &statement, NULL);
+    while(sqlite3_step(statement) == SQLITE_ROW) {
+        TLE t;
+        std::stringstream buf;
+        t.name = reinterpret_cast<const char *>(sqlite3_column_text(statement, 0));
+
+        t.cat_number = sqlite3_column_int(statement, 1);
+        t.classification = sqlite3_column_text(statement, 2)[0];
+        t.international_designator = reinterpret_cast<const char *>(sqlite3_column_text(statement, 3));
+        t.epoch_year = sqlite3_column_int(statement, 4);
+        t.epoch_day = sqlite3_column_int(statement, 5);
+        t.epoch_frac = sqlite3_column_double(statement, 6);
+
+        t.inclination = sqlite3_column_double(statement, 7);
+        t.ascending_node_longitude = sqlite3_column_double(statement, 8);
+        t.eccentricity = sqlite3_column_double(statement, 9);
+        t.argument_of_perigee = sqlite3_column_double(statement, 10);
+        t.mean_anomaly = sqlite3_column_double(statement, 11);
+        t.revloutions_per_day = sqlite3_column_double(statement, 12);
+        t.revolutions_at_epoch = sqlite3_column_double(statement, 13);
+
+        TLEs.push_back(t);
+    }
+    sqlite3_finalize(statement);
+    return TLEs;
+}
