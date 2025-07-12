@@ -4,7 +4,7 @@
 using std::chrono::nanoseconds;
 using std::chrono::high_resolution_clock;
 
-Orbits::Orbits(Scene *s, std::vector<TLE>& t) : Object(s) { 
+Orbits::Orbits(Scene *s, std::vector<TLE>& t, Object *p) : Object(s, p) { 
     tle = t;
     matrix_id = glGetUniformLocation(scene->orbits_program_id, "MVP");
 

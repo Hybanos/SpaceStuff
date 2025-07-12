@@ -1,7 +1,7 @@
 #include "objects/sphere.hpp"
 #include "scene/scene.hpp"
 
-Sphere::Sphere(Scene *s, std::string files[6]) : ObjectCubeMap(files), Object(s) {
+Sphere::Sphere(Scene *s, std::string files[6], Object *p) : ObjectCubeMap(files), Object(s, p) {
     draw_faces = false;
     draw_mesh = false;
 
@@ -157,4 +157,12 @@ void Sphere::debug() {
         ImGui::Text("\t%f\t%f\t%f", rota[0][2], rota[1][2], rota[2][2]);
         ImGui::Text("Rotation angle (deg): %f", acos(rota[0][0]) * (180 / M_PI)); 
     }
+}
+
+glm::vec3 Sphere::get_pos() {
+    glm::vec3 offset = glm::vec3(0, scene->frames * 3, 0);
+    if (parent != nullptr) {
+        return parent->get_pos() + offset;
+    }
+    return offset;
 }

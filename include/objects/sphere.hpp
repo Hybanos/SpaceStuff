@@ -7,7 +7,6 @@
 
 class Sphere : public ObjectCubeMap {
     private:
-        GLuint cubemap_id;
         bool rebuild = false;
         int resolution = 25;
         float size = 6371;
@@ -15,10 +14,11 @@ class Sphere : public ObjectCubeMap {
         float normalise_amount = 1.0f;
         void manageBuffers();
     public:
-        Sphere(Scene *, std::string[6]);
+        Sphere(Scene *, std::string[6], Object *p = nullptr);
         void draw();
         void build();
         void debug();
+        glm::vec3 get_pos();
 };
 
 #endif

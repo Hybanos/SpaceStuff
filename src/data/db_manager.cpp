@@ -102,21 +102,28 @@ void DBManager::ingest_tle_group(std::string group_name) {
         fmt::print("TLE data too recent, using cache...\n");
         return;
     }
-    cpr::Response r = cpr::Get(cpr::Url{"http://141.145.210.183:30050/files/f?f=haha.tle.back"});
+
+    cpr::Response r = cpr::Get(cpr::Url{"https://celestrak.org/NORAD/elements/gp.php?CATNR=25544&FORMAT=tle"}, cpr::Timeout(30000));
     set_meta("DATA_PULL_TIME", time(NULL));
 
-    std::ofstream file;
-    std::string filename = fmt::format("/tmp/{}.tle", group_name);
-    file.open(filename);
-    file << r.text;
-    file.close();
+    std::cout << r.url << std::endl;
+    if (r.status_code == 200) {
 
-    std::vector<TLE> tles = read_tle_file(filename);
-    sqlite3_exec(db, "BEGIN TRANSACTION;", NULL, NULL, NULL);
-    for (auto t : tles) {
-        ingest_tle(t);
+        std::ofstream file;
+        std::string filename = fmt::format("/tmp/{}.tle", group_name);
+        file.open(filename);
+        file << r.text;
+        file.close();
+
+        std::vector<TLE> tles = read_tle_file(filename);
+        sqlite3_exec(db, "BEGIN TRANSACTION;", NULL, NULL, NULL);
+        for (auto t : tles) {
+            ingest_tle(t);
+        }
+        sqlite3_exec(db, "END TRANSACTION;", NULL, NULL, NULL);
+    } else {
+        fmt::print("Got status code {} from celestrak, using cached data", r.status_code);
     }
-    sqlite3_exec(db, "END TRANSACTION;", NULL, NULL, NULL);
 }
 
 void DBManager::ingest_tle(TLE t) {

@@ -23,13 +23,12 @@ Scene::Scene(SDL_Window *_window) {
     grid_program_id = LoadShaders("src/shaders/grid.vs", "src/shaders/grid.fs");
 
     objects.push_back(new SkyBox(this));
-    objects.push_back(new Sphere(this, earth_files));
     objects.push_back(new Grid(this));
+    objects.push_back(new Sphere(this, earth_files, objects[1]));
 
-    // std::vector<TLE> t = read_tle_file("haha.tle");
     std::vector<TLE> t = db.get_all_tle();
 
-    objects.push_back(new Orbits(this, t));
+    objects.push_back(new Orbits(this, t, objects[2]));
     
     camera->look_at(glm::vec3(0, 0, 0));
     camera->update_pos();

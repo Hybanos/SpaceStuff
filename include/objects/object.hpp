@@ -27,10 +27,19 @@ class Scene;
 class Object {
     protected:
         Scene *scene = nullptr;
+        Object *parent = nullptr;
     public:
-        Object(Scene *s) : scene{s} {}
+
+        Object(Scene *s, Object *p = nullptr) : scene{s}, parent{p} {}
+
         virtual void draw() = 0;
         virtual void debug() = 0;
+        virtual glm::vec3 get_pos() {
+            if (parent != nullptr) {
+                return parent->get_pos();
+            }
+            return glm::vec3(0);
+        }
 };
 
 #endif

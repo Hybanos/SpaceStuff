@@ -23,7 +23,7 @@ class Orbits : virtual public Object, virtual public CameraAnchor {
         // std::vector<float> real_time_mean_anomaly;
         std::vector<double> epoch;
         std::vector<float> true_anomaly;
-        std::vector<std::array<float, 361>> true_anomaly_index;
+        std::vector<std::array<float, 360>> true_anomaly_index;
         std::vector<glm::vec3> offset;
         std::vector<glm::vec3> pos;
         std::vector<glm::vec2> angle;
@@ -55,7 +55,7 @@ class Orbits : virtual public Object, virtual public CameraAnchor {
 
         void manage_buffers();
     public:
-        Orbits(Scene *, std::vector<TLE>& t);
+        Orbits(Scene *, std::vector<TLE>& t, Object *p = nullptr);
 
         void build_orbit(int i);
         void build();
