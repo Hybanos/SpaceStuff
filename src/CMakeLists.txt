@@ -16,6 +16,9 @@ target_sources(main PRIVATE
 
     data/db_manager.cpp
 
+    render/shader.cpp
+    render/mesh.cpp
+
     main.cpp
 )
 
@@ -39,6 +42,9 @@ target_sources(main PUBLIC
         ${PROJECT_SOURCE_DIR}/include/scene/time.hpp
 
         ${PROJECT_SOURCE_DIR}/include/data/db_manager.hpp
+
+        ${PROJECT_SOURCE_DIR}/include/render/shader.hpp
+        ${PROJECT_SOURCE_DIR}/include/render/mesh.hpp
 )
 
 target_sources(

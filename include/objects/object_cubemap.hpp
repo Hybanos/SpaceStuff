@@ -2,7 +2,6 @@
 #define SPACESTUFF_OBJECT_CUBEMAP_HPP
 
 #include "object_faces.hpp"
-#include "shader.hpp"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 

@@ -8,6 +8,7 @@
 #include "objects/grid.hpp"
 #include "objects/orbits.hpp"
 #include "data/db_manager.hpp"
+#include "render/shader.hpp"
 
 #include "tle.hpp"
 

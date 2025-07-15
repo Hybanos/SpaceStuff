@@ -17,18 +17,20 @@ Scene::Scene(SDL_Window *_window) {
     camera->scene = this;
     window = _window;
 
-    base_program_id = LoadShaders("src/shaders/base.vs", "src/shaders/base.fs");
-    texture_program_id = LoadShaders("src/shaders/texture.vs", "src/shaders/texture.fs");
-    orbits_program_id = LoadShaders("src/shaders/orbits.vs", "src/shaders/orbits.fs");
-    grid_program_id = LoadShaders("src/shaders/grid.vs", "src/shaders/grid.fs");
+    auto a = Shader("src/shaders/orbits.vs", "src/shaders/orbits.fs");
 
-    objects.push_back(new SkyBox(this));
-    objects.push_back(new Grid(this));
-    objects.push_back(new Sphere(this, earth_files, objects[1]));
+    // base_program_id = LoadShaders("src/shaders/base.vs", "src/shaders/base.fs");
+    // texture_program_id = LoadShaders("src/shaders/texture.vs", "src/shaders/texture.fs");
+    // orbits_program_id = LoadShaders("src/shaders/orbits.vs", "src/shaders/orbits.fs");
+    // grid_program_id = LoadShaders("src/shaders/grid.vs", "src/shaders/grid.fs");
 
-    std::vector<TLE> t = db.get_all_tle();
+    // objects.push_back(new SkyBox(this));
+    // objects.push_back(new Grid(this));
+    // objects.push_back(new Sphere(this, earth_files, objects[1]));
 
-    objects.push_back(new Orbits(this, t, objects[2]));
+    // std::vector<TLE> t = db.get_all_tle();
+
+    // objects.push_back(new Orbits(this, t, objects[2]));
     
     camera->look_at(glm::vec3(0, 0, 0));
     camera->update_pos();
