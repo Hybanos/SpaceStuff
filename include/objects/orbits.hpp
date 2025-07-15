@@ -1,17 +1,18 @@
 #ifndef SPACESTUFF_ORBITS_HPP
 #define SPACESTUFF_ORBITS_HPP
 
+#include <array>
+#include <chrono>
+#include <cstdint>
+
+#include "glm/gtx/polar_coordinates.hpp"
+#include "fmt/core.h"
+
 #include "object_mesh.hpp"
 #include "particle.hpp"
 #include "tle.hpp"
 #include "scene/camera_anchor.hpp"
-
-#include <glm/gtx/polar_coordinates.hpp>
-#include "fmt/core.h"
-
-#include <array>
-#include <chrono>
-#include <cstdint>
+#include "render/mesh.hpp"
 
 class Orbits : virtual public Object, virtual public CameraAnchor {
     private:
@@ -30,17 +31,18 @@ class Orbits : virtual public Object, virtual public CameraAnchor {
         // TODO: switch flags to a proper bitmap
         std::vector<float> flag;
 
-        GLuint matrix_id;
-        GLuint base_buffer;
-        GLuint offset_buffer;
-        GLuint major_buffer;
-        GLuint minor_buffer;
-        GLuint anomaly_buffer;
-        GLuint flag_buffer;
+        Mesh mesh;
+        // GLuint matrix_id;
+        // GLuint base_buffer;
+        // GLuint offset_buffer;
+        // GLuint major_buffer;
+        // GLuint minor_buffer;
+        // GLuint anomaly_buffer;
+        // GLuint flag_buffer;
 
-        GLuint VAO;
-        GLuint lines_buffer;
-        GLuint lines_color_buffer;
+        // GLuint VAO;
+        // GLuint lines_buffer;
+        // GLuint lines_color_buffer;
         std::vector<glm::vec3> lines;
         std::vector<glm::vec4> lines_colors;
 

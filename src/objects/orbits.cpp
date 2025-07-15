@@ -4,19 +4,21 @@
 using std::chrono::nanoseconds;
 using std::chrono::high_resolution_clock;
 
-Orbits::Orbits(Scene *s, std::vector<TLE>& t, Object *p) : Object(s, p) { 
+Orbits::Orbits(Scene *s, std::vector<TLE>& t, Object *p) : 
+Object(s, p),
+mesh(scene->orbits_shader) { 
     tle = t;
-    matrix_id = glGetUniformLocation(scene->orbits_program_id, "MVP");
+    // matrix_id = glGetUniformLocation(scene->orbits_program_id, "MVP");
 
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &lines_buffer);
-    glGenBuffers(1, &lines_color_buffer);
-    glGenBuffers(1, &base_buffer);
-    glGenBuffers(1, &offset_buffer);
-    glGenBuffers(1, &major_buffer);
-    glGenBuffers(1, &minor_buffer);
-    glGenBuffers(1, &anomaly_buffer);
-    glGenBuffers(1, &flag_buffer);
+    // glGenVertexArrays(1, &VAO);
+    // glGenBuffers(1, &lines_buffer);
+    // glGenBuffers(1, &lines_color_buffer);
+    // glGenBuffers(1, &base_buffer);
+    // glGenBuffers(1, &offset_buffer);
+    // glGenBuffers(1, &major_buffer);
+    // glGenBuffers(1, &minor_buffer);
+    // glGenBuffers(1, &anomaly_buffer);
+    // glGenBuffers(1, &flag_buffer);
 
     int size = tle.size();
     base.resize(size);
@@ -189,12 +191,14 @@ void Orbits::draw() {
     }
     manage_buffers();
 
-    glUseProgram(scene->orbits_program_id);
-    glUniformMatrix4fv(matrix_id, 1, GL_FALSE, &(scene->mvp)[0][0]);
+    // glUseProgram(scene->orbits_program_id);
+    // glUniformMatrix4fv(matrix_id, 1, GL_FALSE, &(scene->mvp)[0][0]);
+    mesh.set_mat4("MVP", scene->mvp);
 
-    glBindVertexArray(VAO);
-    glDrawArraysInstanced(GL_LINE_STRIP, 0, lines.size(), tle.size());
-    glBindVertexArray(0);
+    // glBindVertexArray(VAO);
+    // glDrawArraysInstanced(GL_LINE_STRIP, 0, lines.size(), tle.size());
+    // glBindVertexArray(0);
+    mesh.draw_instanced(GL_LINE_STRIP, 0, lines.size(), tle.size());
     scene->lines_drawn += lines.size() * tle.size();
 
     auto t2 = high_resolution_clock::now();
@@ -203,76 +207,85 @@ void Orbits::draw() {
 
 void Orbits::manage_buffers() {
 
-    glBindVertexArray(VAO);
+    mesh.set_buffer(0, lines);
+    mesh.set_buffer(1, lines_colors);
+    mesh.set_buffer(2, base, 1);
+    mesh.set_buffer(5, offset, 1);
+    mesh.set_buffer(6, semi_major_axis, 1);
+    mesh.set_buffer(7, semi_minor_axis, 1);
+    mesh.set_buffer(8, true_anomaly, 1);
+    mesh.set_buffer(9, flag, 1);
 
-    // LINES
-    glBindBuffer(GL_ARRAY_BUFFER, lines_buffer);
-    glBufferData(GL_ARRAY_BUFFER, lines.size() * 3 * sizeof(float), (float *)lines.data(), GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
+    // glBindVertexArray(VAO);
 
-    // COLOR
-    glBindBuffer(GL_ARRAY_BUFFER, lines_color_buffer);
-    glBufferData(GL_ARRAY_BUFFER, lines_colors.size() * 4 * sizeof(float), (float *)lines_colors.data(), GL_STATIC_DRAW);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void *) 0);
+    // // LINES
+    // glBindBuffer(GL_ARRAY_BUFFER, lines_buffer);
+    // glBufferData(GL_ARRAY_BUFFER, lines.size() * 3 * sizeof(float), (float *)lines.data(), GL_STATIC_DRAW);
+    // glEnableVertexAttribArray(0);
+    // glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
 
-    // BASE
-    glBindBuffer(GL_ARRAY_BUFFER, base_buffer);
-    glBufferData(GL_ARRAY_BUFFER, tle.size() * sizeof(glm::mat3), (float *) &base[0], GL_STATIC_DRAW);
-    glEnableVertexAttribArray(2);
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(glm::mat3), (void *) (0 * sizeof(glm::vec3)));
-    glEnableVertexAttribArray(3);
-    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(glm::mat3), (void *) (1 * sizeof(glm::vec3)));
-    glEnableVertexAttribArray(4);
-    glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(glm::mat3), (void *) (2 * sizeof(glm::vec3)));
+    // // COLOR
+    // glBindBuffer(GL_ARRAY_BUFFER, lines_color_buffer);
+    // glBufferData(GL_ARRAY_BUFFER, lines_colors.size() * 4 * sizeof(float), (float *)lines_colors.data(), GL_STATIC_DRAW);
+    // glEnableVertexAttribArray(1);
+    // glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void *) 0);
 
-    glVertexAttribDivisor(2, 1);
-    glVertexAttribDivisor(3, 1);
-    glVertexAttribDivisor(4, 1);
+    // // BASE
+    // glBindBuffer(GL_ARRAY_BUFFER, base_buffer);
+    // glBufferData(GL_ARRAY_BUFFER, tle.size() * sizeof(glm::mat3), (float *) &base[0], GL_STATIC_DRAW);
+    // glEnableVertexAttribArray(2);
+    // glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(glm::mat3), (void *) (0 * sizeof(glm::vec3)));
+    // glEnableVertexAttribArray(3);
+    // glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(glm::mat3), (void *) (1 * sizeof(glm::vec3)));
+    // glEnableVertexAttribArray(4);
+    // glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(glm::mat3), (void *) (2 * sizeof(glm::vec3)));
 
-    // OFFSET
-    glBindBuffer(GL_ARRAY_BUFFER, offset_buffer);
-    glBufferData(GL_ARRAY_BUFFER, tle.size() * sizeof(glm::vec3), (float *) offset.data(), GL_STATIC_DRAW);
-    glEnableVertexAttribArray(5);
-    glVertexAttribPointer(5, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
+    // glVertexAttribDivisor(2, 1);
+    // glVertexAttribDivisor(3, 1);
+    // glVertexAttribDivisor(4, 1);
 
-    glVertexAttribDivisor(5, 1);
+    // // OFFSET
+    // glBindBuffer(GL_ARRAY_BUFFER, offset_buffer);
+    // glBufferData(GL_ARRAY_BUFFER, tle.size() * sizeof(glm::vec3), (float *) offset.data(), GL_STATIC_DRAW);
+    // glEnableVertexAttribArray(5);
+    // glVertexAttribPointer(5, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
 
-    // MAJOR 
-    glBindBuffer(GL_ARRAY_BUFFER, major_buffer);
-    glBufferData(GL_ARRAY_BUFFER, tle.size() * sizeof(float), (float *) semi_major_axis.data(), GL_STATIC_DRAW);
-    glEnableVertexAttribArray(6);
-    glVertexAttribPointer(6, 1, GL_FLOAT, GL_FALSE, 0, (void *) 0);
+    // glVertexAttribDivisor(5, 1);
 
-    glVertexAttribDivisor(6, 1);
+    // // MAJOR 
+    // glBindBuffer(GL_ARRAY_BUFFER, major_buffer);
+    // glBufferData(GL_ARRAY_BUFFER, tle.size() * sizeof(float), (float *) semi_major_axis.data(), GL_STATIC_DRAW);
+    // glEnableVertexAttribArray(6);
+    // glVertexAttribPointer(6, 1, GL_FLOAT, GL_FALSE, 0, (void *) 0);
 
-    // MAJOR 
-    glBindBuffer(GL_ARRAY_BUFFER, minor_buffer);
-    glBufferData(GL_ARRAY_BUFFER, tle.size() * sizeof(float), (float *) semi_minor_axis.data(), GL_STATIC_DRAW);
-    glEnableVertexAttribArray(7);
-    glVertexAttribPointer(7, 1, GL_FLOAT, GL_FALSE, 0, (void *) 0);
+    // glVertexAttribDivisor(6, 1);
 
-    glVertexAttribDivisor(7, 1);
+    // // MAJOR 
+    // glBindBuffer(GL_ARRAY_BUFFER, minor_buffer);
+    // glBufferData(GL_ARRAY_BUFFER, tle.size() * sizeof(float), (float *) semi_minor_axis.data(), GL_STATIC_DRAW);
+    // glEnableVertexAttribArray(7);
+    // glVertexAttribPointer(7, 1, GL_FLOAT, GL_FALSE, 0, (void *) 0);
 
-    // ANOMALIES
-    glBindBuffer(GL_ARRAY_BUFFER, anomaly_buffer);
-    glBufferData(GL_ARRAY_BUFFER, tle.size() * sizeof(float), (float *) &true_anomaly[0], GL_STATIC_DRAW);
-    glEnableVertexAttribArray(8);
-    glVertexAttribPointer(8, 1, GL_FLOAT, GL_FALSE, 0, (void *) 0);
+    // glVertexAttribDivisor(7, 1);
 
-    glVertexAttribDivisor(8, 1);
+    // // ANOMALIES
+    // glBindBuffer(GL_ARRAY_BUFFER, anomaly_buffer);
+    // glBufferData(GL_ARRAY_BUFFER, tle.size() * sizeof(float), (float *) &true_anomaly[0], GL_STATIC_DRAW);
+    // glEnableVertexAttribArray(8);
+    // glVertexAttribPointer(8, 1, GL_FLOAT, GL_FALSE, 0, (void *) 0);
 
-    // FLAGS
-    glBindBuffer(GL_ARRAY_BUFFER, flag_buffer);
-    glBufferData(GL_ARRAY_BUFFER, tle.size() * sizeof(float), &flag[0], GL_STATIC_DRAW);
-    glEnableVertexAttribArray(9);
-    glVertexAttribPointer(9, 1, GL_FLOAT, GL_FALSE, 0, (void *) 0);
+    // glVertexAttribDivisor(8, 1);
 
-    glVertexAttribDivisor(9, 1);
+    // // FLAGS
+    // glBindBuffer(GL_ARRAY_BUFFER, flag_buffer);
+    // glBufferData(GL_ARRAY_BUFFER, tle.size() * sizeof(float), &flag[0], GL_STATIC_DRAW);
+    // glEnableVertexAttribArray(9);
+    // glVertexAttribPointer(9, 1, GL_FLOAT, GL_FALSE, 0, (void *) 0);
 
-    glBindVertexArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    // glVertexAttribDivisor(9, 1);
+
+    // glBindVertexArray(0);
+    // glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void Orbits::debug() {

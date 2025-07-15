@@ -39,6 +39,7 @@ class Scene {
         size_t triangles_t_drawn = 0;
         size_t frames = 0;
 
+        Shader orbits_shader;
         GLuint base_program_id;
         GLuint texture_program_id;
         GLuint orbit_line_program_id;

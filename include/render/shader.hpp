@@ -7,9 +7,9 @@
 #include <regex>
 #include <unordered_map>
 
-#include <GL/glew.h>
-#include <GL/gl.h>
-
+#include "glm/glm.hpp"
+#include "GL/glew.h"
+#include "GL/gl.h"
 
 class Shader {
     private:
@@ -33,6 +33,18 @@ class Shader {
         int loc_to_buff(int loc);
         int loc_to_type(int loc);
         int loc_to_type_size(int loc);
+
+        void set_mat4(std::string name, glm::mat4 &data) {
+            glUniformMatrix4fv(glGetUniformLocation(program_id, name.c_str()), 1, GL_FALSE, &data[0][0]);
+        }
+        
+        void set_mat3(std::string name, glm::mat3 &data) {
+            glUniformMatrix3fv(glGetUniformLocation(program_id, name.c_str()), 1, GL_FALSE, &data[0][0]);
+        }
+
+        void set_int(std::string name, int &data) {
+            glUniform1i(glGetUniformLocation(program_id, name.c_str()), data);
+        }
 };
 
 static std::unordered_map<std::string, int> glsl_types = {

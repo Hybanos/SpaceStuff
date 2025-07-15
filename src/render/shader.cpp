@@ -103,6 +103,7 @@ void Shader::get_layout() {
         if (std::regex_search(line, matches, layout_line_re)) {
             std::cout << matches[1] << " " << matches[2] << std::endl;
             int loc = std::stoi(matches[1]);
+            layout_types.push_back(matches[2]);
             buffer_to_layout.push_back(loc);
             layout_to_buffer.resize(loc + 1);
             layout_to_buffer[loc] = cpt; 
@@ -119,7 +120,7 @@ void Shader::use() {
 }
 
 int Shader::buff_count() {
-    return layout_to_buffer.size();
+    return buffer_to_layout.size();
 }
 
 int Shader::buff_to_loc(int buff) {
@@ -131,9 +132,9 @@ int Shader::loc_to_buff(int loc) {
 }
 
 int Shader::loc_to_type(int loc) {
-    return glsl_types[layout_types[loc]];
+    return glsl_types[layout_types[loc_to_buff(loc)]];
 }
 
 int Shader::loc_to_type_size(int loc) {
-    return glsl_types_size[layout_types[loc]];
+    return glsl_types_size[layout_types[loc_to_buff(loc)]];
 }
