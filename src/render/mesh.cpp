@@ -11,7 +11,7 @@ void Mesh::draw() {
 }
 
 template<class T>
-void Mesh::set_buffer(int loc, std::vector<T> &data) {
+void Mesh::set_buffer(int loc, std::vector<T> &data, int div) {
     glBindVertexArray(VAO);
 
     GLuint buf = buffers[shader.loc_to_buff(loc)];
@@ -23,6 +23,7 @@ void Mesh::set_buffer(int loc, std::vector<T> &data) {
     if (element_count <= 4) {
         glEnableVertexAttribArray(loc);
         glVertexAttribPointer(loc, element_count, element_type, GL_TRUE, 0, (void *) 0);
+        glVertexAttribDivisor(loc, div);
     } else {
 
         int locs_used, elements_per_loc;
@@ -40,9 +41,15 @@ void Mesh::set_buffer(int loc, std::vector<T> &data) {
         for (int i = 0; i < locs_used; i++) {
             glEnableVertexAttribArray(loc + i);
             glVertexAttribPointer(loc + i, elements_per_loc, element_type, GL_TRUE, sizeof(T) , (void *) (i * sizeof(T) / locs_used));
+            glVertexAttribDivisor(loc + i, div);
         }
     }
 
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
+
+// template<class T>
+// void Mesh::set_buffer(int loc, std::vector<T> &data) {
+//     set_buffer(loc, data, 0);
+// }

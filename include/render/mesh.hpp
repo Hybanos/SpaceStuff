@@ -16,6 +16,8 @@ class Mesh {
     public:
         Mesh(Shader &s);
         void draw();
+        // template<class T> 
+        // void set_buffer(int loc, std::vector<T> &data);
         template<class T> 
-        void set_buffer(int loc, std::vector<T> &data);
+        void set_buffer(int loc, std::vector<T> &data, int div = 0);
 };
