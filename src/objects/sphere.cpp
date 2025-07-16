@@ -1,16 +1,12 @@
 #include "objects/sphere.hpp"
 #include "scene/scene.hpp"
 
-Sphere::Sphere(Scene *s, std::string files[6], Object *p) : ObjectCubeMap(files), Object(s, p) {
-    draw_faces = false;
-    draw_mesh = false;
-
-    rota_id = glGetUniformLocation(scene->texture_program_id, "rota");
-    flip_id = glGetUniformLocation(scene->texture_program_id, "flip");
-
+Sphere::Sphere(Scene *s, std::string files[6], Object *p) : 
+Object(s, p),
+mesh(scene->texture_shader) {
+    mesh.gen_cubemap(files);
     build();
-    manageBuffers();
-    manage_texture();
+    manage_buffers();
 }
 
 void Sphere::build() {
@@ -120,26 +116,20 @@ void Sphere::draw() {
 
     if (rebuild) {
         build();
-        manageBuffers();
+        manage_buffers();
     }
 
     glm::mat4 mvp = scene->mvp;
 
-    glUseProgram(scene->base_program_id);
-    glUniformMatrix4fv(matrix_id, 1, GL_FALSE, &mvp[0][0]);
-    if (draw_faces) draw_f();
-    if (draw_mesh) draw_m();
+    mesh.set_mat4("MVP", mvp);
+    mesh.set_mat3("rota", rota);
+    mesh.set_int("flip", 0);
 
-    glUseProgram(scene->texture_program_id);
-    glUniformMatrix4fv(matrix_id, 1, GL_FALSE, &mvp[0][0]);
-    glUniformMatrix3fv(rota_id, 1, GL_FALSE, &rota[0][0]);
-    glUniform1i(flip_id, 0);
-    if (draw_texture) draw_t();
+    mesh.draw_cubemap(GL_TRIANGLES, 0, triangles.size() * 3);
 }
 
-void Sphere::manageBuffers() {
-    manage_f_buffers();
-    manage_m_buffers();
+void Sphere::manage_buffers() {
+    mesh.set_buffer(0, triangles);
 }
 
 void Sphere::debug() {
@@ -147,9 +137,9 @@ void Sphere::debug() {
         ImGui::Checkbox("Build each frame", &rebuild);
         ImGui::SliderInt("Resolution:", &resolution, 2, 100);
         ImGui::SliderFloat("Radius:", &size, 0, 100);
-        ImGui::Checkbox("Draw mesh:", &draw_mesh);
-        ImGui::Checkbox("Draw faces:", &draw_faces);
-        ImGui::Checkbox("Draw texture:", &draw_texture);
+        // ImGui::Checkbox("Draw mesh:", &draw_mesh);
+        // ImGui::Checkbox("Draw faces:", &draw_faces);
+        // ImGui::Checkbox("Draw texture:", &draw_texture);
         ImGui::SliderFloat("Normalisation amound:", &normalise_amount, 0, 1);
         ImGui::Text("Rotation matrix:");
         ImGui::Text("\t%f\t%f\t%f", rota[0][0], rota[1][0], rota[2][0]);

@@ -12,8 +12,8 @@ std::string earth_files[6] = {
     "assets/cubemaps/earth/right.jpg"
 };
 
-Scene::Scene(SDL_Window *_window) :
-orbits_shader("src/shaders/orbits.vs", "src/shaders/orbits.fs") {
+Scene::Scene(SDL_Window *_window) { 
+
     camera = new Camera;
     camera->scene = this;
     window = _window;
@@ -25,7 +25,7 @@ orbits_shader("src/shaders/orbits.vs", "src/shaders/orbits.fs") {
 
     // objects.push_back(new SkyBox(this));
     // objects.push_back(new Grid(this));
-    // objects.push_back(new Sphere(this, earth_files, objects[1]));
+    objects.push_back(new Sphere(this, earth_files));
 
     std::vector<TLE> t = db.get_all_tle();
     objects.push_back(new Orbits(this, t));

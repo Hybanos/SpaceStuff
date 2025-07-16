@@ -9,22 +9,30 @@
 #include "fmt/core.h"
 
 #include "render/shader.hpp"
+#include "stb_image.h"
 
 class Mesh {
     private:
         GLuint VAO;
-        std::vector<GLuint> buffers;
         Shader shader;
+
+        std::vector<GLuint> buffers;
+        GLuint texture;
     public:
         Mesh(Shader &s);
-        void draw();
+
+        void draw(GLenum type, int first, size_t count);
         void draw_instanced(GLenum type, int first, size_t count, size_t total);
+        void draw_cubemap(GLenum type, int first, size_t count);
+
         template<typename T> 
         void set_buffer(int loc, std::vector<T, std::allocator<T>> &data, int div = 0);
 
+        void gen_cubemap( std::string files[6]);
+
         void set_mat4(std::string name, glm::mat4 &data) {shader.set_mat4(name, data);}
         void set_mat3(std::string name, glm::mat3 &data) {shader.set_mat3(name, data);}
-        void set_int(std::string name, int &data) {shader.set_int(name, data);}
+        void set_int(std::string name, int data) {shader.set_int(name, data);}
 };
 
 template<typename T>

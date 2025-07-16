@@ -5,8 +5,8 @@ ObjectCubeMap::ObjectCubeMap(std::string _f[6]) {
     for (int i = 0; i < 6; i++) files.push_back(_f[i]);
 
     glGenTextures(1, &texture_id);
-    cubemap_id = glGetUniformLocation(scene->texture_program_id, "cubemap");
-    matrix_id = glGetUniformLocation(scene->texture_program_id, "MVP");
+    // cubemap_id = glGetUniformLocation(scene->texture_program_id, "cubemap");
+    // matrix_id = glGetUniformLocation(scene->texture_program_id, "MVP");
 }
 
 void ObjectCubeMap::manage_texture() {
