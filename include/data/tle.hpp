@@ -1,5 +1,4 @@
-#ifndef SPACESTUFF_TLE_HPP
-#define SPACESTUFF_TLE_HPP
+#pragma once
 
 #include "glm/glm.hpp"
 
@@ -72,5 +71,3 @@ inline std::vector<TLE> read_tle_file(std::string path) {
     file.close();
     return v;
 }
-
-#endif

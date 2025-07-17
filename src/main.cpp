@@ -29,7 +29,6 @@
 #endif
 
 #include "scene/scene.hpp"
-#include "tle.hpp"
 
 // Main code
 int main(int, char**)

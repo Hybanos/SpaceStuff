@@ -1,5 +1,4 @@
 #include "render/mesh.hpp"
-#include "stb_image.h"
 
 Mesh::Mesh(Shader &s) : shader{s} {
     glGenVertexArrays(1, &VAO);

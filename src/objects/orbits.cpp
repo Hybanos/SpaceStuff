@@ -204,7 +204,7 @@ void Orbits::debug() {
     if (ImGui::CollapsingHeader("Orbits")) {
         ImGui::Checkbox("Draw", &d_draw);
         ImGui::Text("Time to render: %fms", ttr / 1e6);
-        ImGui::Text("Total orbits: %d", tle.size());
+        ImGui::Text("Total orbits: %lld", tle.size());
         
         if (ImGui::InputTextWithHint("##Filter", "filter", filter.InputBuf, IM_ARRAYSIZE(filter.InputBuf))) {
             filter.Build();
