@@ -12,7 +12,7 @@ std::string f[6] = {
 
 SkyBox::SkyBox(Scene *s) : Object(s), mesh(scene->texture_shader) {
 
-    mesh.gen_cubemap(f);
+    mesh.gen_cubemap("assets/cubemaps/skybox");
 
     triangles = {
         glm::vec3(-1.0f,  1.0f, -1.0f),

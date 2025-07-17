@@ -3,15 +3,6 @@
 using std::chrono::nanoseconds;
 using std::chrono::high_resolution_clock;
 
-std::string earth_files[6] = {
-    "assets/cubemaps/earth/front.jpg",
-    "assets/cubemaps/earth/back.jpg",
-    "assets/cubemaps/earth/top.jpg",
-    "assets/cubemaps/earth/bottom.jpg",
-    "assets/cubemaps/earth/left.jpg",
-    "assets/cubemaps/earth/right.jpg"
-};
-
 Scene::Scene(SDL_Window *_window) { 
 
     camera = new Camera;
@@ -20,7 +11,7 @@ Scene::Scene(SDL_Window *_window) {
 
     objects.push_back(new SkyBox(this));
     objects.push_back(new Grid(this));
-    objects.push_back(new Sphere(this, earth_files));
+    objects.push_back(new Sphere(this, "assets/cubemaps/earth"));
 
     objects.push_back(new Particle(this, glm::vec3(0), glm::vec4(1)));
     std::vector<TLE> t = db.get_all_tle();

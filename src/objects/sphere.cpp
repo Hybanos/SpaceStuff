@@ -1,10 +1,10 @@
 #include "objects/sphere.hpp"
 #include "scene/scene.hpp"
 
-Sphere::Sphere(Scene *s, std::string files[6], Object *p) : 
+Sphere::Sphere(Scene *s, std::string path, Object *p) : 
 Object(s, p),
 mesh(scene->texture_shader) {
-    mesh.gen_cubemap(files);
+    mesh.gen_cubemap(path);
     build();
     manage_buffers();
 
