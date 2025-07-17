@@ -172,6 +172,7 @@ void Orbits::compute_true_anomalies(int j) {
 }
 
 void Orbits::draw() {
+    if (!d_draw) return;
     auto t1 = high_resolution_clock::now();
 
     // TODO: opti buffers
@@ -201,6 +202,7 @@ void Orbits::manage_buffers() {
 
 void Orbits::debug() {
     if (ImGui::CollapsingHeader("Orbits")) {
+        ImGui::Checkbox("Draw", &d_draw);
         ImGui::Text("Time to render: %fms", ttr / 1e6);
         ImGui::Text("Total orbits: %d", tle.size());
         

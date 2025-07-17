@@ -1,9 +1,8 @@
 #include "objects/particle.hpp"
 #include "scene/scene.hpp"
 
-Particle::Particle(Scene *s, glm::vec3 p, glm::vec4 c) : Object(s), pos(p), color(c) {
-    draw_faces = true;
-    draw_mesh = false;
+Particle::Particle(Scene *s, glm::vec3 p, glm::vec4 c) : Object(s), pos(p), color(c),
+mesh(scene->base_shader) {
 }
 
 void Particle::build() {
@@ -39,31 +38,22 @@ void Particle::build() {
         triangles_colors.push_back(color);
         triangles_colors.push_back(color);
     }
-
-    manage_f_buffers();
-    build_default_mesh();
-    manage_m_buffers();
 }
 
 void Particle::draw() {
-    build();
 
-    glUseProgram(scene->base_program_id);
-    glUniformMatrix4fv(matrix_id, 1, GL_FALSE, &(scene->mvp)[0][0]);
-
-
-    if (draw_mesh) {
-        draw_m();
-    }
-    if (draw_faces) {
-        draw_f();
+    if (d_draw) {
+        build();
+        mesh.set_buffer(0, triangles);
+        mesh.set_buffer(1, triangles_colors);
+        mesh.set_mat4("MVP", scene->mvp);
+        mesh.draw(GL_TRIANGLES, 0, triangles.size() * 3);
     }
 }
 
 void Particle::debug() {
     if (ImGui::CollapsingHeader("Particle")) {
-        ImGui::Checkbox("Draw mesh:", &draw_mesh);
-        ImGui::Checkbox("Draw faces:", &draw_faces);
+        ImGui::Checkbox("Draw", &d_draw);
         ImGui::Text("x: %f, y:%f, z:%f", pos.x, pos.y, pos.z);
     }
 

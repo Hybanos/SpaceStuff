@@ -42,11 +42,8 @@ class Scene {
         Shader orbits_shader = Shader("src/shaders/orbits.vs", "src/shaders/orbits.fs");
         Shader base_shader = Shader("src/shaders/base.vs", "src/shaders/base.fs");
         Shader texture_shader = Shader("src/shaders/texture.vs", "src/shaders/texture.fs");
+        Shader grid_shader = Shader("src/shaders/grid.vs", "src/shaders/grid.fs");
         GLuint base_program_id;
-        GLuint texture_program_id;
-        GLuint orbit_line_program_id;
-        GLuint orbits_program_id;
-        GLuint grid_program_id;
 
         size_t ttr;
         bool imgui_hover;

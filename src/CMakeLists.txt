@@ -2,9 +2,6 @@ add_executable(main)
 
 target_sources(main PRIVATE
     objects/grid.cpp
-    objects/object_cubemap.cpp
-    objects/object_faces.cpp
-    objects/object_mesh.cpp
     objects/orbits.cpp
     objects/skybox.cpp
     objects/sphere.cpp
@@ -28,9 +25,6 @@ target_sources(main PUBLIC
     FILES
 
         ${PROJECT_SOURCE_DIR}/include/objects/grid.hpp
-        ${PROJECT_SOURCE_DIR}/include/objects/object_cubemap.hpp
-        ${PROJECT_SOURCE_DIR}/include/objects/object_faces.hpp
-        ${PROJECT_SOURCE_DIR}/include/objects/object_mesh.hpp
         ${PROJECT_SOURCE_DIR}/include/objects/orbits.hpp
         ${PROJECT_SOURCE_DIR}/include/objects/skybox.hpp
         ${PROJECT_SOURCE_DIR}/include/objects/sphere.hpp

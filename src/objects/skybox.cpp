@@ -10,11 +10,9 @@ std::string f[6] = {
     "assets/cubemaps/skybox/nz.png",
 };
 
-SkyBox::SkyBox(Scene *s) : ObjectCubeMap(f), Object(s) {
-    rota_id = glGetUniformLocation(scene->texture_program_id, "rota");
-    flip_id = glGetUniformLocation(scene->texture_program_id, "flip");
+SkyBox::SkyBox(Scene *s) : Object(s), mesh(scene->texture_shader) {
 
-    draw_faces = false;
+    mesh.gen_cubemap(f);
 
     triangles = {
         glm::vec3(-1.0f,  1.0f, -1.0f),
@@ -60,40 +58,30 @@ SkyBox::SkyBox(Scene *s) : ObjectCubeMap(f), Object(s) {
         glm::vec3(1.0f, -1.0f,  1.0f)
     };
 
-    for (int i = 0; i < triangles.size(); i++) triangles_colors.push_back(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-
     rota = glm::mat3(
         glm::vec3(1, 0, 0),
         glm::vec3(0, 1, 0),
         glm::vec3(0, 0, 1)
     );
 
-    manage_texture();
-    manage_f_buffers();
+    mesh.set_buffer(0, triangles);
 }
 
 void SkyBox::draw() {
     glm::mat4 mvp = scene->projection * glm::mat4(glm::mat3(scene->view)) * scene->model;
 
-    glDepthMask(GL_FALSE);
-    if (draw_faces) {
-        glUseProgram(scene->base_program_id);
-        glUniformMatrix4fv(matrix_id, 1, GL_FALSE, &mvp[0][0]);
-        draw_f();
+    if (d_draw) {
+        glDepthMask(GL_FALSE);
+        mesh.set_mat4("MVP", mvp);
+        mesh.set_mat3("rota", rota);
+        mesh.set_int("flip", 1);
+        mesh.draw_cubemap(GL_TRIANGLES, 0, triangles.size() * 3);
+        glDepthMask(GL_TRUE);
     }
-    if (draw_texture) {
-        glUseProgram(scene->texture_program_id);
-        glUniformMatrix4fv(matrix_id, 1, GL_FALSE, &mvp[0][0]);
-        glUniformMatrix3fv(rota_id, 1, GL_FALSE, &rota[0][0]);
-        glUniform1i(flip_id, 1);
-        draw_t();
-    }
-    glDepthMask(GL_TRUE);
 }
 
 void SkyBox::debug() {
     if (ImGui::CollapsingHeader("SkyBox")) {
-        ImGui::Checkbox("Draw faces:", &draw_faces);
-        ImGui::Checkbox("Draw texture:", &draw_texture);
+        ImGui::Checkbox("Draw", &d_draw);
     }
 }

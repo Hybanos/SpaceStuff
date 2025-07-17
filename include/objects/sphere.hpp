@@ -1,9 +1,6 @@
 #ifndef SPACESTUFF_SPHERE_HPP
 #define SPACESTUFF_SPHERE_HPP
 
-// #include "object_mesh.hpp"
-// #include "object_faces.hpp"
-// #include "object_cubemap.hpp"
 #include "objects/object.hpp"
 #include "render/mesh.hpp"
 
@@ -16,6 +13,7 @@ class Sphere : virtual public Object{
 
         Mesh mesh;
         
+        bool d_draw = true;
         bool rebuild = false;
         int resolution = 25;
         float size = 6371;

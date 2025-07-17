@@ -1,11 +1,16 @@
 #ifndef SPACESTUFF_SKYBOX_HPP
 #define SPACESTUFF_SKYBOX_HPP
 
-#include "object_cubemap.hpp"
+#include "objects/object.hpp"
+#include "render/mesh.hpp"
 
-class SkyBox : public ObjectCubeMap {
+class SkyBox : virtual public Object {
     private:
-        GLuint cubemap_id;
+        std::vector<glm::vec3> triangles;
+
+        Mesh mesh;
+
+        bool d_draw = true;
         glm::mat3 rota;
     public:
         SkyBox(Scene *);

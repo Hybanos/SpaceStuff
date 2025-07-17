@@ -101,7 +101,7 @@ void Shader::get_layout() {
     int cpt = 0;
     while (std::getline(vs_stream, line, ';')) {
         if (std::regex_search(line, matches, layout_line_re)) {
-            std::cout << matches[1] << " " << matches[2] << std::endl;
+            // std::cout << matches[1] << " " << matches[2] << std::endl;
             int loc = std::stoi(matches[1]);
             layout_types.push_back(matches[2]);
             buffer_to_layout.push_back(loc);

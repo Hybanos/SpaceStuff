@@ -8,7 +8,6 @@
 #include "glm/gtx/polar_coordinates.hpp"
 #include "fmt/core.h"
 
-#include "object_mesh.hpp"
 #include "particle.hpp"
 #include "tle.hpp"
 #include "scene/camera_anchor.hpp"
@@ -32,22 +31,12 @@ class Orbits : virtual public Object, virtual public CameraAnchor {
         std::vector<float> flag;
 
         Mesh mesh;
-        // GLuint matrix_id;
-        // GLuint base_buffer;
-        // GLuint offset_buffer;
-        // GLuint major_buffer;
-        // GLuint minor_buffer;
-        // GLuint anomaly_buffer;
-        // GLuint flag_buffer;
-
-        // GLuint VAO;
-        // GLuint lines_buffer;
-        // GLuint lines_color_buffer;
         std::vector<glm::vec3> lines;
         std::vector<glm::vec4> lines_colors;
 
         size_t ttr;
         ImGuiTextFilter filter;
+        bool d_draw = true;
         // index of the satelite to anchor camera on
         int following = 0; 
 

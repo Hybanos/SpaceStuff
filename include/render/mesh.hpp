@@ -9,6 +9,7 @@
 #include "fmt/core.h"
 
 #include "render/shader.hpp"
+#define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
 class Mesh {
@@ -45,7 +46,7 @@ void Mesh::set_buffer(int loc, std::vector<T, std::allocator<T>> &data, int div)
     glBindBuffer(GL_ARRAY_BUFFER, buf);
     glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(T), data.data(), GL_STATIC_DRAW);
 
-    fmt::print("buff id: {}, loc: {}, count: {}, type: {}\n",shader.loc_to_buff(loc), loc, element_count, element_type);
+    // fmt::print("buff id: {}, loc: {}, count: {}, type: {}\n",shader.loc_to_buff(loc), loc, element_count, element_type);
 
     if (element_count <= 4) {
         glEnableVertexAttribArray(loc);
@@ -65,7 +66,7 @@ void Mesh::set_buffer(int loc, std::vector<T, std::allocator<T>> &data, int div)
             elements_per_loc = element_count / 4;
         }
 
-        fmt::print("locs used: {}, elements per: {}\n", locs_used, elements_per_loc);
+        // fmt::print("locs used: {}, elements per: {}\n", locs_used, elements_per_loc);
 
         for (int i = 0; i < locs_used; i++) {
             glEnableVertexAttribArray(loc + i);

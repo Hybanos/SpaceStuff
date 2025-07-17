@@ -1,5 +1,4 @@
-#ifndef SPACESTUFF_OBJECT_HPP
-#define SPACESTUFF_OBJECT_HPP
+#pragma once
 
 #define SECS_DAY (24 * 3600)
 #define SECS_SIDERAL_DAY (23 * 3600 + 56 * 60 + 4)
@@ -39,5 +38,3 @@ class Object {
             return glm::vec3(0);
         }
 };
-
-#endif

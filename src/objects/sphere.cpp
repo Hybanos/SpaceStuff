@@ -7,6 +7,7 @@ mesh(scene->texture_shader) {
     mesh.gen_cubemap(files);
     build();
     manage_buffers();
+
 }
 
 void Sphere::build() {
@@ -104,6 +105,7 @@ void Sphere::build() {
 }
 
 void Sphere::draw() {
+    if (!d_draw) return;
     double julian_date = ((double) scene->time.get().time_since_epoch().count() / 1e9) / SECS_DAY + 2440587.5;
     double angle = (0.7790572732640 + 1.00273781191135448 * (julian_date - 2451545.0)) * (M_PI * 2);
     angle = fmod(angle, M_PI * 2);
@@ -134,12 +136,10 @@ void Sphere::manage_buffers() {
 
 void Sphere::debug() {
     if (ImGui::CollapsingHeader("Sphere")) {
+        ImGui::Checkbox("Draw", &d_draw);
         ImGui::Checkbox("Build each frame", &rebuild);
         ImGui::SliderInt("Resolution:", &resolution, 2, 100);
         ImGui::SliderFloat("Radius:", &size, 0, 100);
-        // ImGui::Checkbox("Draw mesh:", &draw_mesh);
-        // ImGui::Checkbox("Draw faces:", &draw_faces);
-        // ImGui::Checkbox("Draw texture:", &draw_texture);
         ImGui::SliderFloat("Normalisation amound:", &normalise_amount, 0, 1);
         ImGui::Text("Rotation matrix:");
         ImGui::Text("\t%f\t%f\t%f", rota[0][0], rota[1][0], rota[2][0]);
