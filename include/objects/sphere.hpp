@@ -8,8 +8,6 @@ class Sphere : virtual public Object{
     private:
         std::vector<glm::vec3> triangles;
         std::vector<glm::vec3> triangles_colors;
-        std::vector<glm::vec3> lines;
-        std::vector<glm::vec3> lines_colors;
 
         Mesh mesh;
         

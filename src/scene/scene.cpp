@@ -13,9 +13,8 @@ Scene::Scene(SDL_Window *_window) {
     objects.push_back(new Grid(this));
     objects.push_back(new Sphere(this, "assets/cubemaps/earth"));
 
-    objects.push_back(new Particle(this, glm::vec3(0), glm::vec4(1)));
     std::vector<TLE> t = db.get_all_tle();
-    objects.push_back(new Orbits(this, t));
+    objects.push_back(new Orbits(this, t, objects[2]));
     
     camera->look_at(glm::vec3(0, 0, 0));
     camera->update_pos();
@@ -84,4 +83,5 @@ void Scene::debug() {
     }
     ImGui::End();
     time.debug();
+    db.debug();
 }

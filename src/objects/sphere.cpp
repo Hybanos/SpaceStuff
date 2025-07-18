@@ -7,15 +7,11 @@ mesh(scene->texture_shader) {
     mesh.gen_cubemap(path);
     build();
     manage_buffers();
-
 }
 
 void Sphere::build() {
     triangles.clear();
     triangles_colors.clear();
-
-    lines.clear();
-    lines_colors.clear();
 
     std::vector<glm::vec3> v;
     int n = resolution;
@@ -51,37 +47,10 @@ void Sphere::build() {
             triangles_colors.push_back(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
             triangles_colors.push_back(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
             triangles_colors.push_back(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-
-            lines.push_back(v[i * n + j]);
-            lines.push_back(v[i * n + j + 1]);
-
-            lines.push_back(v[(i + 1) * n + j]);
-            lines.push_back(v[(i + 1) * n + j + 1]);
-
-            lines.push_back(v[i * n + j]);
-            lines.push_back(v[(i + 1) * n + j]);
-
-            lines.push_back(v[i * n + j + 1]);
-            lines.push_back(v[(i + 1) * n + j + 1]);
-
-            lines.push_back(v[i * n + j + 1]);
-            lines.push_back(v[(i + 1) * n + j]);
-
-            lines_colors.push_back(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-            lines_colors.push_back(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-            lines_colors.push_back(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-            lines_colors.push_back(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-            lines_colors.push_back(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-            lines_colors.push_back(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-            lines_colors.push_back(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-            lines_colors.push_back(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-            lines_colors.push_back(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-            lines_colors.push_back(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
         }
     }
 
     int size_triangles = triangles.size();
-    int size_lines = lines.size();
     glm::quat q;
 
     // copy and rotate face 5 times
@@ -95,11 +64,6 @@ void Sphere::build() {
         for (int i = 0; i < size_triangles; i++) {
             triangles.push_back(triangles[i] * q);
             triangles_colors.push_back(triangles_colors[i]);
-        }
-
-        for (int i = 0; i < size_lines; i++) {
-            lines.push_back(lines[i] * q);
-            lines_colors.push_back(lines_colors[i]);
         }
     }
 }
@@ -126,6 +90,7 @@ void Sphere::draw() {
     mesh.set_mat4("MVP", mvp);
     mesh.set_mat3("rota", rota);
     mesh.set_int("flip", 0);
+    mesh.set_vec3("pos", get_pos());
 
     mesh.draw_cubemap(GL_TRIANGLES, 0, triangles.size() * 3);
 }
@@ -150,7 +115,8 @@ void Sphere::debug() {
 }
 
 glm::vec3 Sphere::get_pos() {
-    glm::vec3 offset = glm::vec3(0, scene->frames * 3, 0);
+    // glm::vec3 offset = glm::vec3(0, scene->frames * 3, 0);
+    glm::vec3 offset = glm::vec3(0);
     if (parent != nullptr) {
         return parent->get_pos() + offset;
     }

@@ -44,6 +44,11 @@ class Shader {
             glUniformMatrix3fv(glGetUniformLocation(program_id, name.c_str()), 1, GL_FALSE, &data[0][0]);
         }
 
+        void set_vec3(std::string name, glm::vec3 &data) {
+            use();
+            glUniform3fv(glGetUniformLocation(program_id, name.c_str()), 1, &data[0]);
+        }
+
         void set_int(std::string name, int &data) {
             use();
             glUniform1i(glGetUniformLocation(program_id, name.c_str()), data);

@@ -182,6 +182,7 @@ void Orbits::draw() {
     manage_buffers();
 
     mesh.set_mat4("MVP", scene->mvp);
+    mesh.set_vec3("pos", get_pos());
     mesh.draw_instanced(GL_LINE_STRIP, 0, lines.size(), tle.size());
     scene->lines_drawn += lines.size() * tle.size();
 
@@ -220,7 +221,7 @@ void Orbits::debug() {
 
             if (! filter.PassFilter(tle[i].name.data())) continue;
 
-            if (ImGui::CollapsingHeader(tle[i].name.data())) {
+            if (ImGui::CollapsingHeader(fmt::format("{}##{}", tle[i].name, i).c_str())) {
                 flag[i] = 2;
                 build_orbit(i);
                 manage_buffers();

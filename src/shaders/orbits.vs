@@ -9,12 +9,14 @@ layout(location = 8) in float anomalies;
 layout(location = 9) in float flag;
 
 uniform mat4 MVP;
+uniform vec3 pos;
+
 out vec4 fragment_color;
 flat out float a;
 flat out float f;
 
 void main() {
-    gl_Position =  MVP * vec4(vertexPosition_modelspace * vec3(major, 1, minor) * base + offset, 1);
+    gl_Position =  MVP * vec4(vertexPosition_modelspace * vec3(major, 1, minor) * base + offset + pos, 1);
     fragment_color = vertex_color;
     a = anomalies;
     f = flag;

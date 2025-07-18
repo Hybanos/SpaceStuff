@@ -3,6 +3,7 @@
 DBManager::DBManager() {
     sqlite3_open("data.db", &db);
     init();
+    update_debug_vectors();
 }
 
 DBManager::~DBManager() {
@@ -49,32 +50,89 @@ void DBManager::init() {
     ");";
     sqlite3_exec(db, query.data(), NULL, NULL, NULL);
 
-    // orbit_classification
-    query = "SELECT name FROM sqlite_master WHERE type='table' AND name='Class';";
+    // groups 
+    query = "SELECT name FROM sqlite_master WHERE type='table' AND name='Groups';";
     sqlite3_prepare_v3(db, query.c_str(), query.size(), 0, &statement, NULL);
     if (sqlite3_step(statement) != SQLITE_ROW) {
         
-        query = "CREATE TABLE Class ("
-            "classID INTEGER PRIMARY KEY,"
-            "class TEXT"
-        ");";
+        query = R"(CREATE TABLE Groups (group_id INTEGER PRIMARY KEY, group_name TEXT, pull_time INTEGER DEFAULT 0);)";
         sqlite3_exec(db, query.data(), NULL, NULL, NULL);
 
-        query = "INSERT INTO Class (class) VALUES"
-            "('leo'),"
-            "('gps'),"
-            "('geo'),"
-            "('sso'),"
-            "('circular'),"
-            "('elliptical'),"
-            "('low_incl'),"
-            "('high_incl')"
-        ";";
+            //  ('active'),
+        query = R"(INSERT INTO Groups (group_name) VALUES
+             ('last-30-days'),
+             ('stations'),
+             ('visual'),
+             ('analyst'),
+             ('cosmos-1408-debris'),
+             ('fengyun-1c-debris'),
+             ('iridium-33-debris'),
+             ('cosmos-2251-debris'),
+
+             ('weather'),
+             ('noaa'),
+             ('goes'),
+             ('resources'),
+             ('sarcat'),
+             ('dmc'),
+             ('tdrss'),
+             ('argos'),
+             ('planet'),
+             ('spire'),
+
+             ('geo'),
+             ('gpz'),
+             ('gpz-plus'),
+             ('intelsat'),
+             ('ses'),
+             ('eutelsat'),
+             ('telesat'),
+             ('starlink'),
+             ('oneweb'),
+             ('qianfan'),
+             ('hulianwang'),
+             ('kuiper'),
+             ('iridium-NEXT'),
+             ('orbcomm'),
+             ('globalstar'),
+             ('amateur'),
+             ('satnogs'),
+             ('x-comm'),
+             ('other-comm'),
+
+             ('gnss'),
+             ('gps-ops'),
+             ('glo-ops'),
+             ('galileo'),
+             ('beidou'),
+             ('sbas'),
+             ('nnss'),
+             ('musson'),
+
+             ('science'),
+             ('geodetic'),
+             ('engineering'),
+             ('education'),
+
+             ('military'),
+             ('radar'),
+             ('cubesat'),
+             ('other')
+        ;)";
         sqlite3_exec(db, query.data(), NULL, NULL, NULL);
     }
     sqlite3_finalize(statement);
 
-    ingest_tle_group("haha");
+    query = R"(CREATE TABLE IF NOT EXISTS SatGroup (
+        cat_number INTEGER,
+        group_name TEXT,
+        PRIMARY KEY (cat_number, group_name),
+        FOREIGN KEY(cat_number) REFERENCES SatData(cat_number),
+        FOREIGN KEY(group_name) REFERENCES Groups(group_name)
+    );)";
+    sqlite3_exec(db, query.data(), NULL, NULL, NULL);
+
+    // ingest_tle_group("stations");
 }
 
 void DBManager::set_meta(std::string key, int val) {
@@ -96,15 +154,33 @@ int DBManager::get_meta(std::string key) {
     return ret;
 }
 
+void DBManager::set_group_pull_time(std::string group, int val) {
+    std::string query = fmt::format("UPDATE Groups SET pull_time={} WHERE group_name='{}';", val, group);
+    std::cout << sqlite3_exec(db, query.data(), NULL, NULL, NULL) << std::endl;
+}
+
+int DBManager::get_group_pull_time(std::string group) {
+    int ret;
+    std::string query = fmt::format("SELECT pull_time FROM Groups WHERE group_name='{}';", group);
+    sqlite3_stmt *statement;
+    sqlite3_prepare_v3(db, query.c_str(), query.size(), 0, &statement, NULL);
+    if (sqlite3_step(statement) == SQLITE_ROW) {
+        ret = sqlite3_column_int(statement, 0);
+    } else {
+        fmt::print("No group {} in table Groups\n", group);
+    }
+    sqlite3_finalize(statement);
+    return ret;
+}
+
 // TODO: make good checks
 void DBManager::ingest_tle_group(std::string group_name) {
-    if (get_meta("DATA_PULL_TIME") > time(NULL) - 3600 * 24) {
-        fmt::print("TLE data too recent, using cache...\n");
+    if (get_group_pull_time(group_name) > time(NULL) - 3600 * 24) {
         return;
     }
 
-    cpr::Response r = cpr::Get(cpr::Url{"https://celestrak.org/NORAD/elements/gp.php?CATNR=25544&FORMAT=tle"}, cpr::Timeout(30000));
-    set_meta("DATA_PULL_TIME", time(NULL));
+    cpr::Response r = cpr::Get(cpr::Url{fmt::format("https://celestrak.org/NORAD/elements/gp.php?GROUP={}&FORMAT=tle", group_name)}, cpr::Timeout(30000));
+    set_group_pull_time(group_name, time(NULL));
 
     std::cout << r.url << std::endl;
     if (r.status_code == 200) {
@@ -118,7 +194,7 @@ void DBManager::ingest_tle_group(std::string group_name) {
         std::vector<TLE> tles = read_tle_file(filename);
         sqlite3_exec(db, "BEGIN TRANSACTION;", NULL, NULL, NULL);
         for (auto t : tles) {
-            ingest_tle(t);
+            ingest_tle(t, group_name);
         }
         sqlite3_exec(db, "END TRANSACTION;", NULL, NULL, NULL);
     } else {
@@ -126,7 +202,7 @@ void DBManager::ingest_tle_group(std::string group_name) {
     }
 }
 
-void DBManager::ingest_tle(TLE t) {
+void DBManager::ingest_tle(TLE t, std::string group) {
     std::string query = fmt::format("INSERT OR REPLACE INTO SatData ("
         "name,"
         "cat_number,"
@@ -162,6 +238,15 @@ void DBManager::ingest_tle(TLE t) {
         t.revloutions_per_day
     );
     sqlite3_exec(db, query.data(), NULL, NULL, NULL);
+
+    query = fmt::format(R"(INSERT OR REPLACE INTO SatGroup (
+        cat_number,
+        group_name
+    ) VALUES (
+        {},
+        '{}'
+    );)", t.cat_number, group);
+    sqlite3_exec(db, query.data(), NULL, NULL, NULL);
 }
 
 std::vector<TLE> DBManager::get_all_tle() {
@@ -194,4 +279,38 @@ std::vector<TLE> DBManager::get_all_tle() {
     }
     sqlite3_finalize(statement);
     return TLEs;
+}
+
+void DBManager::update_debug_vectors() {
+    std::string query = "SELECT group_name, pull_time FROM Groups;";
+    sqlite3_stmt *statement;
+    sqlite3_prepare_v3(db, query.c_str(), query.size(), 0, &statement, NULL);
+    while (sqlite3_step(statement) == SQLITE_ROW) {
+        std::string s = reinterpret_cast<const char *>(sqlite3_column_text(statement, 0));
+        group_names.push_back(s);
+        group_pull_times.push_back(sqlite3_column_int(statement, 1));
+    }
+    sqlite3_finalize(statement);
+}
+
+void DBManager::debug() {
+    ImGui::Begin("Data");
+    
+    for (int i = 0; i < group_names.size(); i++) {
+        std::string s = group_names[i];
+        int t = group_pull_times[i];
+        ImGui::SeparatorText(s.c_str());
+        if (t == 0) {
+            ImGui::Text("Last pulled: ---");
+        } else {
+            int d = time(NULL) - t;
+            ImGui::Text(fmt::format("Last pulled: {}s ago", d).c_str());
+        }
+        if (ImGui::Button(fmt::format("pull##{}", i).c_str())) {
+            ingest_tle_group(s);
+            update_debug_vectors();
+        }
+    }
+
+    ImGui::End();
 }
