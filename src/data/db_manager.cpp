@@ -197,6 +197,9 @@ void DBManager::ingest_tle_group(std::string group_name) {
             ingest_tle(t, group_name);
         }
         sqlite3_exec(db, "END TRANSACTION;", NULL, NULL, NULL);
+
+        signals.push_back(Signal::SAT_DATA_UPDATE);
+        fmt::print("db manager: {} signals\n", signals.size());
     } else {
         fmt::print("Got status code {} from celestrak, using cached data", r.status_code);
     }
@@ -282,6 +285,8 @@ std::vector<TLE> DBManager::get_all_tle() {
 }
 
 void DBManager::update_debug_vectors() {
+    group_names.clear();
+    group_pull_times.clear();
     std::string query = "SELECT group_name, pull_time FROM Groups;";
     sqlite3_stmt *statement;
     sqlite3_prepare_v3(db, query.c_str(), query.size(), 0, &statement, NULL);

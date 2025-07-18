@@ -9,31 +9,11 @@ Object(s, p),
 mesh(scene->orbits_shader) { 
     tle = t;
 
-    int size = tle.size();
-    base.resize(size);
-    semi_major_axis.resize(size);
-    semi_minor_axis.resize(size);
-    // linear_eccentricity.resize(size);
-    // real_time_mean_anomaly.resize(size);
-    epoch.resize(size);
-    true_anomaly.resize(size);
-    true_anomaly_index.resize(size);
-    offset.resize(size);
-    pos.resize(size);
-    angle.resize(size);
-    flag.resize(size);
-
     build();
-    for (int i = 0; i < size; i++) {
-        build_orbit(i);
-        flag[i] = 1;
-    }
-
     manage_buffers();
 }
 
 void Orbits::build() {
-
     lines.clear();
     lines_colors.clear();
 
@@ -47,6 +27,23 @@ void Orbits::build() {
     }
     lines.push_back(lines[0]);
     lines_colors.push_back(glm::vec4(M_PI*2, 0.0f, 0.0f, 0.0f));
+
+    int size = tle.size();
+    base.resize(size);
+    semi_major_axis.resize(size);
+    semi_minor_axis.resize(size);
+    epoch.resize(size);
+    true_anomaly.resize(size);
+    true_anomaly_index.resize(size);
+    offset.resize(size);
+    pos.resize(size);
+    angle.resize(size);
+    flag.resize(size);
+
+    for (int i = 0; i < tle.size(); i++) {
+        build_orbit(i);
+        flag[i] = 1;
+    }
 }
 
 void Orbits::build_orbit(int i) {
@@ -248,8 +245,6 @@ void Orbits::debug() {
                 ImGui::Spacing();
                 ImGui::Text("Semi major axis: %f", semi_major_axis[i]);
                 ImGui::Text("Semi minor axis: %f", semi_minor_axis[i]);
-                // ImGui::Text("Linear eccentricity: %f", linear_eccentricity[i]);
-                // ImGui::Text("Mean anomaly: %f", real_time_mean_anomaly[i]);
                 ImGui::Text("True anomaly: %f", true_anomaly[i]);
                 ImGui::Text("True to mean anomalies:");
                 ImGui::PlotLines("", true_anomaly_index[i].begin(), 360, 0, NULL, 0, M_PI * 2, ImVec2(0, 80));
@@ -271,4 +266,15 @@ void Orbits::debug() {
 glm::vec3 &Orbits::get_camera_center() {
     compute_along_orbit(following);
     return pos[following];
+}
+
+void Orbits::on_signal(Signal s) {
+    fmt::print("orbits on signal\n");
+    if (s != Signal::SAT_DATA_UPDATE) return;
+    fmt::print("orbits on signal\n");
+
+    tle = scene->db.get_all_tle();
+
+    build();
+    manage_buffers();
 }

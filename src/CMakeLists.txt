@@ -34,6 +34,7 @@ target_sources(main PUBLIC
         ${PROJECT_SOURCE_DIR}/include/scene/camera_anchor.hpp
         ${PROJECT_SOURCE_DIR}/include/scene/scene.hpp
         ${PROJECT_SOURCE_DIR}/include/scene/time.hpp
+        ${PROJECT_SOURCE_DIR}/include/scene/signal.hpp
 
         ${PROJECT_SOURCE_DIR}/include/data/db_manager.hpp
 

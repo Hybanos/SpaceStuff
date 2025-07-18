@@ -45,6 +45,14 @@ float Scene::get_ratio() {
 void Scene::render() {
     auto t1 = high_resolution_clock::now();
 
+    while (db.signals.size()) {
+        fmt::print("scene: {} signals\n", db.signals.size());
+        Signal s = db.signals[db.signals.size() - 1]; 
+        db.signals.pop_back();
+        fmt::print("scene: {} signals\n", db.signals.size());
+        for (Object *obj : objects) obj->on_signal(s);
+    }
+
     projection = glm::perspective(glm::radians(80.0f), get_ratio(), 0.1f, 100000000.0f);
     view = camera->get_view();
     model = glm::mat4(1.0);
@@ -55,6 +63,8 @@ void Scene::render() {
     triangles_t_drawn = 0;
 
     for (Object * obj : objects) {
+       
+
         obj->draw();
     }
     frames++;

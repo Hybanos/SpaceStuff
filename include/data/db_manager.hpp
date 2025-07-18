@@ -13,6 +13,7 @@
 #include "imgui_impl_sdl3.h"
 
 #include "data/tle.hpp"
+#include "scene/signal.hpp"
 
 class DBManager {
     private:
@@ -22,6 +23,8 @@ class DBManager {
         void init();
         void update_debug_vectors();
     public:
+        std::vector<Signal> signals;
+
         DBManager();
         ~DBManager();
 
