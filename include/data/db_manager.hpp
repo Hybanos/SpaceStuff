@@ -40,6 +40,8 @@ class DBManager {
 
         // ssd
         void ingest_major_bodies();
+        std::vector<MajorBody> get_all_major_bodies();
+        MajorBody get_ephemeris(int id);
 
         void debug();
 };

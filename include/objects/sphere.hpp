@@ -19,7 +19,7 @@ class Sphere : virtual public Object{
         float normalise_amount = 1.0f;
         void manage_buffers();
     public:
-        Sphere(Scene *s, std::string path, Object *p = nullptr);
+        Sphere(Scene *s, std::string path);
         void draw();
         void build();
         void debug();

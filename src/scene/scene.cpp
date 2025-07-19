@@ -14,7 +14,7 @@ Scene::Scene(SDL_Window *_window) {
     objects.push_back(new Sphere(this, "assets/cubemaps/earth"));
 
     std::vector<TLE> t = db.get_all_tle();
-    objects.push_back(new Orbits(this, t, objects[2]));
+    objects.push_back(new Orbits(this, t));
     
     camera->look_at(glm::vec3(0, 0, 0));
     camera->update_pos();
@@ -73,10 +73,27 @@ void Scene::render() {
     ttr = (t2 - t1).count();
 }
 
+void Scene::build_solar_system() {
+
+    // std::vector<MajorBody> v = db.get_all_major_bodies();
+
+    // for (auto &b : v) {
+    //     int id = b.major_body_id;
+    //     if (id < 0) continue;
+    //     if (id < 10) {
+    //         objects.push_back(new Barycenter(this));
+    //     } else {
+    //     }
+    // }
+
+    Object * tmp = new Barycenter(this, 0);
+
+}
+
 void Scene::debug() {
     int id = 0;
     ImGui::Begin("Scene debug");
-    if (ImGui::Button("HAHAHAHAHA")) db.ingest_major_bodies();
+    if (ImGui::Button("HAHAHAHAHA")) db.get_ephemeris(399);
     ImGui::SeparatorText("SCENE");
     ImGui::Text("Time to render: %fms", ttr / 1e6);
     ImGui::Text("Frames: %ld.", frames);

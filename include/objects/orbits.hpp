@@ -44,7 +44,7 @@ class Orbits : virtual public Object, virtual public CameraAnchor {
 
         void manage_buffers();
     public:
-        Orbits(Scene *, std::vector<TLE>& t, Object *p = nullptr);
+        Orbits(Scene *, std::vector<TLE>& t);
 
         void build_orbit(int i);
         void build();

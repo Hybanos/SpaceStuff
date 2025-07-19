@@ -24,18 +24,15 @@ class Scene;
 class Object {
     protected:
         Scene *scene = nullptr;
-        Object *parent = nullptr;
+        glm::vec3 pos = glm::vec3(0);
+        std::vector<Object *> children;
     public:
 
-        Object(Scene *s, Object *p = nullptr) : scene{s}, parent{p} {}
+        Object(Scene *s) : scene{s} {}
 
         virtual void draw() = 0;
         virtual void debug() = 0;
-        virtual glm::vec3 get_pos() {
-            if (parent != nullptr) {
-                return parent->get_pos();
-            }
-            return glm::vec3(0);
-        }
+
         virtual void on_signal(Signal s) {} 
+        void add_child(Object * c) {children.push_back(c);}
 };

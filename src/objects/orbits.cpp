@@ -4,8 +4,8 @@
 using std::chrono::nanoseconds;
 using std::chrono::high_resolution_clock;
 
-Orbits::Orbits(Scene *s, std::vector<TLE>& t, Object *p) : 
-Object(s, p),
+Orbits::Orbits(Scene *s, std::vector<TLE>& t) : 
+Object(s),
 mesh(scene->orbits_shader) { 
     tle = t;
 
@@ -179,7 +179,7 @@ void Orbits::draw() {
     manage_buffers();
 
     mesh.set_mat4("MVP", scene->mvp);
-    mesh.set_vec3("pos", get_pos());
+    mesh.set_vec3("pos", glm::vec3(0));
     mesh.draw_instanced(GL_LINE_STRIP, 0, lines.size(), tle.size());
     scene->lines_drawn += lines.size() * tle.size();
 

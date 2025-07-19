@@ -4,15 +4,27 @@
 #include <sstream>
 #include <vector>
 #include <iostream>
+#include <regex>
 
 struct MajorBody {
     int major_body_id;
     std::string name;
     std::string designation;
     std::string alias;
-    float mass;
-    float heliocentric_gravitaional_constant;
-    float radius;
+    double mass;
+    double heliocentric_gravitaional_constant;
+    double radius;
+};
+
+struct EphemerisLine {
+    double julian_day_number;
+    int timestamp;
+    double x;
+    double y;
+    double z;
+    double vx;
+    double vy;
+    double vz;
 };
 
 inline std::vector<MajorBody> parse_major_bodies(std::string t) {
@@ -35,4 +47,47 @@ inline std::vector<MajorBody> parse_major_bodies(std::string t) {
     }
 
     return v;
+}
+
+static std::regex mass_regex(R"(Mass x10\^(\d+) \(kg\)=\s*([\d\.]+)\D)");
+static std::regex hgc_regex(R"(GM, km\^3\/s\^2\s*=\s*([\d.]*)\D)");
+static std::regex radius_regex(R"(radius, km\s*=\s*([\d.]*)\D)");
+
+// scientific notation regex
+static std::string sn = R"(-?\d+\.\d+(?:E[\+-]\d+)?)";
+static std::string date = R"(.... \d\d\d\d-\w\w\w-\d\d \d\d:\d\d:\d\d\.\d\d\d\d)";
+static std::regex ephemeris_line_regex(fmt::format(R"(({}),\s*({}),\s*({}),\s*({}),\s*({}),\s*({}),\s*({}),\s*({}))",
+    sn, date, sn, sn, sn, sn, sn, sn
+));
+inline void parse_ephemeris(std::string t, MajorBody &body, std::vector<EphemerisLine> &lines) {
+    std::istringstream text(t);
+    std::string l;
+   
+    std::smatch matches;
+    while (std::getline(text, l)) {
+        if (std::regex_search(l, matches, mass_regex)) {
+           body.mass = std::stod(matches[2]) * std::pow(10, std::stoi(matches[1]));
+        }
+        if (std::regex_search(l, matches, hgc_regex)) {
+           body.heliocentric_gravitaional_constant = std::stod(matches[1]) * 1e9; 
+        }
+        if (std::regex_search(l, matches, radius_regex)) {
+           body.radius = std::stod(matches[1]); 
+        }
+        if (std::regex_search(l, matches, ephemeris_line_regex)) {
+            EphemerisLine e;
+            e.julian_day_number = std::stod(matches[1]);
+            e.timestamp = std::stod(matches[2]);
+            e.x = std::stod(matches[3]);
+            e.y = std::stod(matches[4]);
+            e.z = std::stod(matches[5]);
+            e.vx = std::stod(matches[6]);
+            e.vy = std::stod(matches[7]);
+            e.vz = std::stod(matches[8]);
+            lines.push_back(e);
+        }
+    }
+    // std::cout << b.mass << std::endl;
+    // std::cout << b.radius << std::endl;
+    // std::cout << b.heliocentric_gravitaional_constant << std::endl;
 }

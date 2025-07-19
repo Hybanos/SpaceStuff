@@ -1,8 +1,8 @@
 #include "objects/sphere.hpp"
 #include "scene/scene.hpp"
 
-Sphere::Sphere(Scene *s, std::string path, Object *p) : 
-Object(s, p),
+Sphere::Sphere(Scene *s, std::string path) : 
+Object(s),
 mesh(scene->texture_shader) {
     mesh.gen_cubemap(path);
     build();
@@ -90,7 +90,7 @@ void Sphere::draw() {
     mesh.set_mat4("MVP", mvp);
     mesh.set_mat3("rota", rota);
     mesh.set_int("flip", 0);
-    mesh.set_vec3("pos", get_pos());
+    mesh.set_vec3("pos", pos);
 
     mesh.draw_cubemap(GL_TRIANGLES, 0, triangles.size() * 3);
 }
@@ -112,13 +112,4 @@ void Sphere::debug() {
         ImGui::Text("\t%f\t%f\t%f", rota[0][2], rota[1][2], rota[2][2]);
         ImGui::Text("Rotation angle (deg): %f", acos(rota[0][0]) * (180 / M_PI)); 
     }
-}
-
-glm::vec3 Sphere::get_pos() {
-    // glm::vec3 offset = glm::vec3(0, scene->frames * 3, 0);
-    glm::vec3 offset = glm::vec3(0);
-    if (parent != nullptr) {
-        return parent->get_pos() + offset;
-    }
-    return offset;
 }

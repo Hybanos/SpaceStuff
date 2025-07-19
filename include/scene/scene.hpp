@@ -7,6 +7,7 @@
 #include "objects/skybox.hpp"
 #include "objects/grid.hpp"
 #include "objects/orbits.hpp"
+#include "objects/barycenter.hpp"
 #include "data/db_manager.hpp"
 #include "render/shader.hpp"
 
@@ -51,6 +52,8 @@ class Scene {
         float get_ratio();
         int get_width();
         int get_height();
+
+        void build_solar_system();
 
         void render();
         void debug();

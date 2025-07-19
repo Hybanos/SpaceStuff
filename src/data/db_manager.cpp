@@ -331,6 +331,67 @@ void DBManager::ingest_major_bodies() {
     }
 }
 
+std::vector<MajorBody> DBManager::get_all_major_bodies() {
+    std::vector<MajorBody> v;
+
+    std::string query = "SELECT * FROM MajorBodies;";
+    sqlite3_stmt *statement;
+    sqlite3_prepare_v3(db, query.c_str(), query.size(), 0, &statement, NULL);
+    while(sqlite3_step(statement) == SQLITE_ROW) {
+        MajorBody b;
+
+        b.major_body_id = sqlite3_column_int(statement, 0);
+        b.name = reinterpret_cast<const char *>(sqlite3_column_text(statement, 1));
+        b.designation = reinterpret_cast<const char *>(sqlite3_column_text(statement, 2));
+        b.alias = reinterpret_cast<const char *>(sqlite3_column_text(statement, 3));
+        b.mass = sqlite3_column_double(statement, 4);
+        b.heliocentric_gravitaional_constant = sqlite3_column_double(statement, 5);
+        b.radius = sqlite3_column_double(statement, 6);
+
+        v.push_back(b);
+    }
+    sqlite3_finalize(statement);
+
+    return v;
+}
+
+MajorBody DBManager::get_ephemeris(int id) {
+    cpr::Response r = cpr::Get(cpr::Url("https://ssd.jpl.nasa.gov/api/horizons.api"), 
+        cpr::Parameters{
+            {"format", "text"},
+            {"MAKE_EPHEM", "YES"},
+            {"COMMAND", std::to_string(id)},
+            {"EPHEM_TYPE", "VECTORS"},
+            {"CENTER", "'500@0'"},
+            {"START_TIME", "'2025-07-19'"},
+            {"STOP_TIME", "'2025-07-20'"},
+            {"STEP_SIZE", "'1 DAYS'"},
+            {"VEC_TABLE", "'2'"},
+            {"REF_SYSTEM", "'ICRF'"},
+            {"REF_PLANE", "'ECLIPTIC'"},
+            {"VEC_CORR", "'NONE'"},
+            {"CAL_TYPE", "'M'"},
+            {"OUT_UNITS", "'KM-S'"},
+            {"VEC_LABELS", "'YES'"},
+            {"VEC_DELTA_T", "'NO'"},
+            {"CSV_FORMAT", "'YES'"},
+            {"OBJ_DATA", "'YES'"},
+        },
+        cpr::Timeout(30000)
+    );
+    std::cout << r.url << std::endl;
+
+    MajorBody body;
+    std::vector<EphemerisLine> ephemeris_lines;
+    if (r.status_code == 200) {
+        parse_ephemeris(r.text, body, ephemeris_lines);
+    } else {
+        fmt::print("Got status code {} from Horizons System.\n", r.status_code);
+    }
+
+    return body;
+}
+
 void DBManager::update_debug_vectors() {
     group_names.clear();
     group_pull_times.clear();
