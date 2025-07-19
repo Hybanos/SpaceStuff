@@ -24,7 +24,6 @@ void DBManager::init() {
 
         query = fmt::format("INSERT INTO Meta (key, val) VALUES"
             "('CREATE_TIME', {}),"
-            "('DATA_PULL_TIME', -1)"
         ";", time(NULL));
         sqlite3_exec(db, query.data(), NULL, NULL, NULL);
     }
@@ -123,6 +122,7 @@ void DBManager::init() {
     }
     sqlite3_finalize(statement);
 
+    // TODO: change group_name to group_id for joins
     query = R"(CREATE TABLE IF NOT EXISTS SatGroup (
         cat_number INTEGER,
         group_name TEXT,
@@ -132,7 +132,16 @@ void DBManager::init() {
     );)";
     sqlite3_exec(db, query.data(), NULL, NULL, NULL);
 
-    // ingest_tle_group("stations");
+    query = R"(CREATE TABLE IF NOT EXISTS MajorBodies (
+        major_body_id INTEGER PRIMARY KEY,
+        name TEXT,
+        designation TEXT,
+        alias TEXT,
+        mass REAL,
+        heliocentric_gravitational_constant REAL,
+        radius REAL
+    );)";
+    sqlite3_exec(db, query.data(), NULL, NULL, NULL);
 }
 
 void DBManager::set_meta(std::string key, int val) {
@@ -282,6 +291,44 @@ std::vector<TLE> DBManager::get_all_tle() {
     }
     sqlite3_finalize(statement);
     return TLEs;
+}
+
+void DBManager::ingest_major_bodies() {
+    cpr::Response r = cpr::Get(cpr::Url("https://ssd.jpl.nasa.gov/api/horizons.api?format=text&COMMAND=MB"), cpr::Timeout(30000));
+
+    if (r.status_code == 200) {
+        std::vector<MajorBody> v = parse_major_bodies(r.text);
+
+        sqlite3_exec(db, "BEGIN TRANSACTION;", NULL, NULL, NULL);
+
+        std::string query;
+        for (auto &b : v) {
+            query = fmt::format(R"(INSERT OR REPLACE INTO MajorBodies (
+                major_body_id,
+                name,
+                designation,
+                alias,
+                mass,
+                heliocentric_gravitational_constant,
+                radius
+            ) VALUES ({}, '{}', '{}', '{}', {}, {}, {});)", 
+                b.major_body_id,
+                b.name,
+                b.designation,
+                b.alias,
+                -1.0f,
+                -1.0f,
+                -1.0f
+            );
+
+            sqlite3_exec(db, query.c_str(), NULL, NULL, NULL);
+        }
+
+        sqlite3_exec(db, "END TRANSACTION;", NULL, NULL, NULL);
+
+    } else {
+        fmt::print("Got status code {} from Horizons System.\n", r.status_code);
+    }
 }
 
 void DBManager::update_debug_vectors() {

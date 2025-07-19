@@ -66,4 +66,12 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(cpr)
 
+FetchContent_Declare(
+    json 
+    GIT_REPOSITORY
+    https://github.com/nlohmann/json.git
+    GIT_TAG v3.12.0
+)
+FetchContent_MakeAvailable(json)
+
 add_subdirectory(src)

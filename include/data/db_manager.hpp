@@ -13,6 +13,7 @@
 #include "imgui_impl_sdl3.h"
 
 #include "data/tle.hpp"
+#include "data/horizons.hpp"
 #include "scene/signal.hpp"
 
 class DBManager {
@@ -30,10 +31,15 @@ class DBManager {
 
         void set_meta(std::string key, int val);
         int get_meta(std::string key);
+        // sat
         void set_group_pull_time(std::string group, int val);
         int get_group_pull_time(std::string group);
         void ingest_tle_group(std::string group_name);
         void ingest_tle(TLE t, std::string group);
         std::vector<TLE> get_all_tle();
+
+        // ssd
+        void ingest_major_bodies();
+
         void debug();
 };

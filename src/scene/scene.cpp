@@ -76,6 +76,7 @@ void Scene::render() {
 void Scene::debug() {
     int id = 0;
     ImGui::Begin("Scene debug");
+    if (ImGui::Button("HAHAHAHAHA")) db.ingest_major_bodies();
     ImGui::SeparatorText("SCENE");
     ImGui::Text("Time to render: %fms", ttr / 1e6);
     ImGui::Text("Frames: %ld.", frames);
