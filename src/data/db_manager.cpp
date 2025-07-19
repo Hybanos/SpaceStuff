@@ -59,6 +59,8 @@ void DBManager::init() {
         sqlite3_exec(db, query.data(), NULL, NULL, NULL);
 
             //  ('active'),
+            //  ('gpz'),
+            //  ('gpz-plus'),
         query = R"(INSERT INTO Groups (group_name) VALUES
              ('last-30-days'),
              ('stations'),
@@ -72,8 +74,8 @@ void DBManager::init() {
              ('weather'),
              ('noaa'),
              ('goes'),
-             ('resources'),
-             ('sarcat'),
+             ('resource'),
+             ('sarsat'),
              ('dmc'),
              ('tdrss'),
              ('argos'),
@@ -81,8 +83,6 @@ void DBManager::init() {
              ('spire'),
 
              ('geo'),
-             ('gpz'),
-             ('gpz-plus'),
              ('intelsat'),
              ('ses'),
              ('eutelsat'),

@@ -4,6 +4,8 @@ project(SpaceStuff LANGUAGES CXX)
 include(FetchContent)
 include(ExternalProject)
 
+# TODO: install those properly if not on system
+# TODO: needs sqlite3 headers and lib (libsqlite3-dev on debian) 
 find_package(OpenGL REQUIRED)
 find_package(SQLite3 REQUIRED)
 
