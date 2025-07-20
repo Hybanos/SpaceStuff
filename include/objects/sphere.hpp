@@ -4,7 +4,7 @@
 #include "objects/object.hpp"
 #include "render/mesh.hpp"
 
-class Sphere : virtual public Object{
+class Sphere : virtual public Object, virtual public CameraAnchor {
     private:
         std::vector<glm::vec3> triangles;
         std::vector<glm::vec3> triangles_colors;
@@ -20,10 +20,11 @@ class Sphere : virtual public Object{
         void manage_buffers();
     public:
         Sphere(Scene *s, std::string path);
+        Sphere(Scene *s, int _id);
         void draw();
         void build();
         void debug();
-        glm::vec3 get_pos();
+        glm::vec3 &get_camera_center();
 };
 
 #endif

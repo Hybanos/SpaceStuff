@@ -142,6 +142,20 @@ void DBManager::init() {
         radius REAL
     );)";
     sqlite3_exec(db, query.data(), NULL, NULL, NULL);
+    ingest_major_bodies();
+
+    query = R"(CREATE TABLE IF NOT EXISTS BodyEphemerides (
+        body_id INTEGER,
+        timestamp INGEGER,
+        x REAL,
+        y REAL,
+        z REAL,
+        vx REAL,
+        vy REAL,
+        vz REAL,
+        PRIMARY KEY (body_id, timestamp)
+    );)";
+    sqlite3_exec(db, query.data(), NULL, NULL, NULL);
 }
 
 void DBManager::set_meta(std::string key, int val) {
@@ -294,6 +308,14 @@ std::vector<TLE> DBManager::get_all_tle() {
 }
 
 void DBManager::ingest_major_bodies() {
+    std::string query;
+    sqlite3_stmt *statement;
+
+    query = "SELECT * FROM MajorBodies;";
+
+    sqlite3_prepare_v3(db, query.c_str(), query.size(), 0, &statement, NULL);
+    if (sqlite3_step(statement) == SQLITE_ROW) return;
+
     cpr::Response r = cpr::Get(cpr::Url("https://ssd.jpl.nasa.gov/api/horizons.api?format=text&COMMAND=MB"), cpr::Timeout(30000));
 
     if (r.status_code == 200) {
@@ -301,27 +323,8 @@ void DBManager::ingest_major_bodies() {
 
         sqlite3_exec(db, "BEGIN TRANSACTION;", NULL, NULL, NULL);
 
-        std::string query;
         for (auto &b : v) {
-            query = fmt::format(R"(INSERT OR REPLACE INTO MajorBodies (
-                major_body_id,
-                name,
-                designation,
-                alias,
-                mass,
-                heliocentric_gravitational_constant,
-                radius
-            ) VALUES ({}, '{}', '{}', '{}', {}, {}, {});)", 
-                b.major_body_id,
-                b.name,
-                b.designation,
-                b.alias,
-                -1.0f,
-                -1.0f,
-                -1.0f
-            );
-
-            sqlite3_exec(db, query.c_str(), NULL, NULL, NULL);
+            ingest_major_body(b);
         }
 
         sqlite3_exec(db, "END TRANSACTION;", NULL, NULL, NULL);
@@ -329,6 +332,39 @@ void DBManager::ingest_major_bodies() {
     } else {
         fmt::print("Got status code {} from Horizons System.\n", r.status_code);
     }
+}
+
+void DBManager::ingest_major_body(MajorBody body) {
+    std::string query = fmt::format(R"(INSERT OR REPLACE INTO MajorBodies (
+        major_body_id,
+        name,
+        designation,
+        alias,
+        mass,
+        heliocentric_gravitational_constant,
+        radius
+    ) VALUES ({}, '{}', '{}', '{}', {}, {}, {});)", 
+        body.major_body_id,
+        body.name,
+        body.designation,
+        body.alias,
+        body.mass,
+        body.heliocentric_gravitaional_constant,
+        body.radius
+    );
+
+    sqlite3_exec(db, query.c_str(), NULL, NULL, NULL);
+}
+
+void DBManager::ingest_ephemeris(EphemerisLine line) {
+    std::string query = fmt::format(R"(INSERT OR REPLACE INTO BodyEphemerides (
+        body_id,
+        timestamp,
+        x, y, z, vx, vy, vz    
+    ) VALUES ({}, {}, {}, {}, {}, {}, {}, {});)", 
+        line.id, line.timestamp, line.x, line.y, line.z, line.vx, line.vy, line.vz
+    );
+    sqlite3_exec(db, query.c_str(), NULL, NULL, NULL);
 }
 
 std::vector<MajorBody> DBManager::get_all_major_bodies() {
@@ -356,6 +392,26 @@ std::vector<MajorBody> DBManager::get_all_major_bodies() {
 }
 
 MajorBody DBManager::get_ephemeris(int id) {
+    MajorBody body;
+    body.major_body_id = id;
+    // tmp
+    std::string query = fmt::format(R"(SELECT * FROM MajorBodies WHERE major_body_id={})", id);
+    sqlite3_stmt *statement;
+    sqlite3_prepare_v3(db, query.c_str(), query.size(), 0, &statement, NULL);
+    if (sqlite3_step(statement) == SQLITE_ROW) {
+        body.major_body_id = sqlite3_column_int(statement, 0);
+        body.name = reinterpret_cast<const char *>(sqlite3_column_text(statement, 1));
+        body.designation = reinterpret_cast<const char *>(sqlite3_column_text(statement, 2));
+        body.alias = reinterpret_cast<const char *>(sqlite3_column_text(statement, 3));
+        body.mass = sqlite3_column_double(statement, 4);
+        body.heliocentric_gravitaional_constant = sqlite3_column_double(statement, 5);
+        body.radius = sqlite3_column_double(statement, 6);
+
+        sqlite3_finalize(statement);
+        return body;
+    }
+    sqlite3_finalize(statement);
+
     cpr::Response r = cpr::Get(cpr::Url("https://ssd.jpl.nasa.gov/api/horizons.api"), 
         cpr::Parameters{
             {"format", "text"},
@@ -381,15 +437,41 @@ MajorBody DBManager::get_ephemeris(int id) {
     );
     std::cout << r.url << std::endl;
 
-    MajorBody body;
     std::vector<EphemerisLine> ephemeris_lines;
     if (r.status_code == 200) {
         parse_ephemeris(r.text, body, ephemeris_lines);
+        sqlite3_exec(db, "BEGIN TRANSACTION;", NULL, NULL, NULL);
+        ingest_major_body(body);
+        for (auto &l : ephemeris_lines) {
+            ingest_ephemeris(l);
+        }
+        sqlite3_exec(db, "END TRANSACTION;", NULL, NULL, NULL);
     } else {
         fmt::print("Got status code {} from Horizons System.\n", r.status_code);
     }
 
     return body;
+}
+
+EphemerisLine DBManager::get_ephemeris_line(int id) {
+    std::string query = fmt::format(R"(SELECT * FROM BodyEphemerides WHERE body_id={})", id);
+    sqlite3_stmt *statement;
+    EphemerisLine line;
+
+    sqlite3_prepare_v3(db, query.c_str(), query.size(), 0, &statement, NULL);
+    while(sqlite3_step(statement) == SQLITE_ROW) {
+        line.id = id;
+        line.timestamp = sqlite3_column_int(statement, 1);
+        line.x = sqlite3_column_double(statement, 2);
+        line.y = sqlite3_column_double(statement, 3);
+        line.z = sqlite3_column_double(statement, 4);
+        line.vx = sqlite3_column_double(statement, 5);
+        line.vy = sqlite3_column_double(statement, 6);
+        line.vz = sqlite3_column_double(statement, 7);
+    }
+    sqlite3_finalize(statement);
+
+    return line;
 }
 
 void DBManager::update_debug_vectors() {

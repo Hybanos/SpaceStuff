@@ -11,10 +11,11 @@ Scene::Scene(SDL_Window *_window) {
 
     objects.push_back(new SkyBox(this));
     objects.push_back(new Grid(this));
-    objects.push_back(new Sphere(this, "assets/cubemaps/earth"));
+    build_solar_system();
+    // objects.push_back(new Sphere(this, "assets/cubemaps/earth"));
 
-    std::vector<TLE> t = db.get_all_tle();
-    objects.push_back(new Orbits(this, t));
+    // std::vector<TLE> t = db.get_all_tle();
+    // objects.push_back(new Orbits(this, t));
     
     camera->look_at(glm::vec3(0, 0, 0));
     camera->update_pos();
@@ -75,19 +76,11 @@ void Scene::render() {
 
 void Scene::build_solar_system() {
 
-    // std::vector<MajorBody> v = db.get_all_major_bodies();
-
-    // for (auto &b : v) {
-    //     int id = b.major_body_id;
-    //     if (id < 0) continue;
-    //     if (id < 10) {
-    //         objects.push_back(new Barycenter(this));
-    //     } else {
-    //     }
-    // }
-
-    Object * tmp = new Barycenter(this, 0);
-
+    objects.push_back(new Sphere(this, 10));
+    objects.push_back(new Sphere(this, 199));
+    objects.push_back(new Sphere(this, 299));
+    objects.push_back(new Sphere(this, 399));
+    objects.push_back(new Sphere(this, 301));
 }
 
 void Scene::debug() {

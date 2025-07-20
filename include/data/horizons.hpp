@@ -17,8 +17,9 @@ struct MajorBody {
 };
 
 struct EphemerisLine {
+    int id;
+    long timestamp;
     double julian_day_number;
-    int timestamp;
     double x;
     double y;
     double z;
@@ -65,6 +66,7 @@ inline void parse_ephemeris(std::string t, MajorBody &body, std::vector<Ephemeri
    
     std::smatch matches;
     while (std::getline(text, l)) {
+        std::cout << l << std::endl;
         if (std::regex_search(l, matches, mass_regex)) {
            body.mass = std::stod(matches[2]) * std::pow(10, std::stoi(matches[1]));
         }
@@ -76,8 +78,13 @@ inline void parse_ephemeris(std::string t, MajorBody &body, std::vector<Ephemeri
         }
         if (std::regex_search(l, matches, ephemeris_line_regex)) {
             EphemerisLine e;
+            e.id = body.major_body_id;
             e.julian_day_number = std::stod(matches[1]);
-            e.timestamp = std::stod(matches[2]);
+            std::tm tm = {};
+            // A.D. 2025-Jul-19 00:00:00.000
+            std::cout << matches[2] << std::endl;
+            std::stringstream(matches[2]) >> std::get_time(&tm, "A.D. %Y-%b-%d %H:%M:%S.0000");
+            e.timestamp = std::chrono::high_resolution_clock::from_time_t(std::mktime(&tm)).time_since_epoch().count();
             e.x = std::stod(matches[3]);
             e.y = std::stod(matches[4]);
             e.z = std::stod(matches[5]);

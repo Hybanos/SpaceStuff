@@ -18,6 +18,7 @@
 #include <imgui_impl_sdl3.h>
 
 #include "scene/signal.hpp"
+#include "scene/camera_anchor.hpp"
 
 class Scene;
 
@@ -26,6 +27,9 @@ class Object {
         Scene *scene = nullptr;
         glm::vec3 pos = glm::vec3(0);
         std::vector<Object *> children;
+
+        // horizons system body id;
+        int id = 0;
     public:
 
         Object(Scene *s) : scene{s} {}

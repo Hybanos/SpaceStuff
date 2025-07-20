@@ -9,6 +9,25 @@ mesh(scene->texture_shader) {
     manage_buffers();
 }
 
+Sphere::Sphere(Scene *s, int _id) : 
+Object(s),
+mesh(scene->texture_shader) {
+    id = _id;
+
+    MajorBody body = scene->db.get_ephemeris(id);
+    fmt::print("got body {}\n", body.name);
+    size = body.radius;
+    mesh.gen_cubemap("assets/cubemaps/earth");
+    EphemerisLine line = scene->db.get_ephemeris_line(id);
+
+    std::cout << line.x << " " << line.y << " " << line.z << std::endl;
+
+    pos = glm::vec3(line.x, line.y, line.z);
+
+    build();
+    manage_buffers();
+}
+
 void Sphere::build() {
     triangles.clear();
     triangles_colors.clear();
@@ -101,6 +120,7 @@ void Sphere::manage_buffers() {
 
 void Sphere::debug() {
     if (ImGui::CollapsingHeader("Sphere")) {
+        if (ImGui::Button("Follow")) scene->camera->set_anchor(this);
         ImGui::Checkbox("Draw", &d_draw);
         ImGui::Checkbox("Build each frame", &rebuild);
         ImGui::SliderInt("Resolution:", &resolution, 2, 100);
@@ -112,4 +132,8 @@ void Sphere::debug() {
         ImGui::Text("\t%f\t%f\t%f", rota[0][2], rota[1][2], rota[2][2]);
         ImGui::Text("Rotation angle (deg): %f", acos(rota[0][0]) * (180 / M_PI)); 
     }
+}
+
+glm::vec3 &Sphere::get_camera_center() {
+    return pos;
 }
