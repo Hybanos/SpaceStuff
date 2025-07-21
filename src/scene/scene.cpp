@@ -54,7 +54,7 @@ void Scene::render() {
         for (Object *obj : objects) obj->on_signal(s);
     }
 
-    projection = glm::perspective(glm::radians(80.0f), get_ratio(), 0.1f, 100000000.0f);
+    projection = glm::perspective(glm::radians(80.0f), get_ratio(), 10.0f, 100000000.0f);
     view = camera->get_view();
     model = glm::mat4(1.0);
     mvp = projection * view * model;
@@ -80,13 +80,22 @@ void Scene::build_solar_system() {
     objects.push_back(new Sphere(this, 199));
     objects.push_back(new Sphere(this, 299));
     objects.push_back(new Sphere(this, 399));
-    objects.push_back(new Sphere(this, 301));
+        objects.push_back(new Sphere(this, 301));
+    objects.push_back(new Sphere(this, 499));
+    objects.push_back(new Sphere(this, 599));
+        objects.push_back(new Sphere(this, 501));
+        objects.push_back(new Sphere(this, 502));
+        objects.push_back(new Sphere(this, 503));
+        objects.push_back(new Sphere(this, 504));
+    objects.push_back(new Sphere(this, 699));
+    objects.push_back(new Sphere(this, 799));
+    objects.push_back(new Sphere(this, 899));
 }
 
 void Scene::debug() {
     int id = 0;
     ImGui::Begin("Scene debug");
-    if (ImGui::Button("HAHAHAHAHA")) db.get_ephemeris(399);
+    // if (ImGui::Button("HAHAHAHAHA")) db.get_ephemeris(399);
     ImGui::SeparatorText("SCENE");
     ImGui::Text("Time to render: %fms", ttr / 1e6);
     ImGui::Text("Frames: %ld.", frames);

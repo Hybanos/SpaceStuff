@@ -2,6 +2,8 @@
 
 #include <iostream>
 #include <vector>
+#include <filesystem>
+#include <cctype>
 
 #include "glm/glm.hpp"
 #include "GL/glew.h"

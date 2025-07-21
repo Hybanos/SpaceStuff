@@ -30,6 +30,7 @@ class Object {
 
         // horizons system body id;
         int id = 0;
+        std::string display_name;
     public:
 
         Object(Scene *s) : scene{s} {}
@@ -39,4 +40,5 @@ class Object {
 
         virtual void on_signal(Signal s) {} 
         void add_child(Object * c) {children.push_back(c);}
+        void set_pos(glm::vec3 p) {pos = p;}
 };

@@ -58,6 +58,8 @@ SkyBox::SkyBox(Scene *s) : Object(s), mesh(scene->texture_shader) {
         glm::vec3(1.0f, -1.0f,  1.0f)
     };
 
+    for (auto &v : triangles) v = v * 100.0f;
+
     rota = glm::mat3(
         glm::vec3(1, 0, 0),
         glm::vec3(0, 1, 0),

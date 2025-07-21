@@ -39,6 +39,12 @@ void Mesh::draw_instanced(GLenum type, int first, size_t count, size_t total) {
 }
 
 void Mesh::gen_cubemap(std::string path) {
+    std::transform(path.begin(), path.end(), path.begin(), [](unsigned char c){return std::tolower(c);}); // help
+    if (! std::filesystem::exists("./" + path)) {
+        std::cout << "could not find " << path << std::endl;
+        path = "assets/cubemaps/earth";
+    }
+
     glGenTextures(1, &texture);
     glBindVertexArray(VAO);
     glBindTexture(GL_TEXTURE_CUBE_MAP, texture);

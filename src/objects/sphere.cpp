@@ -7,6 +7,8 @@ mesh(scene->texture_shader) {
     mesh.gen_cubemap(path);
     build();
     manage_buffers();
+
+    display_name = "Sphere";
 }
 
 Sphere::Sphere(Scene *s, int _id) : 
@@ -14,15 +16,17 @@ Object(s),
 mesh(scene->texture_shader) {
     id = _id;
 
-    MajorBody body = scene->db.get_ephemeris(id);
+    EphemerisLine line = scene->db.get_ephemeris_line(id);
+    MajorBody body = scene->db.get_major_body(id);
     fmt::print("got body {}\n", body.name);
     size = body.radius;
-    mesh.gen_cubemap("assets/cubemaps/earth");
-    EphemerisLine line = scene->db.get_ephemeris_line(id);
+    display_name = body.name;
+    mesh.gen_cubemap("assets/cubemaps/" + body.name);
 
     std::cout << line.x << " " << line.y << " " << line.z << std::endl;
 
     pos = glm::vec3(line.x, line.y, line.z);
+    // pos = glm::vec3(0);
 
     build();
     manage_buffers();
@@ -119,7 +123,7 @@ void Sphere::manage_buffers() {
 }
 
 void Sphere::debug() {
-    if (ImGui::CollapsingHeader("Sphere")) {
+    if (ImGui::CollapsingHeader(display_name.c_str())) {
         if (ImGui::Button("Follow")) scene->camera->set_anchor(this);
         ImGui::Checkbox("Draw", &d_draw);
         ImGui::Checkbox("Build each frame", &rebuild);
