@@ -40,8 +40,9 @@ void Grid::draw() {
 }
 
 void Grid::debug() {
-    if (ImGui::CollapsingHeader("Grid")) {
+    if (ImGui::TreeNode("Grid")) {
         ImGui::Checkbox("Draw", &d_draw);
+        ImGui::TreePop();
     }
 
 }

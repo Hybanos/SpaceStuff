@@ -85,24 +85,18 @@ inline void parse_ephemeris(std::string t, MajorBody &body, std::vector<Ephemeri
         if (std::regex_search(l, matches, ephemeris_line_regex)) {
             EphemerisLine e;
             e.id = body.major_body_id;
-            // std::cout << matches[1] << std::endl;
-            // std::cout << matches[3] << " " << matches[4] << " " << matches[5] << " " << matches[6] << " " << matches[7] << " " << matches[8] << std::endl;
             e.julian_day_number = std::stod(matches[1]);
             std::tm tm = {};
-            // A.D. 2025-Jul-19 00:00:00.0000
-            // std::cout << matches[2] << std::endl;
             std::stringstream(matches[2]) >> std::get_time(&tm, "A.D. %Y-%b-%d %H:%M:%S.0000");
             e.timestamp = std::chrono::high_resolution_clock::from_time_t(std::mktime(&tm)).time_since_epoch().count();
+            // NOTE: Y and Z axis are swapped
             e.x = std::stod(matches[3]);
-            e.y = std::stod(matches[4]);
-            e.z = std::stod(matches[5]);
+            e.z = std::stod(matches[4]);
+            e.y = std::stod(matches[5]);
             e.vx = std::stod(matches[6]);
-            e.vy = std::stod(matches[7]);
-            e.vz = std::stod(matches[8]);
+            e.vz = std::stod(matches[7]);
+            e.vy = std::stod(matches[8]);
             lines.push_back(e);
         }
     }
-    // std::cout << b.mass << std::endl;
-    // std::cout << b.radius << std::endl;
-    // std::cout << b.heliocentric_gravitaional_constant << std::endl;
 }

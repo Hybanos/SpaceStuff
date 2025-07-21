@@ -23,7 +23,7 @@ class Orbits : virtual public Object, virtual public CameraAnchor {
         std::vector<float> true_anomaly;
         std::vector<std::array<float, 360>> true_anomaly_index;
         std::vector<glm::vec3> offset;
-        std::vector<glm::vec3> pos;
+        std::vector<glm::vec3> positions;
         std::vector<glm::vec2> angle;
         // TODO: switch flags to a proper bitmap
         std::vector<float> flag;
@@ -53,7 +53,7 @@ class Orbits : virtual public Object, virtual public CameraAnchor {
 
         void draw();
         void debug();
-        glm::vec3 &get_camera_center();
+        glm::vec3 get_camera_center();
 };
 
 #endif

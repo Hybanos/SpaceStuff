@@ -39,6 +39,6 @@ class Object {
         virtual void debug() = 0;
 
         virtual void on_signal(Signal s) {} 
-        void add_child(Object * c) {children.push_back(c);}
+        Object *add_child(Object * c) {children.push_back(c); return this;}
         void set_pos(glm::vec3 p) {pos = p;}
 };

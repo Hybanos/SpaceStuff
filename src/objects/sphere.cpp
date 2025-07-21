@@ -116,6 +116,10 @@ void Sphere::draw() {
     mesh.set_vec3("pos", pos);
 
     mesh.draw_cubemap(GL_TRIANGLES, 0, triangles.size() * 3);
+    for (auto c : children) {
+        c->set_pos(pos);
+        c->draw();
+    }
 }
 
 void Sphere::manage_buffers() {
@@ -123,7 +127,7 @@ void Sphere::manage_buffers() {
 }
 
 void Sphere::debug() {
-    if (ImGui::CollapsingHeader(display_name.c_str())) {
+    if (ImGui::TreeNode(display_name.c_str())) {
         if (ImGui::Button("Follow")) scene->camera->set_anchor(this);
         ImGui::Checkbox("Draw", &d_draw);
         ImGui::Checkbox("Build each frame", &rebuild);
@@ -135,9 +139,11 @@ void Sphere::debug() {
         ImGui::Text("\t%f\t%f\t%f", rota[0][1], rota[1][1], rota[2][1]);
         ImGui::Text("\t%f\t%f\t%f", rota[0][2], rota[1][2], rota[2][2]);
         ImGui::Text("Rotation angle (deg): %f", acos(rota[0][0]) * (180 / M_PI)); 
+        for (auto c : children) c->debug();
+        ImGui::TreePop();
     }
 }
 
-glm::vec3 &Sphere::get_camera_center() {
+glm::vec3 Sphere::get_camera_center() {
     return pos;
 }

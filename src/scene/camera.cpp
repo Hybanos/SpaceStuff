@@ -58,7 +58,8 @@ void Camera::set_anchor(CameraAnchor *a) {
 }
 
 void Camera::debug() {
-    ImGui::InputFloat3("Camera center", (float*) &anchor->get_camera_center());
+    glm::vec3 c = anchor->get_camera_center();
+    ImGui::InputFloat3("Camera center", (float *) &c);
     ImGui::InputFloat3("Camera position", (float*)&position);
     if (ImGui::Button("RESET")) {
         def.look_at(glm::vec3(0));

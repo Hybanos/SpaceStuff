@@ -44,7 +44,7 @@ class Camera {
  
         glm::mat4 get_view();
         glm::vec3 get_position() {return position;}
-        glm::vec3 &get_center() {return anchor->get_camera_center();}
+        glm::vec3 get_center() {return anchor->get_camera_center();}
         
 };
 

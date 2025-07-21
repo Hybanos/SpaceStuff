@@ -36,7 +36,7 @@ void Orbits::build() {
     true_anomaly.resize(size);
     true_anomaly_index.resize(size);
     offset.resize(size);
-    pos.resize(size);
+    positions.resize(size);
     angle.resize(size);
     flag.resize(size);
 
@@ -106,11 +106,11 @@ void Orbits::compute_along_orbit(int i) {
     glm::vec3 next = lines[(pos_index + 1) % (360)] * glm::vec3(semi_major_axis[i], 0, semi_minor_axis[i]) * base[i] + offset[i];
     
     // compute actual 3D position
-    pos[i] = inter * next + (1 - inter) * prev;
+    positions[i] = inter * next + (1 - inter) * prev;
 
     // compute pitch and yaw from earth center
-    float yaw = atan2(pos[i].z, pos[i].x);
-    float pitch = atan2(pos[i].y, sqrt(pos[i].x * pos[i].x + pos[i].z * pos[i].z));
+    float yaw = atan2(positions[i].z, positions[i].x);
+    float pitch = atan2(positions[i].y, sqrt(positions[i].x * positions[i].x + positions[i].z * positions[i].z));
 
     angle[i][0] = pitch;
     angle[i][1] = yaw;
@@ -179,7 +179,7 @@ void Orbits::draw() {
     manage_buffers();
 
     mesh.set_mat4("MVP", scene->mvp);
-    mesh.set_vec3("pos", glm::vec3(0));
+    mesh.set_vec3("pos", pos);
     mesh.draw_instanced(GL_LINE_STRIP, 0, lines.size(), tle.size());
     scene->lines_drawn += lines.size() * tle.size();
 
@@ -199,7 +199,7 @@ void Orbits::manage_buffers() {
 }
 
 void Orbits::debug() {
-    if (ImGui::CollapsingHeader("Orbits")) {
+    if (ImGui::TreeNode("Orbits")) {
         ImGui::Checkbox("Draw", &d_draw);
         ImGui::Text("Time to render: %fms", ttr / 1e6);
         ImGui::Text("Total orbits: %lld", tle.size());
@@ -218,7 +218,7 @@ void Orbits::debug() {
 
             if (! filter.PassFilter(tle[i].name.data())) continue;
 
-            if (ImGui::CollapsingHeader(fmt::format("{}##{}", tle[i].name, i).c_str())) {
+            if (ImGui::TreeNode(fmt::format("{}##{}", tle[i].name, i).c_str())) {
                 flag[i] = 2;
                 build_orbit(i);
                 manage_buffers();
@@ -247,25 +247,27 @@ void Orbits::debug() {
                 ImGui::Text("Semi minor axis: %f", semi_minor_axis[i]);
                 ImGui::Text("True anomaly: %f", true_anomaly[i]);
                 ImGui::Text("True to mean anomalies:");
-                ImGui::PlotLines("", true_anomaly_index[i].begin(), 360, 0, NULL, 0, M_PI * 2, ImVec2(0, 80));
+                ImGui::PlotLines("haha", true_anomaly_index[i].begin(), 360, 0, NULL, 0, M_PI * 2, ImVec2(0, 80));
                 ImGui::Spacing();
                 ImGui::Text("\tx\ty\tz");
                 ImGui::Text("\t%f\t%f\t%f", base[i][0][0], base[i][1][0], base[i][2][0]);
                 ImGui::Text("\t%f\t%f\t%f", base[i][0][1], base[i][1][1], base[i][2][1]);
                 ImGui::Text("\t%f\t%f\t%f", base[i][0][2], base[i][1][2], base[i][2][2]);
                 ImGui::Spacing();
-                ImGui::Text("x: %f, y:%f, z:%f", pos[i].x, pos[i].y, pos[i].z);
+                ImGui::Text("x: %f, y:%f, z:%f", positions[i].x, positions[i].y, positions[i].z);
                 ImGui::Text("pitch: %f yaw: %f", angle[i][0], angle[i][1]);
                 ImGui::Text("lat: %f lon: %f", angle[i][0] / M_PI * 180, angle[i][1] / M_PI * 180);
-                ImGui::Text("Altitude: %f", (float) glm::length(pos[i]) - 6371);
+                ImGui::Text("Altitude: %f", (float) glm::length(positions[i]) - 6371);
+                ImGui::TreePop();
             }
         }
+        ImGui::TreePop();
     }
 }
 
-glm::vec3 &Orbits::get_camera_center() {
+glm::vec3 Orbits::get_camera_center() {
     compute_along_orbit(following);
-    return pos[following];
+    return positions[following] + pos;
 }
 
 void Orbits::on_signal(Signal s) {

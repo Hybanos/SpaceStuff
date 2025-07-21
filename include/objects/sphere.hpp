@@ -24,7 +24,7 @@ class Sphere : virtual public Object, virtual public CameraAnchor {
         void draw();
         void build();
         void debug();
-        glm::vec3 &get_camera_center();
+        glm::vec3 get_camera_center();
 };
 
 #endif

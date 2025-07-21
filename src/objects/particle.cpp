@@ -52,9 +52,10 @@ void Particle::draw() {
 }
 
 void Particle::debug() {
-    if (ImGui::CollapsingHeader("Particle")) {
+    if (ImGui::TreeNode("Particle")) {
         ImGui::Checkbox("Draw", &d_draw);
         ImGui::Text("x: %f, y:%f, z:%f", pos.x, pos.y, pos.z);
+        ImGui::TreePop();
     }
 
 }

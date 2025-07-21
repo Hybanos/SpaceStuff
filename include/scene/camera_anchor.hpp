@@ -5,7 +5,7 @@
 class CameraAnchor {
     private:
     public:
-        virtual glm::vec3 &get_camera_center() = 0;
+        virtual glm::vec3 get_camera_center() = 0;
 };
 
 class SimpleAnchor : virtual public CameraAnchor {
@@ -16,7 +16,7 @@ class SimpleAnchor : virtual public CameraAnchor {
             center = c;
         }
 
-        glm::vec3 &get_camera_center() {
+        glm::vec3 get_camera_center() {
             return center;
         }
 };

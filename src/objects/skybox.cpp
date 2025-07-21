@@ -85,7 +85,8 @@ void SkyBox::draw() {
 }
 
 void SkyBox::debug() {
-    if (ImGui::CollapsingHeader("SkyBox")) {
+    if (ImGui::TreeNode("SkyBox")) {
         ImGui::Checkbox("Draw", &d_draw);
+        ImGui::TreePop();
     }
 }
