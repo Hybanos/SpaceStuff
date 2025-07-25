@@ -12,10 +12,6 @@ Scene::Scene(SDL_Window *_window) {
     objects.push_back(new SkyBox(this));
     objects.push_back(new Grid(this));
     build_solar_system();
-    // objects.push_back(new Sphere(this, "assets/cubemaps/earth"));
-
-    // std::vector<TLE> t = db.get_all_tle();
-    // objects.push_back(new Orbits(this, t));
     
     camera->look_at(glm::vec3(0, 0, 0));
     camera->update_pos();
@@ -54,7 +50,7 @@ void Scene::render() {
         for (Object *obj : objects) obj->on_signal(s);
     }
 
-    projection = glm::perspective(glm::radians(80.0f), get_ratio(), 10.0f, 100000000.0f);
+    projection = glm::perspective(glm::radians(80.0f), get_ratio(), 10.0f, 10000000000.0f);
     view = camera->get_view();
     model = glm::mat4(1.0);
     mvp = projection * view * model;

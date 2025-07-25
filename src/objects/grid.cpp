@@ -35,6 +35,7 @@ void Grid::draw() {
 
     if (d_draw) {
         mesh.set_mat4("MVP", scene->mvp);
+        mesh.set_vec3("pos", pos - scene->camera->get_center());
         mesh.draw(GL_TRIANGLES, 0, triangles.size() * 3);
     }
 }

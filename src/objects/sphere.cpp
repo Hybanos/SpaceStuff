@@ -113,7 +113,7 @@ void Sphere::draw() {
     mesh.set_mat4("MVP", mvp);
     mesh.set_mat3("rota", rota);
     mesh.set_int("flip", 0);
-    mesh.set_vec3("pos", pos);
+    mesh.set_vec3("pos", pos - scene->camera->get_center());
 
     mesh.draw_cubemap(GL_TRIANGLES, 0, triangles.size() * 3);
     for (auto c : children) {

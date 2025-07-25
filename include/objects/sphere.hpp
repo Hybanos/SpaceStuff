@@ -1,5 +1,4 @@
-#ifndef SPACESTUFF_SPHERE_HPP
-#define SPACESTUFF_SPHERE_HPP
+#pragma once
 
 #include "objects/object.hpp"
 #include "render/mesh.hpp"
@@ -26,5 +25,3 @@ class Sphere : virtual public Object, virtual public CameraAnchor {
         void debug();
         glm::vec3 get_camera_center();
 };
-
-#endif

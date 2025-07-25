@@ -179,7 +179,7 @@ void Orbits::draw() {
     manage_buffers();
 
     mesh.set_mat4("MVP", scene->mvp);
-    mesh.set_vec3("pos", pos);
+    mesh.set_vec3("pos", pos - scene->camera->get_center());
     mesh.draw_instanced(GL_LINE_STRIP, 0, lines.size(), tle.size());
     scene->lines_drawn += lines.size() * tle.size();
 

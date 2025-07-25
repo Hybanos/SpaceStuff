@@ -17,7 +17,8 @@ glm::mat4 Camera::get_view() {
     update_pos();
     return glm::lookAt(
         get_position(),
-        anchor->get_camera_center(),
+        glm::vec3(0),
+        // anchor->get_camera_center(),
         glm::vec3(0,1,0)
     );
 }
@@ -49,7 +50,7 @@ void Camera::update_pos() {
     position[2] = sin(yaw) * cos(pitch);
 
     position *= distance;
-    position += anchor->get_camera_center();
+    // position += anchor->get_camera_center();
 }
 
 void Camera::set_anchor(CameraAnchor *a) {
