@@ -15,6 +15,7 @@
 #include "data/tle.hpp"
 #include "data/horizons.hpp"
 #include "scene/signal.hpp"
+#include "scene/time.hpp"
 
 class DBManager {
     private:
@@ -39,14 +40,15 @@ class DBManager {
         std::vector<TLE> get_all_tle();
 
         // ssd
-        // returning with body ids of -1 means none foundk
+        // returning with body ids of -1 means none found
         void ingest_major_bodies();
         void ingest_major_body(MajorBody body);
         void ingest_ephemeris(EphemerisLine line);
         std::vector<MajorBody> get_all_major_bodies();
         MajorBody get_major_body(int id);
         EphemerisLine get_ephemeris_line(int id);
-        void download_ephemeris_line(int id);
+        std::vector<EphemerisLine> get_ephemeris_year(int id, int year);
+        void download_ephemeris_year(int id, int year);
 
         void debug();
 };

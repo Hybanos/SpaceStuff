@@ -1,5 +1,7 @@
 #include "data/db_manager.hpp"
 
+using namespace std::chrono_literals;
+
 DBManager::DBManager() {
     sqlite3_open("data.db", &db);
     init();
@@ -416,9 +418,23 @@ MajorBody DBManager::get_major_body(int id) {
     return body;
 }
 
+// TODO: make good
 EphemerisLine DBManager::get_ephemeris_line(int id) {
-    fmt::print("db ephemeris line\n");
-    std::string query = fmt::format(R"(SELECT * FROM BodyEphemerides WHERE body_id={})", id);
+    std::vector<EphemerisLine> lines = get_ephemeris_year(id, 2025);
+    EphemerisLine line = lines[id];
+
+    return line;
+}
+
+std::vector<EphemerisLine> DBManager::get_ephemeris_year(int id, int year) {
+    std::vector<EphemerisLine> lines;
+    long t1;
+
+    std::chrono::year_month_day y{std::chrono::year{year}, std::chrono::January, std::chrono::day{1}};
+    std::chrono::sys_days d = y;
+    t1 = std::chrono::duration_cast<nanoseconds>(d.time_since_epoch()).count(); 
+
+    std::string query = fmt::format(R"(SELECT * FROM BodyEphemerides WHERE body_id={} AND timestamp >= {} ORDER BY timestamp LIMIT 400)", id, t1);
     sqlite3_stmt *statement;
     EphemerisLine line;
     line.id = -1;
@@ -433,19 +449,22 @@ EphemerisLine DBManager::get_ephemeris_line(int id) {
         line.vx = sqlite3_column_double(statement, 5);
         line.vy = sqlite3_column_double(statement, 6);
         line.vz = sqlite3_column_double(statement, 7);
+        lines.push_back(line);
     }
     sqlite3_finalize(statement);
 
-    if (line.id == -1) {
-        download_ephemeris_line(id);
+    if (lines.size() < 100) {
+        download_ephemeris_year(id, year);
         // NOTE: ugly
-        return get_ephemeris_line(id);
+        return get_ephemeris_year(id, year);
     }
 
-    return line;
+    return lines;
+
+    
 }
 
-void DBManager::download_ephemeris_line(int id) {
+void DBManager::download_ephemeris_year(int id, int year) {
     fmt::print("api ephemeris line\n");
     MajorBody body = get_major_body(id);
     cpr::Response r = cpr::Get(cpr::Url("https://ssd.jpl.nasa.gov/api/horizons.api"), 
@@ -455,8 +474,8 @@ void DBManager::download_ephemeris_line(int id) {
             {"COMMAND", std::to_string(id)},
             {"EPHEM_TYPE", "VECTORS"},
             {"CENTER", "'500@0'"},
-            {"START_TIME", "'2025-07-19'"},
-            {"STOP_TIME", "'2025-07-20'"},
+            {"START_TIME", fmt::format("'{}-01-01'", year)},
+            {"STOP_TIME", fmt::format("'{}-01-01'", year + 1)},
             {"STEP_SIZE", "'1 DAYS'"},
             {"VEC_TABLE", "'2'"},
             {"REF_SYSTEM", "'ICRF'"},
