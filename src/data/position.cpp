@@ -42,12 +42,38 @@ glm::vec3 MajorBody_simu::get_pos(long timestamp) {
     return (curr + next);
 }
 
-glm::mat3 MajorBody_simu::get_rota(long timestamp) {
+static double get_angle(json o, double julian_date, double f(double)) {
+    if (!o.size()) return 0.0f;
+    double angle;
+    for (auto &j : o) {
+        if (j.size() == 1) angle += (double) j * julian_date; 
+        else if (j.size() == 2) angle += (double) j[0] * (julian_date * julian_date); // NOTE: ugly
+        else angle += (double) j[0] * f((double) j[1] + (double) j[2] * julian_date);
+    }
+    return angle;
+}
+
+glm::mat3 MajorBody_simu::get_rota(double julian_day) {
+    julian_day = julian_day - 2451545.0;
+    double julian_year = julian_day / 36525;
 
     if (rotation_info.size() == 0) return glm::mat3(1);
 
-    float a0 = glm::radians(90.0f + (float) rotation_info["a0"]);
-    float d0 = glm::radians(90.0f - (float) rotation_info["d0"]);
+    double a0 = 90.0f + (double) rotation_info["a0"];
+    double d0 = 90.0f - (double) rotation_info["d0"];
+    double W = rotation_info["W"];
+
+    a0 += get_angle(rotation_info["a0_d"], julian_day, glm::sin);
+    a0 += get_angle(rotation_info["a0_T"], julian_year, glm::sin);
+    d0 += get_angle(rotation_info["d0_d"], julian_day, glm::cos);
+    d0 += get_angle(rotation_info["d0_T"], julian_year, glm::cos);
+    W += get_angle(rotation_info["W_d"], julian_day, glm::sin);
+    W += get_angle(rotation_info["W_T"], julian_year, glm::sin);
+
+    a0 = glm::radians(fmod(a0, 360));
+    d0 = glm::radians(fmod(d0, 360));
+    W = glm::radians(fmod(W, 360));
+    a0 += W;
 
     glm::mat3 y(
         glm::cos(a0), 0, -glm::sin(a0),
@@ -61,5 +87,5 @@ glm::mat3 MajorBody_simu::get_rota(long timestamp) {
         0, 0, 1
     );
 
-    return y * z;
+    return z * y;
 }

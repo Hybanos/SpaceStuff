@@ -30,5 +30,5 @@ class MajorBody_simu {
 
         void compute_transforms(int year);
         glm::vec3 get_pos(long timestamp);
-        glm::mat3 get_rota(long timestamp);
+        glm::mat3 get_rota(double julian_date);
 };

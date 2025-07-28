@@ -95,7 +95,7 @@ void Sphere::build() {
 
 void Sphere::draw() {
     if (!d_draw) return;
-    double julian_date = ((double) scene->get_time().time_since_epoch().count() / 1e9) / SECS_DAY + 2440587.5;
+    double julian_date = scene->time.get_julian(); 
     double angle = (0.7790572732640 + 1.00273781191135448 * (julian_date - 2451545.0)) * (M_PI * 2);
     angle = fmod(angle, M_PI * 2);
 
@@ -104,9 +104,9 @@ void Sphere::draw() {
         glm::vec3(0, 1, 0),
         glm::vec3(sin(angle), 0, cos(angle))
     );
-    rota = body.get_rota(scene->get_time().time_since_epoch().count());
-
     pos = body.get_pos(scene->get_time().time_since_epoch().count());
+
+    rota = body.get_rota(scene->time.get_julian());
 
     if (rebuild) {
         build();

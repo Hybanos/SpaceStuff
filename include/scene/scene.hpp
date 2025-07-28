@@ -22,10 +22,10 @@ class Object;
 class Scene {
     private:
         std::vector<Object *> objects;
-        Time time;
     public:
         Scene(SDL_Window *);
         DBManager db;
+        Time time;
 
         SDL_Window *window = nullptr;
         Camera *camera = nullptr;

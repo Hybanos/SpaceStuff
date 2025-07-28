@@ -21,7 +21,6 @@ class Time {
         int rate = 1;
         bool paused = false;
 
-
         int combo_index = 0;
     public:
         Time();
