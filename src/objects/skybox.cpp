@@ -75,6 +75,7 @@ void SkyBox::draw() {
     if (d_draw) {
         glDepthMask(GL_FALSE);
         mesh.set_mat4("MVP", mvp);
+        mesh.set_mat4("transform", glm::mat4(1));
         mesh.set_mat3("rota", rota);
         mesh.set_int("flip", 1);
         mesh.set_vec3("pos", glm::vec3(0));

@@ -22,13 +22,13 @@ class Object;
 class Scene {
     private:
         std::vector<Object *> objects;
+        Time time;
     public:
         Scene(SDL_Window *);
         DBManager db;
 
         SDL_Window *window = nullptr;
         Camera *camera = nullptr;
-        Time time;
 
         glm::mat4 projection;
         glm::mat4 view;
@@ -49,9 +49,12 @@ class Scene {
         size_t ttr;
         bool imgui_hover;
 
+        std::chrono::high_resolution_clock::time_point frame_time;
+
         float get_ratio();
         int get_width();
         int get_height();
+        std::chrono::high_resolution_clock::time_point get_time();
 
         void build_solar_system();
 

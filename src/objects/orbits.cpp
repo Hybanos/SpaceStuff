@@ -122,7 +122,7 @@ void Orbits::get_true_anomaly(int i, bool compute) {
     }
 
     // double t = (double) (high_resolution_clock::now().time_since_epoch().count() / 1e9); 
-    double t = scene->time.get().time_since_epoch().count() / 1e9;
+    double t = scene->get_time().time_since_epoch().count() / 1e9;
     double days_since_epoch = (t - epoch[i]) / SECS_DAY;
 
     float real_time_mean_anomaly = tle[i].mean_anomaly + days_since_epoch * tle[i].revloutions_per_day * M_PI * 2;

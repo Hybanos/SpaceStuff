@@ -88,7 +88,7 @@ inline void parse_ephemeris(std::string t, MajorBody &body, std::vector<Ephemeri
             e.julian_day_number = std::stod(matches[1]);
             std::tm tm = {};
             std::stringstream(matches[2]) >> std::get_time(&tm, "A.D. %Y-%b-%d %H:%M:%S.0000");
-            e.timestamp = std::chrono::high_resolution_clock::from_time_t(std::mktime(&tm)).time_since_epoch().count();
+            e.timestamp = std::chrono::high_resolution_clock::from_time_t(std::mktime(&tm)).time_since_epoch().count() + (3600l * 1'000'000'000);
             // NOTE: Y and Z axis are swapped
             e.x = std::stod(matches[3]);
             e.z = std::stod(matches[4]);

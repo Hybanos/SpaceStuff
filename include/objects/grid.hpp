@@ -10,6 +10,7 @@ class Grid : virtual public Object {
 
         Mesh mesh;
 
+        bool follow = true;
         bool d_draw = true;
         float scale = 10010;
     public:

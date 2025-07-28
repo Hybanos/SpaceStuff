@@ -12,12 +12,20 @@ time_point<high_resolution_clock> Time::get() {
     duration delta = now - last_sample;
     last_sample = now; 
     if (!paused) timestamp = timestamp + delta * rate;
+
     return timestamp;
+}
+
+double Time::get_julian() {
+    double julian_date = ((double) get().time_since_epoch().count() / 1e9) / (24 * 3600) + 2440587.5;
+
+    return julian_date;
 }
 
 void Time::debug() {
     ImGui::Begin("Time");
     ImGui::Text(fmt::format("Curr time: {}", get()).c_str());
+    ImGui::Text(fmt::format("Julian days: {}", get_julian()).c_str());
     ImGui::DragInt("Rate", &rate);
     if (ImGui::Button("Now")) {
         auto now = high_resolution_clock::now();

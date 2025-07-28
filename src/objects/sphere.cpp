@@ -3,6 +3,7 @@
 
 Sphere::Sphere(Scene *s, std::string path) : 
 Object(s),
+body(10, s->db),
 mesh(scene->texture_shader) {
     mesh.gen_cubemap(path);
     build();
@@ -13,15 +14,16 @@ mesh(scene->texture_shader) {
 
 Sphere::Sphere(Scene *s, int _id) : 
 Object(s),
+body(_id, s->db),
 mesh(scene->texture_shader) {
     id = _id;
 
     EphemerisLine line = scene->db.get_ephemeris_line(id);
-    MajorBody body = scene->db.get_major_body(id);
-    fmt::print("got body {}\n", body.name);
-    size = body.radius;
-    display_name = body.name;
-    mesh.gen_cubemap("assets/cubemaps/" + body.name);
+    MajorBody b = scene->db.get_major_body(id);
+    fmt::print("got body {}\n", b.name);
+    size = b.radius;
+    display_name = b.name;
+    mesh.gen_cubemap("assets/cubemaps/" + b.name);
 
     std::cout << line.x << " " << line.y << " " << line.z << std::endl;
 
@@ -93,7 +95,7 @@ void Sphere::build() {
 
 void Sphere::draw() {
     if (!d_draw) return;
-    double julian_date = ((double) scene->time.get().time_since_epoch().count() / 1e9) / SECS_DAY + 2440587.5;
+    double julian_date = ((double) scene->get_time().time_since_epoch().count() / 1e9) / SECS_DAY + 2440587.5;
     double angle = (0.7790572732640 + 1.00273781191135448 * (julian_date - 2451545.0)) * (M_PI * 2);
     angle = fmod(angle, M_PI * 2);
 
@@ -102,6 +104,9 @@ void Sphere::draw() {
         glm::vec3(0, 1, 0),
         glm::vec3(sin(angle), 0, cos(angle))
     );
+    rota = body.get_rota(scene->get_time().time_since_epoch().count());
+
+    pos = body.get_pos(scene->get_time().time_since_epoch().count());
 
     if (rebuild) {
         build();

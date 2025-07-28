@@ -41,6 +41,8 @@ float Scene::get_ratio() {
  
 void Scene::render() {
     auto t1 = high_resolution_clock::now();
+    frame_time = time.get();
+    // fmt::print("current time: {}\n", frame_time.time_since_epoch().count());
 
     while (db.signals.size()) {
         fmt::print("scene: {} signals\n", db.signals.size());
@@ -70,6 +72,10 @@ void Scene::render() {
     ttr = (t2 - t1).count();
 }
 
+std::chrono::high_resolution_clock::time_point Scene::get_time() {
+    return frame_time;
+}
+
 void Scene::build_solar_system() {
     std::vector<TLE> t = db.get_all_tle();
 
@@ -82,11 +88,12 @@ void Scene::build_solar_system() {
     objects.push_back(new Sphere(this, 301));
     objects.push_back(new Sphere(this, 499));
     objects.push_back(new Sphere(this, 599));
-    objects.push_back(new Sphere(this, 501));
-    objects.push_back(new Sphere(this, 502));
-    objects.push_back(new Sphere(this, 503));
-    objects.push_back(new Sphere(this, 504));
+        objects.push_back(new Sphere(this, 501));
+        objects.push_back(new Sphere(this, 502));
+        objects.push_back(new Sphere(this, 503));
+        objects.push_back(new Sphere(this, 504));
     objects.push_back(new Sphere(this, 699));
+        objects.push_back(new Sphere(this, 606));
     objects.push_back(new Sphere(this, 799));
     objects.push_back(new Sphere(this, 899));
 }

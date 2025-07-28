@@ -35,7 +35,11 @@ void Grid::draw() {
 
     if (d_draw) {
         mesh.set_mat4("MVP", scene->mvp);
-        mesh.set_vec3("pos", pos - scene->camera->get_center());
+
+        glm::vec3 p = pos;
+        if (!follow) p = p - scene->camera->get_center();
+
+        mesh.set_vec3("pos", p);
         mesh.draw(GL_TRIANGLES, 0, triangles.size() * 3);
     }
 }
@@ -43,6 +47,7 @@ void Grid::draw() {
 void Grid::debug() {
     if (ImGui::TreeNode("Grid")) {
         ImGui::Checkbox("Draw", &d_draw);
+        ImGui::Checkbox("Follow", &follow);
         ImGui::TreePop();
     }
 

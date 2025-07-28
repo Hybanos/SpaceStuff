@@ -421,20 +421,16 @@ MajorBody DBManager::get_major_body(int id) {
 // TODO: make good
 EphemerisLine DBManager::get_ephemeris_line(int id) {
     std::vector<EphemerisLine> lines = get_ephemeris_year(id, 2025);
-    EphemerisLine line = lines[id];
+    EphemerisLine line = lines[0];
 
     return line;
 }
 
 std::vector<EphemerisLine> DBManager::get_ephemeris_year(int id, int year) {
     std::vector<EphemerisLine> lines;
-    long t1;
+    long t1 = year_to_timestamp(year);
 
-    std::chrono::year_month_day y{std::chrono::year{year}, std::chrono::January, std::chrono::day{1}};
-    std::chrono::sys_days d = y;
-    t1 = std::chrono::duration_cast<nanoseconds>(d.time_since_epoch()).count(); 
-
-    std::string query = fmt::format(R"(SELECT * FROM BodyEphemerides WHERE body_id={} AND timestamp >= {} ORDER BY timestamp LIMIT 400)", id, t1);
+    std::string query = fmt::format(R"(SELECT * FROM BodyEphemerides WHERE body_id={} AND timestamp >= {} ORDER BY timestamp DESC LIMIT 400)", id, t1);
     sqlite3_stmt *statement;
     EphemerisLine line;
     line.id = -1;
@@ -442,7 +438,7 @@ std::vector<EphemerisLine> DBManager::get_ephemeris_year(int id, int year) {
     sqlite3_prepare_v3(db, query.c_str(), query.size(), 0, &statement, NULL);
     while(sqlite3_step(statement) == SQLITE_ROW) {
         line.id = id;
-        line.timestamp = sqlite3_column_int(statement, 1);
+        line.timestamp = sqlite3_column_int64(statement, 1);
         line.x = sqlite3_column_double(statement, 2);
         line.y = sqlite3_column_double(statement, 3);
         line.z = sqlite3_column_double(statement, 4);
@@ -460,8 +456,6 @@ std::vector<EphemerisLine> DBManager::get_ephemeris_year(int id, int year) {
     }
 
     return lines;
-
-    
 }
 
 void DBManager::download_ephemeris_year(int id, int year) {
@@ -474,8 +468,8 @@ void DBManager::download_ephemeris_year(int id, int year) {
             {"COMMAND", std::to_string(id)},
             {"EPHEM_TYPE", "VECTORS"},
             {"CENTER", "'500@0'"},
-            {"START_TIME", fmt::format("'{}-01-01'", year)},
-            {"STOP_TIME", fmt::format("'{}-01-01'", year + 1)},
+            {"START_TIME", fmt::format("'{}-Jan-01 UT'", year)},
+            {"STOP_TIME", fmt::format("'{}-Jan-01'", year + 1)},
             {"STEP_SIZE", "'1 DAYS'"},
             {"VEC_TABLE", "'2'"},
             {"REF_SYSTEM", "'ICRF'"},

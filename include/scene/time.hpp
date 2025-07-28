@@ -26,5 +26,12 @@ class Time {
     public:
         Time();
         time_point<high_resolution_clock> get();
+        double get_julian();
         void debug();
 };
+
+static long year_to_timestamp(int year) {
+    std::chrono::year_month_day y{std::chrono::year{year}, std::chrono::January, std::chrono::day{1}};
+    std::chrono::sys_days d = y;
+    return std::chrono::duration_cast<nanoseconds>(d.time_since_epoch()).count(); 
+}

@@ -2,6 +2,7 @@
 
 #include "objects/object.hpp"
 #include "render/mesh.hpp"
+#include "data/position.hpp"
 
 class Sphere : virtual public Object, virtual public CameraAnchor {
     private:
@@ -9,6 +10,7 @@ class Sphere : virtual public Object, virtual public CameraAnchor {
         std::vector<glm::vec3> triangles_colors;
 
         Mesh mesh;
+        MajorBody_simu body;
         
         bool d_draw = true;
         bool rebuild = false;
