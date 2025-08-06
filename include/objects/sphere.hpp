@@ -3,6 +3,7 @@
 #include "objects/object.hpp"
 #include "render/mesh.hpp"
 #include "data/position.hpp"
+#include "objects/particle.hpp"
 
 class Sphere : virtual public Object, virtual public CameraAnchor {
     private:
@@ -11,6 +12,7 @@ class Sphere : virtual public Object, virtual public CameraAnchor {
 
         Mesh mesh;
         MajorBody_simu body;
+        Particle p;
         
         bool d_draw = true;
         bool rebuild = false;

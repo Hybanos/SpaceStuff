@@ -28,7 +28,6 @@ mesh(scene->texture_shader) {
     std::cout << line.x << " " << line.y << " " << line.z << std::endl;
 
     pos = glm::vec3(line.x, line.y, line.z);
-    // pos = glm::vec3(0);
 
     build();
     manage_buffers();
@@ -105,7 +104,6 @@ void Sphere::draw() {
         glm::vec3(sin(angle), 0, cos(angle))
     );
     pos = body.get_pos(scene->get_time().time_since_epoch().count());
-
     rota = body.get_rota(scene->time.get_julian());
 
     if (rebuild) {
