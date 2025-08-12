@@ -26,10 +26,18 @@
     ],
     "saturn": [
         {
+            "name": "D Ring",
+            "body_distance": 66900,
+            "width": 7500,
+            "thickness": 30,
+            "transmittance": 0.95
+        },
+        {
             "name": "C Ring",
             "body_distance": 74658,
             "width": 17500,
             "thickness": 5,
+            "transmittance": 0.2,
             "gaps": [
                 {
                     "name": "Colombo gap",
@@ -63,6 +71,7 @@
             "name": "Cassini Division",
             "body_distance": 117580,
             "width": 4700,
+            "transmittance": 0.4,
             "gaps": [
                 {
                     "name": "Huygens gap",
@@ -111,6 +120,7 @@
             "body_distance": 122170,
             "width": 14600,
             "thickness": 30,
+            "transmittance": 0.1,
             "gaps": [
                 {
                     "name": "Encke gap",
@@ -127,7 +137,8 @@
         {
             "name": "F Ring",
             "body_distance": 140180,
-            "width": 500
+            "width": 500,
+            "transmittance": 0.75
         }
     ],
     "saturn_bad": [
@@ -135,12 +146,6 @@
             "name": "Roche Division",
             "body_distance": 136775,
             "width": 2600
-        },
-        {
-            "name": "D Ring",
-            "body_distance": 66900,
-            "width": 7500,
-            "thickness": 30
         },
         {
             "name": "E Ring",
@@ -177,5 +182,32 @@
             "body_distance": 211000,
             "width": 2500
         }
+    ],
+    "uranus": [
+        { "name": "ζcc", "body_distance": 26840.0, "width": 8000.0, "transmittance": 0.9999000049998333 },
+        { "name": "ζc", "body_distance": 34890.0, "width": 3000.0, "transmittance": 0.9995001249791693 },
+        { "name": "1986U2R", "body_distance": 37000.0, "width": 2500.0, "transmittance": 0.9900498337491681 },
+        { "name": "ζ", "body_distance": 37850.0, "width": 3500.0, "transmittance": 0.9955101098295706 },
+        { "name": "6", "body_distance": 41837.0, "width": 1.9, "transmittance": 0.8065414401773269 },
+        { "name": "5", "body_distance": 42234.0, "width": 3.4, "transmittance": 0.7189237334319262 },
+        { "name": "4", "body_distance": 42570.0, "width": 3.4, "transmittance": 0.794533602503334 },
+        { "name": "α", "body_distance": 44718.0, "width": 7.4, "transmittance": 0.6065306597126334 },
+        { "name": "β", "body_distance": 45661.0, "width": 8.75, "transmittance": 0.7595721232249685 },
+        { "name": "η", "body_distance": 47175.0, "width": 2.3, "transmittance": 0.8146473164114145 },
+        { "name": "ηc", "body_distance": 47176.0, "width": 40.0, "transmittance": 0.9801986733067553 },
+        { "name": "γ", "body_distance": 47627.0, "width": 4.15, "thickness": 0.15, "transmittance": 0.44932896411722156 },
+        { "name": "δc", "body_distance": 48300.0, "width": 11.0, "transmittance": 0.9704455335485082 },
+        { "name": "δ", "body_distance": 48300.0, "width": 5.1, "transmittance": 0.6376281516217733 },
+        { "name": "λ", "body_distance": 50023.0, "width": 1.5, "transmittance": 0.8607079764250578 },
+        { "name": "ε", "body_distance": 51149.0, "width": 58.05, "thickness": 0.15, "transmittance": 0.22313016014842982 },
+        { "name": "ν", "body_distance": 66100.0, "width": 3800.0, "transmittance": 0.99999460001458 },
+        { "name": "μ", "body_distance": 86000.0, "width": 17000.0, "transmittance": 0.9999915000361249 }
+    ],
+    "neptune": [
+        { "name": "Galle", "body_distance": 40900.0, "width": 2000.0, "transmittance": 0.9999000049998333 },
+        { "name": "Le Verrier", "body_distance": 53200.0, "width": 113.0, "transmittance": 0.9938151143031728 },
+        { "name": "Lassell", "body_distance": 53200.0, "width": 4000.0, "transmittance": 0.9999000049998333 },
+        { "name": "Arago", "body_distance": 57200.0, "width": 100.0, "transmittance": 1 },
+        { "name": "Adams", "body_distance": 62932.0, "width": 15.0, "transmittance": 0.9891196836401106 }
     ]
 }

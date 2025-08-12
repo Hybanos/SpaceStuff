@@ -26,6 +26,7 @@ class Object {
     protected:
         Scene *scene = nullptr;
         glm::vec3 pos = glm::vec3(0);
+        glm::mat3 rota = glm::mat3(1);
         std::vector<Object *> children;
 
         // horizons system body id;
@@ -41,4 +42,5 @@ class Object {
         virtual void on_signal(Signal s) {} 
         Object *add_child(Object * c) {children.push_back(c); return this;}
         void set_pos(glm::vec3 p) {pos = p;}
+        void set_rota(glm::mat3 r) {rota = r;}
 };

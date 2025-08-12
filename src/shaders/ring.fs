@@ -15,7 +15,7 @@ float rand(vec2 co){
 void main() {
     vec3 tmp = vec3(1.0, 1.0, 0.90);
 
-    float t = 1.0;
+    float t = 0.8;
 
     // t = 1 * rand(vec2(1, r)); 
     // t = fract(r); 
@@ -24,11 +24,9 @@ void main() {
     // t = fract(sqrt(p.x * p.x + p.z * p.z));
 
     float offset = 0.5 + fract(r) / 50;
-    t = texture(tex, vec2(fract(r / 90000), offset)).x;
+    t = texture(tex, vec2(fract(r / 25000), offset)).x;
     t = t * (1 - trans);
-    t = t - 0.35;
-    t = t * 2;
-    t = t + 0.2;
+    t = max(0.005, t);
     color = vec4(tmp, t);
 
 }

@@ -36,12 +36,13 @@ void Ring::build() {
     triangles.clear();
     triangles.reserve(360 * 6 * ring_info.size());
     std::vector<glm::vec3> points;
-    points.clear();
     points.resize(360);
+    transmittance.clear();
+    radius.clear();
 
     for (int i = 0; i < 360; i++) {
         float i_rad = glm::radians((float) i);
-        points[i] = glm::vec3(glm::cos(i_rad), 0, glm::sin(i_rad));
+        points[i] = rota * glm::vec3(glm::cos(i_rad), 0, glm::sin(i_rad));
     }
 
     json ring_with_gaps = json::array();
@@ -97,6 +98,8 @@ void Ring::build() {
 }
 
 void Ring::draw() {
+    build();
+
     mesh.set_mat4("MVP", scene->mvp);
     mesh.set_vec3("pos", pos - scene->camera->get_center());
 

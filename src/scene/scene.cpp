@@ -98,8 +98,12 @@ void Scene::build_solar_system() {
         ->add_child(new Ring(this, "saturn"))
     );
         // objects.push_back(new Sphere(this, 606));
-    // objects.push_back(new Sphere(this, 799));
-    // objects.push_back(new Sphere(this, 899));
+    objects.push_back((new Sphere(this, 799))
+        ->add_child(new Ring(this, "uranus"))
+    );
+    objects.push_back((new Sphere(this, 899))
+        ->add_child(new Ring(this, "neptune"))
+    );
 }
 
 void Scene::debug() {

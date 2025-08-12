@@ -121,6 +121,7 @@ void Sphere::draw() {
     mesh.draw_cubemap(GL_TRIANGLES, 0, triangles.size() * 3);
     for (auto c : children) {
         c->set_pos(pos);
+        c->set_rota(rota);
         c->draw();
     }
 }
