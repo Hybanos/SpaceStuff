@@ -16,7 +16,7 @@ mesh(scene->ring_shader) {
         if (j["body_distance"].is_null()) j["body_distance"] = 0; 
         if (j["width"].is_null()) j["width"] = 0;
         if (j["thickness"].is_null()) j["thickness"] = 0;
-        if (j["transmittance"].is_null()) j["transmittance"] = 0.5; 
+        if (j["transmittance"].is_null()) j["transmittance"] = 0.0; 
         if (j["mass"].is_null()) j["mass"] = -1; 
         if (j["gaps"].is_null()) j["gaps"] = json::array();
 
@@ -49,6 +49,14 @@ void Ring::build() {
     for (auto j : ring_info) {
         int inner = j["body_distance"];
         int outer = inner + (int) j["width"];
+
+        for (auto &g : j["gaps"]) {
+            outer = g["body_distance"];
+            j["body_distance"] = inner;
+            j["width"] = outer - inner;
+            ring_with_gaps.push_back(j);
+            inner = outer;
+        }
 
         ring_with_gaps.push_back(j);
     }

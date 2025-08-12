@@ -22,14 +22,6 @@
             "thickness": 2000,
             "transmittance": 0.9999999003051415,
             "mass": 1000000000
-        },
-        {
-            "name": "Main ring",
-            "body_distance": 122500,
-            "width": 97000,
-            "thickness": 8400,
-            "transmittance": 0.9999999700915414,
-            "mass": 1000000000
         }
     ],
     "saturn": [
