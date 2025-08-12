@@ -14,7 +14,10 @@ class Ring : virtual public Object {
         std::vector<glm::vec3> triangles;
         std::vector<float> transmittance;
         std::vector<float> radius;
+        glm::vec2 highlight_bounds = glm::vec2(0);
+
         std::string name;
+        int selected = -1;
 
         Mesh mesh;
         json ring_info;

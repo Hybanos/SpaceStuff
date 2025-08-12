@@ -49,6 +49,11 @@ class Shader {
             glUniform3fv(glGetUniformLocation(program_id, name.c_str()), 1, &data[0]);
         }
 
+        void set_vec2(std::string name, glm::vec2 &data) {
+            use();
+            glUniform2fv(glGetUniformLocation(program_id, name.c_str()), 1, &data[0]);
+        }
+
         void set_int(std::string name, int &data) {
             use();
             glUniform1i(glGetUniformLocation(program_id, name.c_str()), data);

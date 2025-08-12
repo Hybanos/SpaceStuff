@@ -59,6 +59,7 @@ void Ring::build() {
             inner = outer;
         }
 
+        if (outer - inner < 1) continue;
         ring_with_gaps.push_back(j);
     }
 
@@ -100,8 +101,17 @@ void Ring::build() {
 void Ring::draw() {
     build();
 
+    if (selected >= 0) {
+        highlight_bounds.x = ring_info[selected]["body_distance"];
+        highlight_bounds.y = highlight_bounds.x + (int) ring_info[selected]["width"];
+    } else {
+        highlight_bounds.x = 0;
+        highlight_bounds.y = 0;
+    }
+
     mesh.set_mat4("MVP", scene->mvp);
     mesh.set_vec3("pos", pos - scene->camera->get_center());
+    mesh.set_vec2("highlight_bounds", highlight_bounds);
 
     mesh.set_buffer(0, triangles);
     mesh.set_buffer(1, transmittance);
@@ -115,8 +125,12 @@ void Ring::debug() {
 
         int i = 0;
         for (auto &j : ring_info) {
-            static bool sel = false;
+            ImGui::PushID(i);
             ImGui::Text(((std::string) j["name"]).c_str());
+            if (ImGui::Button("Select")) {
+                if (selected == i) selected = -1;
+                else selected = i;
+            }
             ImGui::Text("Distance: %d", (int) j["body_distance"]);
             ImGui::Text("Width: %d", (int) j["width"]);
             ImGui::Text("Thickness: %d", (int) j["thickness"]);
@@ -130,8 +144,10 @@ void Ring::debug() {
                 }
             }
             ImGui::NewLine();
+            ImGui::PopID();
             i++;
         }
+        if (name == "saturn")
 
         ImGui::TreePop();
     }
