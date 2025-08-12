@@ -79,25 +79,25 @@ std::chrono::high_resolution_clock::time_point Scene::get_time() {
 void Scene::build_solar_system() {
     std::vector<TLE> t = db.get_all_tle();
 
-    // objects.push_back(new Sphere(this, 10));
-    // objects.push_back(new Sphere(this, 199));
-    // objects.push_back(new Sphere(this, 299));
-    // objects.push_back((new Sphere(this, 399))
-    //     ->add_child(new Orbits(this, t))
-    // );
-    // objects.push_back(new Sphere(this, 301));
-    // objects.push_back(new Sphere(this, 499));
+    objects.push_back(new Sphere(this, 10));
+    objects.push_back(new Sphere(this, 199));
+    objects.push_back(new Sphere(this, 299));
+    objects.push_back((new Sphere(this, 399))
+        ->add_child(new Orbits(this, t))
+    );
+    objects.push_back(new Sphere(this, 301));
+    objects.push_back(new Sphere(this, 499));
     objects.push_back((new Sphere(this, 599))
         ->add_child(new Ring(this, "jupiter"))
     );
-    //     objects.push_back(new Sphere(this, 501));
-    //     objects.push_back(new Sphere(this, 502));
-    //     objects.push_back(new Sphere(this, 503));
-    //     objects.push_back(new Sphere(this, 504));
+    objects.push_back(new Sphere(this, 501));
+    objects.push_back(new Sphere(this, 502));
+    objects.push_back(new Sphere(this, 503));
+    objects.push_back(new Sphere(this, 504));
     objects.push_back((new Sphere(this, 699))
         ->add_child(new Ring(this, "saturn"))
     );
-        // objects.push_back(new Sphere(this, 606));
+    objects.push_back(new Sphere(this, 606));
     objects.push_back((new Sphere(this, 799))
         ->add_child(new Ring(this, "uranus"))
     );
