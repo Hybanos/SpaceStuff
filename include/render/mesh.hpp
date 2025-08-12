@@ -32,11 +32,13 @@ class Mesh {
         void set_buffer(int loc, std::vector<T, std::allocator<T>> &data, int div = 0);
 
         void gen_cubemap(std::string path);
+        void gen_texture(std::string path);
 
         void set_mat4(std::string name, glm::mat4 data) {shader.set_mat4(name, data);}
         void set_mat3(std::string name, glm::mat3 data) {shader.set_mat3(name, data);}
         void set_vec3(std::string name, glm::vec3 data) {shader.set_vec3(name, data);}
         void set_int(std::string name, int data) {shader.set_int(name, data);}
+        // void 
 };
 
 template<typename T>

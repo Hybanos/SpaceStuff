@@ -3,7 +3,6 @@ layout(location = 0) in vec3 vertexPosition_modelspace;
 layout(location = 1) in vec4 vertexColor;
 
 uniform mat4 MVP;
-uniform double time;
 
 out vec4 fragmentColor;
 

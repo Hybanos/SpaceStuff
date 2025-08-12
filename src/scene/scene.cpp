@@ -52,7 +52,7 @@ void Scene::render() {
         for (Object *obj : objects) obj->on_signal(s);
     }
 
-    projection = glm::perspective(glm::radians(80.0f), get_ratio(), 10.0f, 10000000000.0f);
+    projection = glm::perspective(glm::radians(60.0f), get_ratio(), 10.0f, 10000000000.0f);
     view = camera->get_view();
     model = glm::mat4(1.0);
     mvp = projection * view * model;
@@ -79,23 +79,27 @@ std::chrono::high_resolution_clock::time_point Scene::get_time() {
 void Scene::build_solar_system() {
     std::vector<TLE> t = db.get_all_tle();
 
-    objects.push_back(new Sphere(this, 10));
-    objects.push_back(new Sphere(this, 199));
-    objects.push_back(new Sphere(this, 299));
-    objects.push_back((new Sphere(this, 399))
-        ->add_child(new Orbits(this, t))
+    // objects.push_back(new Sphere(this, 10));
+    // objects.push_back(new Sphere(this, 199));
+    // objects.push_back(new Sphere(this, 299));
+    // objects.push_back((new Sphere(this, 399))
+    //     ->add_child(new Orbits(this, t))
+    // );
+    // objects.push_back(new Sphere(this, 301));
+    // objects.push_back(new Sphere(this, 499));
+    objects.push_back((new Sphere(this, 599))
+        ->add_child(new Ring(this, "jupiter"))
     );
-    objects.push_back(new Sphere(this, 301));
-    objects.push_back(new Sphere(this, 499));
-    objects.push_back(new Sphere(this, 599));
-        objects.push_back(new Sphere(this, 501));
-        objects.push_back(new Sphere(this, 502));
-        objects.push_back(new Sphere(this, 503));
-        objects.push_back(new Sphere(this, 504));
-    objects.push_back(new Sphere(this, 699));
-        objects.push_back(new Sphere(this, 606));
-    objects.push_back(new Sphere(this, 799));
-    objects.push_back(new Sphere(this, 899));
+    //     objects.push_back(new Sphere(this, 501));
+    //     objects.push_back(new Sphere(this, 502));
+    //     objects.push_back(new Sphere(this, 503));
+    //     objects.push_back(new Sphere(this, 504));
+    objects.push_back((new Sphere(this, 699))
+        ->add_child(new Ring(this, "saturn"))
+    );
+        // objects.push_back(new Sphere(this, 606));
+    // objects.push_back(new Sphere(this, 799));
+    // objects.push_back(new Sphere(this, 899));
 }
 
 void Scene::debug() {

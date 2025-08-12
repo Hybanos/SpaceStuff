@@ -10,7 +10,10 @@ void Mesh::draw(GLenum type, int first, size_t count) {
     shader.use();
 
     glBindVertexArray(VAO);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture);
     glDrawArrays(type, first, count);
+    glBindTexture(GL_TEXTURE_2D, 0);
     glBindVertexArray(0);
 }
 
@@ -36,6 +39,36 @@ void Mesh::draw_instanced(GLenum type, int first, size_t count, size_t total) {
     glBindVertexArray(VAO);
     glDrawArraysInstanced(type, first, count, total);
     glBindVertexArray(0);
+}
+
+void Mesh::gen_texture(std::string path) {
+    std::transform(path.begin(), path.end(), path.begin(), [](unsigned char c){return std::tolower(c);}); // help
+    glGenTextures(1, &texture);
+    glBindVertexArray(VAO);
+    glBindTexture(GL_TEXTURE_2D, texture);
+
+    int width, height, nb_channels;
+
+    unsigned char *data = nullptr;
+    data = stbi_load(path.c_str(), &width, &height, &nb_channels, 0);
+
+    if (data != nullptr) {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, width, height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, data);
+        stbi_image_free(data);
+    } else {
+        std::cout << "error loading texture " << path << std::endl;
+    }
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    glBindVertexArray(0);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    shader.use(); 
+    set_int("tex", 0);
 }
 
 void Mesh::gen_cubemap(std::string path) {

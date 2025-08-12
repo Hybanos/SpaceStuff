@@ -8,6 +8,7 @@
 #include "objects/grid.hpp"
 #include "objects/orbits.hpp"
 #include "objects/barycenter.hpp"
+#include "objects/ring.hpp"
 #include "data/db_manager.hpp"
 #include "render/shader.hpp"
 
@@ -44,6 +45,7 @@ class Scene {
         Shader base_shader = Shader("src/shaders/base.vs", "src/shaders/base.fs");
         Shader texture_shader = Shader("src/shaders/texture.vs", "src/shaders/texture.fs");
         Shader grid_shader = Shader("src/shaders/grid.vs", "src/shaders/grid.fs");
+        Shader ring_shader = Shader("src/shaders/ring.vs", "src/shaders/ring.fs");
         GLuint base_program_id;
 
         size_t ttr;

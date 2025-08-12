@@ -7,6 +7,7 @@ target_sources(main PRIVATE
     objects/sphere.cpp
     objects/particle.cpp
     objects/barycenter.cpp
+    objects/ring.cpp
 
     scene/camera.cpp
     scene/scene.cpp
@@ -32,6 +33,7 @@ target_sources(main PUBLIC
         ${PROJECT_SOURCE_DIR}/include/objects/sphere.hpp
         ${PROJECT_SOURCE_DIR}/include/objects/particle.hpp
         ${PROJECT_SOURCE_DIR}/include/objects/barycenter.hpp
+        ${PROJECT_SOURCE_DIR}/include/objects/ring.hpp
 
         ${PROJECT_SOURCE_DIR}/include/scene/camera.hpp
         ${PROJECT_SOURCE_DIR}/include/scene/camera_anchor.hpp

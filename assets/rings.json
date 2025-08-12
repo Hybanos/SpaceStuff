@@ -1,0 +1,189 @@
+{
+    "jupiter": [
+        {
+            "name": "Halo ring",
+            "body_distance": 92000,
+            "width": 30500,
+            "thickness": 12500,
+            "transmittance": 0.9999990030518621
+        },
+        {
+            "name": "Main ring",
+            "body_distance": 122500,
+            "width": 6500,
+            "thickness": 300,
+            "transmittance": 0.999994118020353,
+            "mass": 10000000000000000
+        },
+        {
+            "name": "Amalthea gossamer ring",
+            "body_distance": 129000,
+            "width": 53000,
+            "thickness": 2000,
+            "transmittance": 0.9999999003051415,
+            "mass": 1000000000
+        },
+        {
+            "name": "Main ring",
+            "body_distance": 122500,
+            "width": 97000,
+            "thickness": 8400,
+            "transmittance": 0.9999999700915414,
+            "mass": 1000000000
+        }
+    ],
+    "saturn": [
+        {
+            "name": "C Ring",
+            "body_distance": 74658,
+            "width": 17500,
+            "thickness": 5,
+            "gaps": [
+                {
+                    "name": "Colombo gap",
+                    "body_distance": 77870,
+                    "width": 150
+                },
+                {
+                    "name": "Maxwell gap",
+                    "body_distance": 87491,
+                    "width":270 
+                },
+                {
+                    "name": "Bond gap",
+                    "body_distance": 88700,
+                    "width":20 
+                },
+                {
+                    "name": "Dawes gap",
+                    "body_distance": 90210,
+                    "width": 20 
+                }
+            ]
+        },
+        {
+            "name": "B Ring",
+            "body_distance": 92000,
+            "width": 25500,
+            "thickness": 15
+        },
+        {
+            "name": "Cassini Division",
+            "body_distance": 117580,
+            "width": 4700,
+            "gaps": [
+                {
+                    "name": "Huygens gap",
+                    "body_distance": 117680,
+                    "width": 400
+                },
+                {
+                    "name": "Herschel gap",
+                    "body_distance": 118234,
+                    "width":102 
+                },
+                {
+                    "name": "Russel gap",
+                    "body_distance": 118614,
+                    "width": 33 
+                },
+                {
+                    "name": "Jeffreys gap",
+                    "body_distance": 118950,
+                    "width": 38 
+                },
+                {
+                    "name": "Kuiper gap",
+                    "body_distance": 119405,
+                    "width": 3 
+                },
+                {
+                    "name": "Laplace gap",
+                    "body_distance": 119967,
+                    "width": 238 
+                },
+                {
+                    "name": "Bessel gap",
+                    "body_distance": 120241,
+                    "width": 10
+                },
+                {
+                    "name": "Barnad gap",
+                    "body_distance": 120312,
+                    "width": 13 
+                }
+            ]
+        },
+        {
+            "name": "A Ring",
+            "body_distance": 122170,
+            "width": 14600,
+            "thickness": 30,
+            "gaps": [
+                {
+                    "name": "Encke gap",
+                    "body_distance": 133589,
+                    "width": 325 
+                },
+                {
+                    "name": "Keeler gap",
+                    "body_distance": 136505,
+                    "width": 35 
+                }
+            ]
+        },
+        {
+            "name": "F Ring",
+            "body_distance": 140180,
+            "width": 500
+        }
+    ],
+    "saturn_bad": [
+        {
+            "name": "Roche Division",
+            "body_distance": 136775,
+            "width": 2600
+        },
+        {
+            "name": "D Ring",
+            "body_distance": 66900,
+            "width": 7500,
+            "thickness": 30
+        },
+        {
+            "name": "E Ring",
+            "body_distance": 480000,
+            "width": 300000,
+            "thickness": 2000000
+        },
+        {
+            "name": "Phoebe Ring",
+            "body_distance": 13000000,
+            "width": 12800000,
+            "thickness": 2330000
+        },
+        {
+            "name": "Janus/Epimetheus Ring",
+            "body_distance": 149000,
+            "width": 5000
+        },
+        {
+            "name": "G Ring",
+            "body_distance": 166000,
+            "width": 9000
+        },
+        {
+            "name": "Methone Ring Arc",
+            "body_distance": 194230
+        },
+        {
+            "name": "Anthe Ring Arc",
+            "body_distance": 197665
+        },
+        {
+            "name": "Pallene Ring",
+            "body_distance": 211000,
+            "width": 2500
+        }
+    ]
+}
