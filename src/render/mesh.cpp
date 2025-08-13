@@ -75,7 +75,7 @@ void Mesh::gen_cubemap(std::string path) {
     std::transform(path.begin(), path.end(), path.begin(), [](unsigned char c){return std::tolower(c);}); // help
     if (! std::filesystem::exists("./" + path)) {
         std::cout << "could not find " << path << std::endl;
-        path = "assets/cubemaps/earth";
+        path = "assets/textures/cubemaps/earth";
     }
 
     glGenTextures(1, &texture);

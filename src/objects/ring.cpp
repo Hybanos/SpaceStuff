@@ -7,7 +7,7 @@ mesh(scene->ring_shader) {
     name = body_name;
     std::transform(name.begin(), name.end(), name.begin(), [](unsigned char c){return std::tolower(c);}); 
 
-    ring_info = json::parse(std::ifstream("assets/rings.json"))[name];
+    ring_info = json::parse(std::ifstream("assets/data/rings.json"))[name];
 
     if (ring_info.is_null()) ring_info = json::array();
 
@@ -29,7 +29,7 @@ mesh(scene->ring_shader) {
 
     build();
 
-    mesh.gen_texture("assets/perlin-512_6-oct.png");
+    mesh.gen_texture("assets/textures/other/perlin-512_6-oct.png");
 }
 
 void Ring::build() {

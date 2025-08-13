@@ -6,7 +6,7 @@ MajorBody_simu::MajorBody_simu(int _id, DBManager &_db) : id{_id}, db{_db} {
 
     std::string lower_name = name;
     std::transform(lower_name.begin(), lower_name.end(), lower_name.begin(), [](unsigned char c){return std::tolower(c);}); 
-    rotation_info = json::parse(std::ifstream("assets/bodies.json"))[lower_name]; 
+    rotation_info = json::parse(std::ifstream("assets/data/bodies.json"))[lower_name]; 
 
     compute_transforms(2025);
 }

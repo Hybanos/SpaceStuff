@@ -2,17 +2,17 @@
 #include "scene/scene.hpp"
 
 std::string f[6] = {
-    "assets/cubemaps/skybox/px.png",
-    "assets/cubemaps/skybox/nx.png",
-    "assets/cubemaps/skybox/py.png",
-    "assets/cubemaps/skybox/ny.png",
-    "assets/cubemaps/skybox/pz.png",
-    "assets/cubemaps/skybox/nz.png",
+    "assets/textures/cubemaps/skybox/px.png",
+    "assets/textures/cubemaps/skybox/nx.png",
+    "assets/textures/cubemaps/skybox/py.png",
+    "assets/textures/cubemaps/skybox/ny.png",
+    "assets/textures/cubemaps/skybox/pz.png",
+    "assets/textures/cubemaps/skybox/nz.png",
 };
 
 SkyBox::SkyBox(Scene *s) : Object(s), mesh(scene->texture_shader) {
 
-    mesh.gen_cubemap("assets/cubemaps/skybox");
+    mesh.gen_cubemap("assets/textures/cubemaps/skybox");
 
     triangles = {
         glm::vec3(-1.0f,  1.0f, -1.0f),
