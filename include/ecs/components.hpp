@@ -4,14 +4,19 @@
 
 #define FREE_ENTITY NUM_COMPONENT
 
+// Thanks github.com/natsu-anon/ecs-demo for the macro work
+#define COMPONENTS \
+    X(POSITION, Position) \
+    X(ROTATION, Rotation) \
+    X(SCALE, Scale) 
+
+#define X(ENUM, TYPE) ENUM,
 typedef enum Component {
-    POSITION,
-    ROTATION,
-    SCALE,
-    VELOCITY,
+    COMPONENTS
 
     NUM_COMPONENT,
-};
+} Component;
+#undef X
 
 typedef struct Position {
     float x;
@@ -23,12 +28,7 @@ typedef struct Rotation {
     glm::mat3 rota;
 } Rotation;
 
-typedef struct Rotation {
+typedef struct Scale {
     float scale;
 } Rotation;
 
-typedef struct Velocity {
-    float x;
-    float y;
-    float z;
-} Velocity;
