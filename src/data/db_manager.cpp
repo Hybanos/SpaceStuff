@@ -290,7 +290,7 @@ std::vector<TLE> DBManager::get_all_tle() {
 
         t.cat_number = sqlite3_column_int(statement, 1);
         t.classification = sqlite3_column_text(statement, 2)[0];
-        t.international_designator = reinterpret_cast<const char *>(sqlite3_column_text(statement, 3));
+        strcpy(t.international_designator, reinterpret_cast<const char *>(sqlite3_column_text(statement, 3)));
         t.epoch_year = sqlite3_column_int(statement, 4);
         t.epoch_day = sqlite3_column_int(statement, 5);
         t.epoch_frac = sqlite3_column_double(statement, 6);

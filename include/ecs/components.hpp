@@ -22,11 +22,7 @@ typedef enum Component {
 } Component;
 #undef X
 
-typedef struct Position {
-    float x;
-    float y;
-    float z;
-} Position;
+typedef glm::vec3 Position;
 
 typedef struct Rotation {
     glm::mat3 rota;

@@ -84,17 +84,20 @@ void Scene::build_solar_system() {
         size_t e = ecs.request_entity();
 
         ecs.set_component(e, POSITION);
+        ecs.set_component(e, ROTATION);
         ecs.set_component(e, TWO_LINE_ELEMENT);
         ecs.set_component(e, ORBIT);
 
         ecs.set_TLE(e, t[i]);
+        float ii = i;
+        ecs.set_Position(e, {ii, ii, ii});
     }
 
     objects.push_back(new Sphere(this, 10));
     objects.push_back(new Sphere(this, 199));
     objects.push_back(new Sphere(this, 299));
     objects.push_back((new Sphere(this, 399))
-        ->add_child(new Orbits(this, t))
+        // ->add_child(new Orbits(this, t))
     );
     objects.push_back(new Sphere(this, 301));
     objects.push_back(new Sphere(this, 499));

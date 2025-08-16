@@ -4,5 +4,4 @@
 
 #include "ecs/ecs.hpp"
 
-// void render_orbits();
 void debug_entities(ECSTable &ecs);

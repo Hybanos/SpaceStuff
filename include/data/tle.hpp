@@ -15,7 +15,8 @@ struct TLE {
     // line 1
     int cat_number;
     char classification;
-    std::string international_designator;
+    // std::string international_designator;
+    char international_designator[9];
     int epoch_year;
     int epoch_day;
     float epoch_frac;
@@ -36,7 +37,9 @@ inline TLE read_tle(std::string &title, std::string &l_1, std::string &l_2) {
 
     t.cat_number = stoi(l_1.substr(2, 5));
     t.classification = l_1[7];
-    t.international_designator = l_1.substr(9, 7);
+    // t.international_designator = l_1.substr(9, 7);
+    memcpy(&t.international_designator, l_1.substr(9, 7).c_str(), sizeof(char) * 9);
+    memcpy(&t.international_designator, l_1.data() + 9, 9);
     t.epoch_year = stoi(l_1.substr(18, 2));
     t.epoch_year += t.epoch_year < 50 ? 2000 : 1900;
     t.epoch_day = stoi(l_1.substr(20, 3));
