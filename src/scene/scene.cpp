@@ -8,6 +8,7 @@ Scene::Scene(SDL_Window *_window) {
     camera = new Camera;
     camera->scene = this;
     window = _window;
+    frame_time = time.get();
 
     objects.push_back(new SkyBox(this));
     objects.push_back(new Grid(this));
@@ -89,15 +90,18 @@ void Scene::build_solar_system() {
         ecs.set_component(e, ORBIT);
 
         ecs.set_TLE(e, t[i]);
-        float ii = i;
-        ecs.set_Position(e, {ii, ii, ii});
     }
+
+    systems::compute_orbit_from_tle(ecs);
+    systems::index_true_anomalies(ecs);
+    systems::compute_true_anomalies(ecs, (double) get_time().time_since_epoch().count() / 1e9);
+    systems::compute_pos_along_orbit(ecs);
 
     objects.push_back(new Sphere(this, 10));
     objects.push_back(new Sphere(this, 199));
     objects.push_back(new Sphere(this, 299));
     objects.push_back((new Sphere(this, 399))
-        // ->add_child(new Orbits(this, t))
+        ->add_child(new Orbits(this, t))
     );
     objects.push_back(new Sphere(this, 301));
     objects.push_back(new Sphere(this, 499));
@@ -142,5 +146,5 @@ void Scene::debug() {
     ImGui::End();
     time.debug();
     db.debug();
-    debug_entities(ecs); 
+    systems::debug_entities(ecs); 
 }

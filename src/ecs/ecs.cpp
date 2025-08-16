@@ -57,7 +57,7 @@ void ECSTable::set_component(size_t entity_id, Component component) {
 
 #define X(ENUM, TYPE) \
 void ECSTable::set_##TYPE(size_t entity_id, TYPE value) { \
-    memcpy(component_table[ENUM] + sizeof(TYPE) * entity_id, &value, sizeof(TYPE)); \
+    ((TYPE *) component_table[ENUM])[entity_id] = value; \
 }
 COMPONENTS
 #undef X

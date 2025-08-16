@@ -24,9 +24,7 @@ typedef enum Component {
 
 typedef glm::vec3 Position;
 
-typedef struct Rotation {
-    glm::mat3 rota;
-} Rotation;
+typedef glm::mat3 Rotation;
 
 typedef struct Scale {
     float scale;

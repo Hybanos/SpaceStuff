@@ -121,13 +121,11 @@ void Orbits::get_true_anomaly(int i, bool compute) {
         compute_true_anomalies(i);
     }
 
-    // double t = (double) (high_resolution_clock::now().time_since_epoch().count() / 1e9); 
     double t = scene->get_time().time_since_epoch().count() / 1e9;
     double days_since_epoch = (t - epoch[i]) / SECS_DAY;
 
     float real_time_mean_anomaly = tle[i].mean_anomaly + days_since_epoch * tle[i].revloutions_per_day * M_PI * 2;
     real_time_mean_anomaly = fmod(real_time_mean_anomaly, M_PI * 2);
-    // fmt::print("{}\n", real_time_mean_anomaly);
 
     int index =  (int) glm::degrees(real_time_mean_anomaly);
     float delta = floor(glm::degrees(real_time_mean_anomaly)) - glm::degrees(real_time_mean_anomaly);
@@ -228,26 +226,26 @@ void Orbits::debug() {
                     scene->camera->set_anchor(this);
                 }
 
-                // ImGui::Text("Catalog number: %d", tle[i].cat_number);
-                // ImGui::Text("Catalog class: %c", tle[i].classification);
-                // ImGui::Text("Int. designator: %s", tle[i].international_designator.c_str());
-                // ImGui::DragInt("Epoch year", &tle[i].epoch_year);
-                // ImGui::DragInt("Epoch day", &tle[i].epoch_day);
-                // ImGui::DragFloat("Epoch frac", &tle[i].epoch_frac);
-                // ImGui::Spacing();
-                // ImGui::SliderFloat("Inclination", &tle[i].inclination, 0, M_PI * 2);
-                // ImGui::SliderFloat("Ascending node", &tle[i].ascending_node_longitude, 0, M_PI * 2);
-                // ImGui::SliderFloat("Eccentricity", &tle[i].eccentricity, 0, 1);
-                // ImGui::SliderFloat("Argument of perigee", &tle[i].argument_of_perigee, 0, M_PI * 2);
-                // ImGui::SliderFloat("Mean anomaly (at epoch)", &tle[i].mean_anomaly, 0, M_PI * 2);
-                // ImGui::DragFloat("Revs. per day", &tle[i].revloutions_per_day);
-                // ImGui::DragInt("Revs at epoch", &tle[i].revolutions_at_epoch);
-                // ImGui::Spacing();
-                // ImGui::Text("Semi major axis: %f", semi_major_axis[i]);
-                // ImGui::Text("Semi minor axis: %f", semi_minor_axis[i]);
-                // ImGui::Text("True anomaly: %f", true_anomaly[i]);
-                // ImGui::Text("True to mean anomalies:");
-                // ImGui::PlotLines("haha", true_anomaly_index[i].begin(), 360, 0, NULL, 0, M_PI * 2, ImVec2(0, 80));
+                ImGui::Text("Catalog number: %d", tle[i].cat_number);
+                ImGui::Text("Catalog class: %c", tle[i].classification);
+                ImGui::Text("Int. designator: %s", tle[i].international_designator);
+                ImGui::DragInt("Epoch year", &tle[i].epoch_year);
+                ImGui::DragInt("Epoch day", &tle[i].epoch_day);
+                ImGui::DragFloat("Epoch frac", &tle[i].epoch_frac);
+                ImGui::Spacing();
+                ImGui::SliderFloat("Inclination", &tle[i].inclination, 0, M_PI * 2);
+                ImGui::SliderFloat("Ascending node", &tle[i].ascending_node_longitude, 0, M_PI * 2);
+                ImGui::SliderFloat("Eccentricity", &tle[i].eccentricity, 0, 1);
+                ImGui::SliderFloat("Argument of perigee", &tle[i].argument_of_perigee, 0, M_PI * 2);
+                ImGui::SliderFloat("Mean anomaly (at epoch)", &tle[i].mean_anomaly, 0, M_PI * 2);
+                ImGui::DragFloat("Revs. per day", &tle[i].revloutions_per_day);
+                ImGui::DragInt("Revs at epoch", &tle[i].revolutions_at_epoch);
+                ImGui::Spacing();
+                ImGui::Text("Semi major axis: %f", semi_major_axis[i]);
+                ImGui::Text("Semi minor axis: %f", semi_minor_axis[i]);
+                ImGui::Text("True anomaly: %f", true_anomaly[i]);
+                ImGui::Text("True to mean anomalies:");
+                ImGui::PlotLines("haha", true_anomaly_index[i].begin(), 360, 0, NULL, 0, M_PI * 2, ImVec2(0, 80));
                 ImGui::Spacing();
                 ImGui::Text("\tx\ty\tz");
                 ImGui::Text("\t%f\t%f\t%f", base[i][0][0], base[i][1][0], base[i][2][0]);
