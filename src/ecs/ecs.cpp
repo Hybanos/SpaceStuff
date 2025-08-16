@@ -3,10 +3,10 @@
 ECSTable::ECSTable() {
     component_table = (void **) malloc(sizeof(void *) * NUM_COMPONENT);
     #define X(ENUM, TYPE) \
-    component_table[ENUM] = (TYPE *) malloc(sizeof(TYPE) * size);
+    component_table[ENUM] = (TYPE *) malloc(sizeof(TYPE) * max);
     COMPONENTS
     #undef X
-    bits = (int *) malloc(sizeof(int) * size);
+    bits = (int *) malloc(sizeof(int) * max);
 }
 
 ECSTable::~ECSTable() {
@@ -47,7 +47,7 @@ void ECSTable::remove_entity(size_t entity_id) {
 }
 
 void ECSTable::set_component(size_t entity_id, Component component) {
-    bits[entity_id] |= component;
+    bits[entity_id] |= (1 << component);
     // component_sizes[component]++;
 }
 
@@ -57,7 +57,7 @@ void ECSTable::set_component(size_t entity_id, Component component) {
 
 #define X(ENUM, TYPE) \
 void ECSTable::set_##TYPE(size_t entity_id, TYPE value) { \
-    component_table[ENUM][entity_id] = value; \
-} \
+    memcpy(component_table[ENUM] + sizeof(TYPE) * entity_id, &value, sizeof(TYPE)); \
+}
 COMPONENTS
 #undef X

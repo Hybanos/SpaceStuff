@@ -15,6 +15,7 @@ Scene::Scene(SDL_Window *_window) {
     
     camera->look_at(glm::vec3(0, 0, 0));
     camera->update_pos();
+
 }
 
 int Scene::get_width() {
@@ -79,6 +80,16 @@ std::chrono::high_resolution_clock::time_point Scene::get_time() {
 void Scene::build_solar_system() {
     std::vector<TLE> t = db.get_all_tle();
 
+    for (int i = 0; i < t.size(); i++) {
+        size_t e = ecs.request_entity();
+
+        ecs.set_component(e, POSITION);
+        ecs.set_component(e, TWO_LINE_ELEMENT);
+        ecs.set_component(e, ORBIT);
+
+        ecs.set_TLE(e, t[i]);
+    }
+
     objects.push_back(new Sphere(this, 10));
     objects.push_back(new Sphere(this, 199));
     objects.push_back(new Sphere(this, 299));
@@ -128,4 +139,5 @@ void Scene::debug() {
     ImGui::End();
     time.debug();
     db.debug();
+    debug_entities(ecs); 
 }

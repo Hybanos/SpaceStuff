@@ -1,6 +1,8 @@
 #pragma once
 
-#include <glm/glm.hpp>
+#include "glm/glm.hpp"
+
+#include "data/tle.hpp"
 
 #define FREE_ENTITY NUM_COMPONENT
 
@@ -8,7 +10,9 @@
 #define COMPONENTS \
     X(POSITION, Position) \
     X(ROTATION, Rotation) \
-    X(SCALE, Scale) 
+    X(SCALE, Scale) \
+    X(TWO_LINE_ELEMENT, TLE) \
+    X(ORBIT, Orbit)
 
 #define X(ENUM, TYPE) ENUM,
 typedef enum Component {
@@ -30,5 +34,15 @@ typedef struct Rotation {
 
 typedef struct Scale {
     float scale;
-} Rotation;
+} Scale;
+
+typedef struct Orbit {
+    float semi_major_axis;
+    float semi_minor_axis;
+    double epoch;
+    float true_anomaly;
+    float true_anomaly_index[360];
+    glm::vec3 offset;
+    float flag;
+} Orbit;
 

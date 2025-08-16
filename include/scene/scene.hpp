@@ -11,6 +11,7 @@
 #include "objects/ring.hpp"
 #include "data/db_manager.hpp"
 #include "render/shader.hpp"
+#include "ecs/systems.hpp"
 
 #include "data/tle.hpp"
 
@@ -23,6 +24,8 @@ class Object;
 class Scene {
     private:
         std::vector<Object *> objects;
+        ECSTable ecs;
+
     public:
         Scene(SDL_Window *);
         DBManager db;

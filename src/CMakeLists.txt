@@ -19,6 +19,9 @@ target_sources(main PRIVATE
     render/shader.cpp
     render/mesh.cpp
 
+    ecs/ecs.cpp
+    ecs/systems.cpp
+
     main.cpp
 )
 
@@ -48,6 +51,10 @@ target_sources(main PUBLIC
 
         ${PROJECT_SOURCE_DIR}/include/render/shader.hpp
         ${PROJECT_SOURCE_DIR}/include/render/mesh.hpp
+
+        ${PROJECT_SOURCE_DIR}/include/ecs/ecs.hpp
+        ${PROJECT_SOURCE_DIR}/include/ecs/components.hpp
+        ${PROJECT_SOURCE_DIR}/include/ecs/systems.hpp
 )
 
 target_sources(

@@ -4,10 +4,9 @@
 #include <unordered_map>
 #include <functional>
 
-#include <fmt/core.h>
+#include "fmt/core.h"
 
-#include <ecs/components.hpp>
-#include <ecs/systems.hpp>
+#include "ecs/components.hpp"
 
 typedef std::function<void (void)> system_function_t;
 
@@ -33,7 +32,7 @@ class ECSTable {
         // void request_system(int bits, system_function_t);
 
         #define X(ENUM, TYPE) \
-        void set_##TYPE(size_t entity_id, TYPE value);
+        void set_##TYPE(size_t entity_id, TYPE value); 
         COMPONENTS
         #undef X
 };
