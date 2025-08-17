@@ -11,4 +11,4 @@ namespace systems {
     void compute_pos_along_orbit(ECSTable &ecs);
 
     void debug_entities(ECSTable &ecs);
-}
+} // namespace systems

@@ -3,14 +3,15 @@
 namespace systems {
 
 void compute_orbit_from_tle(ECSTable &ecs) {
-    int flags = (1 << TWO_LINE_ELEMENT) | (1 << ORBIT) | (1 << ROTATION);
+    int flags = (1 << TWO_LINE_ELEMENT) | (1 << ORBIT) | (1 << ROTATION) | (1 << EPOCH);
 
     for (size_t i = 0; i < ecs.size; i++) {
-        if (!(ecs.bits[i] & flags)) continue;
+        if ((ecs.bits[i] & flags) != flags) continue;
 
         TLE &tle = ((TLE *) ecs.component_table[TWO_LINE_ELEMENT])[i];
         Orbit &orbit = ((Orbit *) ecs.component_table[ORBIT])[i];
         Rotation &rotation = ((Rotation *) ecs.component_table[ROTATION])[i];
+        Epoch &epoch = ((Epoch *) ecs.component_table[EPOCH])[i];
 
         // ref: https://en.wikipedia.org/wiki/Orbital_elements#Euler_angle_transformations
         // note: Y and Z axis are swapped (we are in Y-up right-handed geometry, wikipedia is Z-up)
@@ -52,20 +53,21 @@ void compute_orbit_from_tle(ECSTable &ecs) {
         tm.tm_hour = 1;
         tm.tm_min = 0;
         tm.tm_sec = 0;
-        orbit.epoch = ((double) std::mktime(&tm)) + (tle.epoch_day - 1 + tle.epoch_frac) * 86400;
+        epoch = ((double) std::mktime(&tm)) + (tle.epoch_day - 1 + tle.epoch_frac) * 86400;
     }
 }
 
 void index_true_anomalies(ECSTable &ecs) {
-    int flags = (1 << TWO_LINE_ELEMENT) | (1 << ORBIT);
+    int flags = (1 << TWO_LINE_ELEMENT) | (1 << ORBIT) | (1 << TRUE_ANOMALY_INDEX);
     int max_iter = 20;
     double e = 0.0001;
 
     for (size_t i = 0; i < ecs.size; i++) {
-        if (!(ecs.bits[i] & flags)) continue;
+        if ((ecs.bits[i] & flags) != flags) continue;
 
         TLE &tle = ((TLE *) ecs.component_table[TWO_LINE_ELEMENT])[i];
         Orbit &orbit = ((Orbit *) ecs.component_table[ORBIT])[i];
+        AnomalyIndex &anomaly_index = ((AnomalyIndex *) ecs.component_table[TRUE_ANOMALY_INDEX])[i];
 
         for (int angle = 0; angle < 360; angle++) {
             float tmp_mean_anomaly = glm::radians((float) angle);
@@ -86,21 +88,23 @@ void index_true_anomalies(ECSTable &ecs) {
                 }
             }
 
-            orbit.true_anomaly_index[angle] = fmod(anm_ecc + M_PI * 2, M_PI * 2);
+            anomaly_index[angle] = fmod(anm_ecc + M_PI * 2, M_PI * 2);
         }
     }
 }
 
 void compute_true_anomalies(ECSTable &ecs, double t) {
-    int flags = (1 << TWO_LINE_ELEMENT) | (1 << ORBIT);
+    int flags = (1 << TWO_LINE_ELEMENT) | (1 << ORBIT) | (1 << EPOCH) | (1 << TRUE_ANOMALY_INDEX);
 
     for (size_t i = 0; i < ecs.size; i++) {
-        if (!(ecs.bits[i] & flags)) continue;
+        if ((ecs.bits[i] & flags) != flags) continue;
 
         TLE &tle = ((TLE *) ecs.component_table[TWO_LINE_ELEMENT])[i];
         Orbit &orbit = ((Orbit *) ecs.component_table[ORBIT])[i];
+        Epoch &epoch = ((Epoch *) ecs.component_table[EPOCH])[i];
+        AnomalyIndex &anomaly_index = ((AnomalyIndex *) ecs.component_table[TRUE_ANOMALY_INDEX])[i];
 
-        double days_since_epoch = (t - orbit.epoch) / (24 * 3600);
+        double days_since_epoch = (t - epoch) / (24 * 3600);
 
         float real_time_mean_anomaly = tle.mean_anomaly + days_since_epoch * tle.revloutions_per_day * M_PI * 2;
         real_time_mean_anomaly = fmod(real_time_mean_anomaly, M_PI * 2);
@@ -108,8 +112,8 @@ void compute_true_anomalies(ECSTable &ecs, double t) {
         int index =  (int) glm::degrees(real_time_mean_anomaly);
         float delta = floor(glm::degrees(real_time_mean_anomaly)) - glm::degrees(real_time_mean_anomaly);
 
-        float ta_i = orbit.true_anomaly_index[index];
-        float ta_ip1 = index != 359 ? orbit.true_anomaly_index[(index+1) % 360] : M_PI * 2;
+        float ta_i = anomaly_index[index];
+        float ta_ip1 = index != 359 ? anomaly_index[(index+1) % 360] : M_PI * 2;
 
         orbit.true_anomaly = delta * ta_i + (1 - delta) * ta_ip1;
         orbit.true_anomaly = fmod(orbit.true_anomaly, M_PI * 2);
@@ -120,7 +124,7 @@ void compute_pos_along_orbit(ECSTable &ecs) {
     int flags = (1 << ORBIT) | (1 << ROTATION) | (1 << POSITION);
 
     for (size_t i = 0; i < ecs.size; i++) {
-        if (!(ecs.bits[i] & flags)) continue;
+        if ((ecs.bits[i] & flags) != flags) continue;
 
         Orbit &orbit = ((Orbit *) ecs.component_table[ORBIT])[i];
         Rotation &rota = ((Rotation *) ecs.component_table[ROTATION])[i];
@@ -214,17 +218,33 @@ void debug_entities(ECSTable &ecs) {
 
         ImGui::DragFloat("Semi major axis", &orbit.semi_major_axis);
         ImGui::DragFloat("Semi minor axis", &orbit.semi_minor_axis);
-        float tmp = orbit.epoch;
-        ImGui::DragFloat("Epoch", &tmp);
-        orbit.epoch = tmp;
         ImGui::Text("True anomaly: %f", orbit.true_anomaly);
         ImGui::Text("True to mean anomalies:");
-        ImGui::PlotLines("haha", orbit.true_anomaly_index, 360, 0, NULL, 0, M_PI * 2, ImVec2(0, 80));
         ImGui::DragFloat3("Offset", &orbit.offset[0]);
         ImGui::InputFloat("Flag", &orbit.flag);
+    }
+
+    if (bits & (1 << EPOCH)) {
+        ImGui::Spacing();
+        ImGui::SeparatorText("Epoch");
+
+        Epoch &epoch = ((Epoch *) ecs.component_table[EPOCH])[selected];
+
+        float tmp = epoch;
+        ImGui::DragFloat("Epoch", &tmp);
+        epoch = tmp;
+    }
+
+    if (bits & (1 << TRUE_ANOMALY_INDEX)) {
+        ImGui::Spacing();
+        ImGui::SeparatorText("True anomaly index");
+
+        AnomalyIndex &index = ((AnomalyIndex *) ecs.component_table[TRUE_ANOMALY_INDEX])[selected];
+
+        ImGui::PlotLines("haha", index.begin(), 360, 0, NULL, 0, M_PI * 2, ImVec2(0, 80));
     }
 
     ImGui::End();
 }
 
-}
+} // namespace systems

@@ -1,6 +1,6 @@
 #include "render/mesh.hpp"
 
-Mesh::Mesh(Shader &s) : shader{s} {
+Mesh::Mesh(Shader s) : shader{s} {
     glGenVertexArrays(1, &VAO);
     buffers.resize(shader.buff_count());
     glGenBuffers(buffers.size(), buffers.data());

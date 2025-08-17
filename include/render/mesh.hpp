@@ -22,14 +22,14 @@ class Mesh {
         std::vector<GLuint> buffers;
         GLuint texture;
     public:
-        Mesh(Shader &s);
+        Mesh(Shader s);
 
         void draw(GLenum type, int first, size_t count);
         void draw_instanced(GLenum type, int first, size_t count, size_t total);
         void draw_cubemap(GLenum type, int first, size_t count);
 
         template<typename T> 
-        void set_buffer(int loc, std::vector<T, std::allocator<T>> &data, int div = 0);
+        void set_buffer(int loc, T *data, size_t count, int div = 0);
 
         void gen_cubemap(std::string path);
         void gen_texture(std::string path);
@@ -43,14 +43,14 @@ class Mesh {
 };
 
 template<typename T>
-void Mesh::set_buffer(int loc, std::vector<T, std::allocator<T>> &data, int div) {
+void Mesh::set_buffer(int loc, T *data, size_t count, int div) {
     glBindVertexArray(VAO);
 
     GLuint buf = buffers[shader.loc_to_buff(loc)];
     int element_count = shader.loc_to_type_size(loc);
     int element_type = shader.loc_to_type(loc);
     glBindBuffer(GL_ARRAY_BUFFER, buf);
-    glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(T), data.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, count * sizeof(T), data, GL_STATIC_DRAW);
 
     // fmt::print("buff id: {}, loc: {}, count: {}, type: {}\n",shader.loc_to_buff(loc), loc, element_count, element_type);
 

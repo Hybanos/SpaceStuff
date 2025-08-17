@@ -1,5 +1,7 @@
 #pragma once
 
+#include <array>
+
 #include "glm/glm.hpp"
 
 #include "data/tle.hpp"
@@ -12,7 +14,9 @@
     X(ROTATION, Rotation) \
     X(SCALE, Scale) \
     X(TWO_LINE_ELEMENT, TLE) \
-    X(ORBIT, Orbit)
+    X(ORBIT, Orbit) \
+    X(EPOCH, Epoch) \
+    X(TRUE_ANOMALY_INDEX, AnomalyIndex)
 
 #define X(ENUM, TYPE) ENUM,
 typedef enum Component {
@@ -23,20 +27,17 @@ typedef enum Component {
 #undef X
 
 typedef glm::vec3 Position;
-
 typedef glm::mat3 Rotation;
-
-typedef struct Scale {
-    float scale;
-} Scale;
+typedef float Scale;
 
 typedef struct Orbit {
+    glm::vec3 offset;
     float semi_major_axis;
     float semi_minor_axis;
-    double epoch;
     float true_anomaly;
-    float true_anomaly_index[360];
-    glm::vec3 offset;
     float flag;
 } Orbit;
+
+typedef double Epoch;
+typedef std::array<float, 360> AnomalyIndex;
 

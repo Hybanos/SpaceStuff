@@ -88,6 +88,8 @@ void Scene::build_solar_system() {
         ecs.set_component(e, ROTATION);
         ecs.set_component(e, TWO_LINE_ELEMENT);
         ecs.set_component(e, ORBIT);
+        ecs.set_component(e, EPOCH);
+        ecs.set_component(e, TRUE_ANOMALY_INDEX);
 
         ecs.set_TLE(e, t[i]);
     }

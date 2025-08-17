@@ -113,9 +113,9 @@ void Ring::draw() {
     mesh.set_vec3("pos", pos - scene->camera->get_center());
     mesh.set_vec2("highlight_bounds", highlight_bounds);
 
-    mesh.set_buffer(0, triangles);
-    mesh.set_buffer(1, transmittance);
-    mesh.set_buffer(2, radius);
+    mesh.set_buffer(0, triangles.data(), triangles.size());
+    mesh.set_buffer(1, transmittance.data(), transmittance.size());
+    mesh.set_buffer(2, radius.data(), radius.size());
 
     mesh.draw(GL_TRIANGLES, 0, triangles.size());
 }
