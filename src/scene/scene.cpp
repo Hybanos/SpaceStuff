@@ -152,5 +152,5 @@ void Scene::debug() {
     ImGui::End();
     time.debug();
     db.debug();
-    systems::debug_entities(ecs); 
+    systems::debug_entities(this, ecs); 
 }

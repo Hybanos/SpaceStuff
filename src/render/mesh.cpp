@@ -49,7 +49,6 @@ void Mesh::set_attrib_pointer(int loc, int element_count, int stride, void *poin
     glBindVertexArray(VAO);
 
     int buf = buffers[shader.loc_to_buff(loc_to_buffer_override[loc])];
-    // buf = buffers[shader.loc_to_buff(5)];
     glBindBuffer(GL_ARRAY_BUFFER, buf);
     glEnableVertexAttribArray(loc);
 
@@ -63,7 +62,6 @@ void Mesh::set_attrib_divisor(int loc, int div) {
     glBindVertexArray(VAO);
 
     int buf = buffers[shader.loc_to_buff(loc_to_buffer_override[loc])];
-    // buf = buffers[shader.loc_to_buff(5)];
     glBindBuffer(GL_ARRAY_BUFFER, buf);
     glEnableVertexAttribArray(loc);
     glVertexAttribDivisor(loc, div);

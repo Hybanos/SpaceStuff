@@ -12,6 +12,8 @@ namespace systems {
     void compute_true_anomalies(ECSTable &ecs, double t);
     void compute_pos_along_orbit(ECSTable &ecs);
     void draw_orbits(Scene *scene, ECSTable &ecs);
+    void filter_orbits(Scene *scene, ECSTable &ecs);
 
-    void debug_entities(ECSTable &ecs);
+    void debug_entity(Scene *scene, ECSTable &ecs, size_t entity_id);
+    void debug_entities(Scene *scene, ECSTable &ecs);
 } // namespace systems
