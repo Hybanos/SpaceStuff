@@ -44,8 +44,8 @@ void Particle::draw() {
 
     if (d_draw) {
         build();
-        mesh.set_buffer(0, triangles.data(), triangles.size());
-        mesh.set_buffer(1, triangles_colors.data(), triangles_colors.size());
+        mesh.set_location(0, triangles.data(), triangles.size());
+        mesh.set_location(1, triangles_colors.data(), triangles_colors.size());
         mesh.set_mat4("MVP", scene->mvp);
         mesh.draw(GL_TRIANGLES, 0, triangles.size() * 3);
     }

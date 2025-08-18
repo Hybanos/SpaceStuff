@@ -127,7 +127,7 @@ void Sphere::draw() {
 }
 
 void Sphere::manage_buffers() {
-    mesh.set_buffer(0, triangles.data(), triangles.size());
+    mesh.set_location(0, triangles.data(), triangles.size());
 }
 
 void Sphere::debug() {

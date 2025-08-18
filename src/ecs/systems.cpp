@@ -44,6 +44,7 @@ void compute_orbit_from_tle(ECSTable &ecs) {
 
         float linear_eccentricity = sqrt(orbit.semi_major_axis * orbit.semi_major_axis - orbit.semi_minor_axis * orbit.semi_minor_axis);
         orbit.offset = glm::vec3(-linear_eccentricity, 0, 0) * rotation;
+        orbit.flag = 1;
 
         // jan 1 of epoch year (seconds per year isn't uniform)
         std::tm tm = {};
@@ -140,6 +141,10 @@ void compute_pos_along_orbit(ECSTable &ecs) {
         
         position = inter * next + (1 - inter) * prev;
     }
+}
+
+void draw_orbits(Scene *scene, ECSTable &ecs) {
+    render::orbits::draw(scene, ecs, 0, ecs.size);
 }
 
 void debug_entities(ECSTable &ecs) {

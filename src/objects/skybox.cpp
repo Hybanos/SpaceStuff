@@ -66,7 +66,7 @@ SkyBox::SkyBox(Scene *s) : Object(s), mesh(scene->texture_shader) {
         glm::vec3(0, 0, 1)
     );
 
-    mesh.set_buffer(0, triangles.data(), triangles.size());
+    mesh.set_location(0, triangles.data(), triangles.size());
 }
 
 void SkyBox::draw() {

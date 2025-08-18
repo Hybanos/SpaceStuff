@@ -4,6 +4,10 @@ Mesh::Mesh(Shader s) : shader{s} {
     glGenVertexArrays(1, &VAO);
     buffers.resize(shader.buff_count());
     glGenBuffers(buffers.size(), buffers.data());
+    loc_to_buffer_override.resize(buffers.size());
+    for (int i = 0; i < buffers.size(); i++) {
+        loc_to_buffer_override[i] = shader.loc_to_buff(i);
+    }
 }
 
 void Mesh::draw(GLenum type, int first, size_t count) {
@@ -39,6 +43,38 @@ void Mesh::draw_instanced(GLenum type, int first, size_t count, size_t total) {
     glBindVertexArray(VAO);
     glDrawArraysInstanced(type, first, count, total);
     glBindVertexArray(0);
+}
+
+void Mesh::set_attrib_pointer(int loc, int element_count, int stride, void *pointer) {
+    glBindVertexArray(VAO);
+
+    int buf = buffers[shader.loc_to_buff(loc_to_buffer_override[loc])];
+    // buf = buffers[shader.loc_to_buff(5)];
+    glBindBuffer(GL_ARRAY_BUFFER, buf);
+    glEnableVertexAttribArray(loc);
+
+    glVertexAttribPointer(loc, element_count, shader.loc_to_type(loc), GL_FALSE, stride, pointer); 
+
+    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void Mesh::set_attrib_divisor(int loc, int div) {
+    glBindVertexArray(VAO);
+
+    int buf = buffers[shader.loc_to_buff(loc_to_buffer_override[loc])];
+    // buf = buffers[shader.loc_to_buff(5)];
+    glBindBuffer(GL_ARRAY_BUFFER, buf);
+    glEnableVertexAttribArray(loc);
+    glVertexAttribDivisor(loc, div);
+
+    glBindVertexArray(0);
+}
+
+void Mesh::fuse_loc_buffers(int first, int last) {
+    for (int i = first; i < last+1; i++) {
+        loc_to_buffer_override[i] = first;
+    }
 }
 
 void Mesh::gen_texture(std::string path) {

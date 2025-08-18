@@ -155,6 +155,7 @@ int main(int, char**)
 
     glewInit();
     glEnable(GL_BLEND);
+    glEnable(GL_DEBUG_OUTPUT);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
     // glDisable(GL_CULL_FACE);

@@ -187,14 +187,14 @@ void Orbits::draw() {
 
 void Orbits::manage_buffers() {
     size_t size = base.size();
-    mesh.set_buffer(0, lines.data(), lines.size());
-    mesh.set_buffer(1, lines_colors.data(), lines_colors.size());
-    mesh.set_buffer(2, base.data(), size, 1);
-    mesh.set_buffer(5, offset.data(), size, 1);
-    mesh.set_buffer(6, semi_major_axis.data(), size, 1);
-    mesh.set_buffer(7, semi_minor_axis.data(), size, 1);
-    mesh.set_buffer(8, true_anomaly.data(), size, 1);
-    mesh.set_buffer(9, flag.data(), size, 1);
+    mesh.set_location(0, lines.data(), lines.size());
+    mesh.set_location(1, lines_colors.data(), lines_colors.size());
+    mesh.set_location(2, base.data(), size, 1);
+    mesh.set_location(5, offset.data(), size, 1);
+    mesh.set_location(6, semi_major_axis.data(), size, 1);
+    mesh.set_location(7, semi_minor_axis.data(), size, 1);
+    mesh.set_location(8, true_anomaly.data(), size, 1);
+    mesh.set_location(9, flag.data(), size, 1);
 }
 
 void Orbits::debug() {

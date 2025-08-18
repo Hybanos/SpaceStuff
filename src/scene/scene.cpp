@@ -68,6 +68,10 @@ void Scene::render() {
 
         obj->draw();
     }
+    
+    systems::compute_true_anomalies(ecs, (double) get_time().time_since_epoch().count() / 1e9);
+    systems::draw_orbits(this, ecs);
+
     frames++;
 
     auto t2 = high_resolution_clock::now();
@@ -103,7 +107,7 @@ void Scene::build_solar_system() {
     objects.push_back(new Sphere(this, 199));
     objects.push_back(new Sphere(this, 299));
     objects.push_back((new Sphere(this, 399))
-        ->add_child(new Orbits(this, t))
+        // ->add_child(new Orbits(this, t))
     );
     objects.push_back(new Sphere(this, 301));
     objects.push_back(new Sphere(this, 499));

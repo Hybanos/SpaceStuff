@@ -19,6 +19,8 @@ class Mesh {
         GLuint VAO;
         Shader shader;
 
+        std::vector<int> loc_to_buffer_override;
+
         std::vector<GLuint> buffers;
         GLuint texture;
     public:
@@ -29,7 +31,13 @@ class Mesh {
         void draw_cubemap(GLenum type, int first, size_t count);
 
         template<typename T> 
-        void set_buffer(int loc, T *data, size_t count, int div = 0);
+        void set_location(int loc, T *data, size_t count, int div = 0);
+        template<typename T> 
+        void fill_buffer(int loc, T *data, size_t count);
+        void set_attrib_pointer(int loc, int element_count, int stride, void *pointer);
+        void set_attrib_divisor(int loc, int div);
+        // TODO: that's ugly
+        void fuse_loc_buffers(int first, int last);
 
         void gen_cubemap(std::string path);
         void gen_texture(std::string path);
@@ -39,11 +47,10 @@ class Mesh {
         void set_vec3(std::string name, glm::vec3 data) {shader.set_vec3(name, data);}
         void set_vec2(std::string name, glm::vec2 data) {shader.set_vec2(name, data);}
         void set_int(std::string name, int data) {shader.set_int(name, data);}
-        // void 
 };
 
 template<typename T>
-void Mesh::set_buffer(int loc, T *data, size_t count, int div) {
+void Mesh::set_location(int loc, T *data, size_t count, int div) {
     glBindVertexArray(VAO);
 
     GLuint buf = buffers[shader.loc_to_buff(loc)];
@@ -80,6 +87,18 @@ void Mesh::set_buffer(int loc, T *data, size_t count, int div) {
             glVertexAttribDivisor(loc + i, div);
         }
     }
+
+    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+template<typename T> 
+void Mesh::fill_buffer(int loc, T *data, size_t count) {
+    glBindVertexArray(VAO);
+
+    GLuint buf = buffers[shader.loc_to_buff(loc)];
+    glBindBuffer(GL_ARRAY_BUFFER, buf);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(T) * count, data, GL_STATIC_DRAW);
 
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);

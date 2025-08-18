@@ -28,7 +28,7 @@ Grid::Grid(Scene * s) : Object{s}, mesh(scene->grid_shader) {
         glm::vec3(-1, -1, 0) * scale,
     };
 
-    mesh.set_buffer(0, triangles.data(), triangles.size());
+    mesh.set_location(0, triangles.data(), triangles.size());
 }
 
 void Grid::draw() {
