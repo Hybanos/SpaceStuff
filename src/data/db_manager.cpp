@@ -379,9 +379,9 @@ std::vector<MajorBody> DBManager::get_all_major_bodies() {
         MajorBody b;
 
         b.major_body_id = sqlite3_column_int(statement, 0);
-        b.name = reinterpret_cast<const char *>(sqlite3_column_text(statement, 1));
-        b.designation = reinterpret_cast<const char *>(sqlite3_column_text(statement, 2));
-        b.alias = reinterpret_cast<const char *>(sqlite3_column_text(statement, 3));
+        strcpy(b.name, reinterpret_cast<const char *>(sqlite3_column_text(statement, 1)));
+        strcpy(b.designation, reinterpret_cast<const char *>(sqlite3_column_text(statement, 2)));
+        strcpy(b.alias, reinterpret_cast<const char *>(sqlite3_column_text(statement, 3)));
         b.mass = sqlite3_column_double(statement, 4);
         b.heliocentric_gravitaional_constant = sqlite3_column_double(statement, 5);
         b.radius = sqlite3_column_double(statement, 6);
@@ -403,9 +403,9 @@ MajorBody DBManager::get_major_body(int id) {
     sqlite3_prepare_v3(db, query.c_str(), query.size(), 0, &statement, NULL);
     if (sqlite3_step(statement) == SQLITE_ROW) {
         body.major_body_id = sqlite3_column_int(statement, 0);
-        body.name = reinterpret_cast<const char *>(sqlite3_column_text(statement, 1));
-        body.designation = reinterpret_cast<const char *>(sqlite3_column_text(statement, 2));
-        body.alias = reinterpret_cast<const char *>(sqlite3_column_text(statement, 3));
+        strcpy(body.name , reinterpret_cast<const char *>(sqlite3_column_text(statement, 1)));
+        strcpy(body.designation , reinterpret_cast<const char *>(sqlite3_column_text(statement, 2)));
+        strcpy(body.alias , reinterpret_cast<const char *>(sqlite3_column_text(statement, 3)));
         body.mass = sqlite3_column_double(statement, 4);
         body.heliocentric_gravitaional_constant = sqlite3_column_double(statement, 5);
         body.radius = sqlite3_column_double(statement, 6);

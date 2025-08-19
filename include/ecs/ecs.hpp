@@ -28,6 +28,8 @@ class ECSTable {
         void remove_entity(size_t entity_id);
         void set_component(size_t entity_id, Component component);
         // void commit() {sort();}
+        size_t get_first(int b);
+        size_t get_last(int b);
 
         // void request_system(int bits, system_function_t);
 

@@ -23,7 +23,7 @@ mesh(scene->texture_shader) {
     fmt::print("got body {}\n", b.name);
     size = b.radius;
     display_name = b.name;
-    mesh.gen_cubemap("assets/textures/cubemaps/" + b.name);
+    mesh.gen_cubemap(fmt::format("assets/textures/cubemaps/{}", b.name));
 
     std::cout << line.x << " " << line.y << " " << line.z << std::endl;
 

@@ -20,7 +20,9 @@ target_sources(main PRIVATE
     render/objects/orbits.cpp
 
     ecs/ecs.cpp
-    ecs/systems.cpp
+    ecs/systems/systems.cpp
+    ecs/systems/sphere.cpp
+    ecs/systems/orbit.cpp
 
     main.cpp
 )

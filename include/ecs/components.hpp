@@ -5,6 +5,7 @@
 #include "glm/glm.hpp"
 
 #include "data/tle.hpp"
+#include "data/horizons.hpp"
 
 #define FREE_ENTITY NUM_COMPONENT
 
@@ -16,7 +17,9 @@
     X(TWO_LINE_ELEMENT, TLE) \
     X(ORBIT, Orbit) \
     X(EPOCH, Epoch) \
-    X(TRUE_ANOMALY_INDEX, AnomalyIndex)
+    X(TRUE_ANOMALY_INDEX, AnomalyIndex) \
+    X(MAJOR_BODY, MajorBody) \
+    X(EPHEMERIS, Ephemeris) \
 
 #define X(ENUM, TYPE) ENUM,
 typedef enum Component {
@@ -25,6 +28,9 @@ typedef enum Component {
     NUM_COMPONENT,
 } Component;
 #undef X
+
+#define DRAWABLE_ORBIT ((1 << POSITION) | (1 << ROTATION) | (1 << TWO_LINE_ELEMENT) | (1 << ORBIT) | (1 << EPOCH) | (1 << TRUE_ANOMALY_INDEX))
+#define DRAWABLE_SPHERE ((1 << POSITION) | (1 << ROTATION) | (1 << SCALE) | (1 << MAJOR_BODY) | (1 << EPHEMERIS))
 
 typedef glm::vec3 Position;
 typedef glm::mat3 Rotation;
@@ -40,4 +46,4 @@ typedef struct Orbit {
 
 typedef double Epoch;
 typedef std::array<float, 360> AnomalyIndex;
-
+typedef std::array<EphemerisLine, 365> Ephemeris;

@@ -69,8 +69,8 @@ void Scene::render() {
         obj->draw();
     }
     
-    systems::compute_true_anomalies(ecs, (double) get_time().time_since_epoch().count() / 1e9);
-    systems::draw_orbits(this, ecs);
+    systems::orbit::compute_true_anomalies(ecs, (double) get_time().time_since_epoch().count() / 1e9);
+    systems::orbit::draw_orbits(this, ecs);
 
     frames++;
 
@@ -85,6 +85,18 @@ std::chrono::high_resolution_clock::time_point Scene::get_time() {
 void Scene::build_solar_system() {
     std::vector<TLE> t = db.get_all_tle();
 
+    for (int id : {10, 199, 299, 399, 301, 499, 599, 501, 502, 503, 504, 699, 606, 799, 899}) {
+        size_t e = ecs.request_entity();
+
+        ecs.set_component(e, POSITION);
+        ecs.set_component(e, ROTATION);
+        ecs.set_component(e, SCALE);
+        ecs.set_component(e, MAJOR_BODY);
+        ecs.set_component(e, EPHEMERIS);
+
+        ecs.set_MajorBody(e, db.get_major_body(id));
+    }
+
     for (int i = 0; i < t.size(); i++) {
         size_t e = ecs.request_entity();
 
@@ -98,10 +110,10 @@ void Scene::build_solar_system() {
         ecs.set_TLE(e, t[i]);
     }
 
-    systems::compute_orbit_from_tle(ecs);
-    systems::index_true_anomalies(ecs);
-    systems::compute_true_anomalies(ecs, (double) get_time().time_since_epoch().count() / 1e9);
-    systems::compute_pos_along_orbit(ecs);
+    systems::orbit::compute_orbit_from_tle(ecs);
+    systems::orbit::index_true_anomalies(ecs);
+    systems::orbit::compute_true_anomalies(ecs, (double) get_time().time_since_epoch().count() / 1e9);
+    systems::orbit::compute_pos_along_orbit(ecs);
 
     objects.push_back(new Sphere(this, 10));
     objects.push_back(new Sphere(this, 199));

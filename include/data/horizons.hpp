@@ -7,12 +7,13 @@
 #include <regex>
 #include <algorithm> 
 #include <cctype>
+#include <chrono>
 
 struct MajorBody {
     int major_body_id;
-    std::string name;
-    std::string designation;
-    std::string alias;
+    char name[40];
+    char designation[40];
+    char alias[40];
     double mass;
     double heliocentric_gravitaional_constant;
     double radius;
@@ -36,16 +37,20 @@ inline std::vector<MajorBody> parse_major_bodies(std::string t) {
 
     std::string l;
     while (std::getline(text, l)) {
-        MajorBody b;
+        MajorBody b = {0};
         try {
             b.major_body_id = std::stoi(l.substr(0, 9));
         } catch (std::exception) {
             continue;
         }
-        b.name = l.substr(11, 35);
-        b.name.erase(std::find_if(b.name.rbegin(), b.name.rend(), [](unsigned char ch) {return !std::isspace(ch);}).base(), b.name.end());
-        b.designation = l.substr(46, 9);
-        b.alias = l.substr(59);
+        std::string tmp;
+        tmp = l.substr(11, 35);
+        tmp.erase(std::find_if(tmp.rbegin(), tmp.rend(), [](unsigned char ch) {return !std::isspace(ch);}).base(), tmp.end());
+        memcpy(&b.name, tmp.data(), tmp.size());
+        tmp = l.substr(46, 9);
+        memcpy(&b.designation, tmp.data(), tmp.size());
+        tmp = l.substr(59);
+        memcpy(&b.alias, tmp.data(), tmp.size());
         b.mass = -1;
         b.heliocentric_gravitaional_constant = -1;
         b.radius = -1;

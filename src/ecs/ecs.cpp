@@ -51,6 +51,22 @@ void ECSTable::set_component(size_t entity_id, Component component) {
     // component_sizes[component]++;
 }
 
+size_t ECSTable::get_first(int b) {
+    size_t i = 0;
+    while (1) {
+        if (bits[i] == b) return i;
+        i++;
+    }
+}
+
+size_t ECSTable::get_last(int b) {
+    size_t i = size;
+    while (1) {
+        if (bits[i-1] == b) return i;
+        i--;
+    }
+}
+
 // void ECSTable::request_system(int bits, system_function_t fn) {
 //     systems.emplace(bits, fn);
 // }

@@ -1,12 +1,10 @@
 #include "ecs/systems.hpp"
 
-namespace systems {
+namespace systems::orbit {
 
 void compute_orbit_from_tle(ECSTable &ecs) {
-    int flags = (1 << TWO_LINE_ELEMENT) | (1 << ORBIT) | (1 << ROTATION) | (1 << EPOCH);
-
     for (size_t i = 0; i < ecs.size; i++) {
-        if ((ecs.bits[i] & flags) != flags) continue;
+        if (ecs.bits[i] != DRAWABLE_ORBIT) continue;
 
         TLE &tle = ((TLE *) ecs.component_table[TWO_LINE_ELEMENT])[i];
         Orbit &orbit = ((Orbit *) ecs.component_table[ORBIT])[i];
@@ -59,12 +57,11 @@ void compute_orbit_from_tle(ECSTable &ecs) {
 }
 
 void index_true_anomalies(ECSTable &ecs) {
-    int flags = (1 << TWO_LINE_ELEMENT) | (1 << ORBIT) | (1 << TRUE_ANOMALY_INDEX);
     int max_iter = 20;
     double e = 0.0001;
 
     for (size_t i = 0; i < ecs.size; i++) {
-        if ((ecs.bits[i] & flags) != flags) continue;
+        if (ecs.bits[i] != DRAWABLE_ORBIT) continue;
 
         TLE &tle = ((TLE *) ecs.component_table[TWO_LINE_ELEMENT])[i];
         Orbit &orbit = ((Orbit *) ecs.component_table[ORBIT])[i];
@@ -95,10 +92,8 @@ void index_true_anomalies(ECSTable &ecs) {
 }
 
 void compute_true_anomalies(ECSTable &ecs, double t) {
-    int flags = (1 << TWO_LINE_ELEMENT) | (1 << ORBIT) | (1 << EPOCH) | (1 << TRUE_ANOMALY_INDEX);
-
     for (size_t i = 0; i < ecs.size; i++) {
-        if ((ecs.bits[i] & flags) != flags) continue;
+        if (ecs.bits[i] != DRAWABLE_ORBIT) continue;
 
         TLE &tle = ((TLE *) ecs.component_table[TWO_LINE_ELEMENT])[i];
         Orbit &orbit = ((Orbit *) ecs.component_table[ORBIT])[i];
@@ -122,10 +117,8 @@ void compute_true_anomalies(ECSTable &ecs, double t) {
 }
 
 void compute_pos_along_orbit(ECSTable &ecs) {
-    int flags = (1 << ORBIT) | (1 << ROTATION) | (1 << POSITION);
-
     for (size_t i = 0; i < ecs.size; i++) {
-        if ((ecs.bits[i] & flags) != flags) continue;
+        if (ecs.bits[i] != DRAWABLE_ORBIT) continue;
 
         Orbit &orbit = ((Orbit *) ecs.component_table[ORBIT])[i];
         Rotation &rota = ((Rotation *) ecs.component_table[ROTATION])[i];
@@ -144,11 +137,12 @@ void compute_pos_along_orbit(ECSTable &ecs) {
 }
 
 void draw_orbits(Scene *scene, ECSTable &ecs) {
-    render::orbits::draw(scene, ecs, 0, ecs.size);
+    size_t first = ecs.get_first(DRAWABLE_ORBIT);
+    size_t last = ecs.get_last(DRAWABLE_ORBIT);
+    render::orbits::draw(scene, ecs, first, last);
 }
 
 void filter_orbits(Scene *scene, ECSTable &ecs) {
-    int flags = (1 << ORBIT) | (1 << TWO_LINE_ELEMENT);
     static ImGuiTextFilter filter;
 
     if (ImGui::InputTextWithHint("##Filter", "filter", filter.InputBuf, IM_ARRAYSIZE(filter.InputBuf))) {
@@ -156,7 +150,7 @@ void filter_orbits(Scene *scene, ECSTable &ecs) {
     }
 
     for (size_t i = 0; i < ecs.size; i++) {
-        if ((ecs.bits[i] & flags) != flags) continue;
+        if (ecs.bits[i] != DRAWABLE_ORBIT) continue;
 
         TLE &tle = ((TLE *) ecs.component_table[TWO_LINE_ELEMENT])[i];
         Orbit &orbit = ((Orbit *) ecs.component_table[ORBIT])[i];
@@ -174,123 +168,4 @@ void filter_orbits(Scene *scene, ECSTable &ecs) {
     } 
 }
 
-void debug_entity(Scene *scene, ECSTable &ecs, size_t entity_id) {
-        int bits = ecs.bits[entity_id];
-        if (bits & (1 << POSITION)) {
-            ImGui::Spacing();
-            ImGui::SeparatorText("Position");
-            ImGui::DragFloat3("##1", &((Position *) ecs.component_table[POSITION])[entity_id].x);
-        }
-
-        if (bits & (1 << ROTATION)) {
-            ImGui::Spacing();
-            ImGui::SeparatorText("Rotation");
-            ImGui::DragFloat3("##2", &((glm::mat3 *) ecs.component_table[ROTATION])[entity_id][0][0]);
-            ImGui::DragFloat3("##3", &((glm::mat3 *) ecs.component_table[ROTATION])[entity_id][1][0]);
-            ImGui::DragFloat3("##4", &((glm::mat3 *) ecs.component_table[ROTATION])[entity_id][2][0]);
-        }
-
-        if (bits & (1 << SCALE)) {
-            ImGui::Spacing();
-            ImGui::SeparatorText("Scale");
-            ImGui::DragFloat("##5", &((float *)ecs.component_table[SCALE])[entity_id]);
-        }
-
-        if (bits & (1 << TWO_LINE_ELEMENT)) {
-            ImGui::Spacing();
-            ImGui::SeparatorText("TLE");
-
-            TLE &tle = ((TLE *)ecs.component_table[TWO_LINE_ELEMENT])[entity_id];
-
-            ImGui::Text(tle.name.c_str());
-            ImGui::Text("Catalog number: %d", tle.cat_number);
-            ImGui::Text("Catalog class: %c", tle.classification);
-            ImGui::Text("Int. designator: %s", tle.international_designator);
-            ImGui::DragInt("Epoch year", &tle.epoch_year);
-            ImGui::DragInt("Epoch day", &tle.epoch_day);
-            ImGui::DragFloat("Epoch frac", &tle.epoch_frac);
-            ImGui::Spacing();
-            ImGui::SliderFloat("Inclination", &tle.inclination, 0, M_PI * 2);
-            ImGui::SliderFloat("Ascending node", &tle.ascending_node_longitude, 0, M_PI * 2);
-            ImGui::SliderFloat("Eccentricity", &tle.eccentricity, 0, 1);
-            ImGui::SliderFloat("Argument of perigee", &tle.argument_of_perigee, 0, M_PI * 2);
-            ImGui::SliderFloat("Mean anomaly (at epoch)", &tle.mean_anomaly, 0, M_PI * 2);
-            ImGui::DragFloat("Revs. per day", &tle.revloutions_per_day);
-            ImGui::DragInt("Revs at epoch", &tle.revolutions_at_epoch);
-        }
-
-        if (bits & (1 << ORBIT)) {
-            ImGui::Spacing();
-            ImGui::SeparatorText("Orbit");
-
-            Orbit &orbit = ((Orbit *)ecs.component_table[ORBIT])[entity_id];
-
-            ImGui::DragFloat("Semi major axis", &orbit.semi_major_axis);
-            ImGui::DragFloat("Semi minor axis", &orbit.semi_minor_axis);
-            ImGui::Text("True anomaly: %f", orbit.true_anomaly);
-            ImGui::Text("True to mean anomalies:");
-            ImGui::DragFloat3("Offset", &orbit.offset[0]);
-            ImGui::InputFloat("Flag", &orbit.flag);
-        }
-
-        if (bits & (1 << EPOCH)) {
-            ImGui::Spacing();
-            ImGui::SeparatorText("Epoch");
-
-            Epoch &epoch = ((Epoch *) ecs.component_table[EPOCH])[entity_id];
-
-            float tmp = epoch;
-            ImGui::DragFloat("Epoch", &tmp);
-            epoch = tmp;
-        }
-
-        if (bits & (1 << TRUE_ANOMALY_INDEX)) {
-            ImGui::Spacing();
-            ImGui::SeparatorText("True anomaly index");
-
-            AnomalyIndex &index = ((AnomalyIndex *) ecs.component_table[TRUE_ANOMALY_INDEX])[entity_id];
-
-            ImGui::PlotLines("haha", index.begin(), 360, 0, NULL, 0, M_PI * 2, ImVec2(0, 80));
-        }
-
-}
-
-void debug_entities(Scene *scene, ECSTable &ecs) {
-    ImGui::Begin("ECS");
-    ImGui::BeginTabBar("ECS tabs");
-
-    if (ImGui::BeginTabItem("ECS table")) {
-        static size_t selected = 0;
-        if (ImGui::BeginTable("ecs_entity_table", 2, ImGuiTableFlags_Borders | ImGuiTableFlags_ScrollY | ImGuiTableFlags_Resizable, ImVec2(0, 300))) {
-            ImGui::TableSetupColumn("ID");
-            ImGui::TableSetupColumn("bits");
-            ImGui::TableHeadersRow();
-            for (size_t i = 0; i < ecs.size; i++) {
-                ImGui::TableNextRow();
-                ImGui::TableNextColumn();
-                bool sel = (selected == i);
-                ImGui::Selectable(fmt::format("{}", i).c_str(), &sel, ImGuiSelectableFlags_SpanAllColumns);
-                if (sel) selected = i;
-                ImGui::TableNextColumn();
-                ImGui::Text("%d", ecs.bits[i]);
-            }
-            ImGui::EndTable();
-        };
-
-        ImGui::Spacing();
-
-        ImGui::Text("Entity %lld:", selected);
-        debug_entity(scene, ecs, selected);
-
-        ImGui::EndTabItem();
-    }
-    if (ImGui::BeginTabItem("Orbit filter")) {
-        filter_orbits(scene, ecs);
-        ImGui::EndTabItem();
-    }
-
-    ImGui::EndTabBar();
-    ImGui::End();
-}
-
-} // namespace systems
+} // namespace systems::orbit
