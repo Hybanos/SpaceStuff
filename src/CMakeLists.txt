@@ -18,6 +18,7 @@ target_sources(main PRIVATE
     render/shader.cpp
     render/mesh.cpp
     render/objects/orbits.cpp
+    render/objects/sphere.cpp
 
     ecs/ecs.cpp
     ecs/systems/systems.cpp
@@ -53,6 +54,7 @@ target_sources(main PUBLIC
         ${PROJECT_SOURCE_DIR}/include/render/shader.hpp
         ${PROJECT_SOURCE_DIR}/include/render/mesh.hpp
         ${PROJECT_SOURCE_DIR}/include/render/objects/orbits.hpp
+        ${PROJECT_SOURCE_DIR}/include/render/objects/sphere.hpp
 
         ${PROJECT_SOURCE_DIR}/include/ecs/ecs.hpp
         ${PROJECT_SOURCE_DIR}/include/ecs/components.hpp

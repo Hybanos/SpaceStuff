@@ -10,18 +10,18 @@ Mesh::Mesh(Shader s) : shader{s} {
     }
 }
 
-void Mesh::draw(GLenum type, int first, size_t count) {
+void Mesh::draw(GLenum type, int first, size_t count, int tex) {
     shader.use();
 
     glBindVertexArray(VAO);
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture);
+    if (texture.size()) glBindTexture(GL_TEXTURE_2D, texture[tex]);
     glDrawArrays(type, first, count);
     glBindTexture(GL_TEXTURE_2D, 0);
     glBindVertexArray(0);
 }
 
-void Mesh::draw_cubemap(GLenum type, int first, size_t count) {
+void Mesh::draw_cubemap(GLenum type, int first, size_t count, int tex) {
     shader.use();
 
     glBindVertexArray(VAO);
@@ -30,7 +30,7 @@ void Mesh::draw_cubemap(GLenum type, int first, size_t count) {
     glEnable(GL_POLYGON_OFFSET_FILL);
     glPolygonOffset(1.0f, 1.0f);
 
-    glBindTexture(GL_TEXTURE_CUBE_MAP, texture);
+    if (texture.size()) glBindTexture(GL_TEXTURE_CUBE_MAP, texture[tex]);
     glDrawArrays(type, first, count);
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 
@@ -38,7 +38,7 @@ void Mesh::draw_cubemap(GLenum type, int first, size_t count) {
     glBindVertexArray(0);
 }
 
-void Mesh::draw_instanced(GLenum type, int first, size_t count, size_t total) {
+void Mesh::draw_instanced(GLenum type, int first, size_t count, size_t total, int tex) {
     shader.use();
     glBindVertexArray(VAO);
     glDrawArraysInstanced(type, first, count, total);
@@ -75,11 +75,12 @@ void Mesh::fuse_loc_buffers(int first, int last) {
     }
 }
 
-void Mesh::gen_texture(std::string path) {
+int Mesh::gen_texture(std::string path) {
     std::transform(path.begin(), path.end(), path.begin(), [](unsigned char c){return std::tolower(c);}); // help
-    glGenTextures(1, &texture);
+    GLuint tex;
+    glGenTextures(1, &tex);
     glBindVertexArray(VAO);
-    glBindTexture(GL_TEXTURE_2D, texture);
+    glBindTexture(GL_TEXTURE_2D, tex);
 
     int width, height, nb_channels;
 
@@ -103,18 +104,21 @@ void Mesh::gen_texture(std::string path) {
 
     shader.use(); 
     set_int("tex", 0);
+    texture.push_back(tex);
+    return texture.size() - 1;
 }
 
-void Mesh::gen_cubemap(std::string path) {
+int Mesh::gen_cubemap(std::string path) {
     std::transform(path.begin(), path.end(), path.begin(), [](unsigned char c){return std::tolower(c);}); // help
     if (! std::filesystem::exists("./" + path)) {
         std::cout << "could not find " << path << std::endl;
         path = "assets/textures/cubemaps/earth";
     }
 
-    glGenTextures(1, &texture);
+    GLuint tex;
+    glGenTextures(1, &tex);
     glBindVertexArray(VAO);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, texture);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, tex);
 
     int width, height, nb_channels;
 
@@ -148,4 +152,7 @@ void Mesh::gen_cubemap(std::string path) {
 
     glBindVertexArray(0);
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+
+    texture.push_back(tex);
+    return texture.size() - 1;
 }

@@ -16,7 +16,6 @@ Scene::Scene(SDL_Window *_window) {
     
     camera->look_at(glm::vec3(0, 0, 0));
     camera->update_pos();
-
 }
 
 int Scene::get_width() {
@@ -72,6 +71,10 @@ void Scene::render() {
     systems::orbit::compute_true_anomalies(ecs, (double) get_time().time_since_epoch().count() / 1e9);
     systems::orbit::draw_orbits(this, ecs);
 
+    systems::sphere::compute_pos(this, ecs);
+    systems::sphere::compute_rota(this, ecs);
+    systems::sphere::draw_spheres(this, ecs);
+
     frames++;
 
     auto t2 = high_resolution_clock::now();
@@ -93,53 +96,56 @@ void Scene::build_solar_system() {
         ecs.set_component(e, SCALE);
         ecs.set_component(e, MAJOR_BODY);
         ecs.set_component(e, EPHEMERIS);
+        ecs.set_component(e, ROTATION_INFO);
 
         ecs.set_MajorBody(e, db.get_major_body(id));
     }
 
-    for (int i = 0; i < t.size(); i++) {
-        size_t e = ecs.request_entity();
+    systems::sphere::init(this, ecs);
 
-        ecs.set_component(e, POSITION);
-        ecs.set_component(e, ROTATION);
-        ecs.set_component(e, TWO_LINE_ELEMENT);
-        ecs.set_component(e, ORBIT);
-        ecs.set_component(e, EPOCH);
-        ecs.set_component(e, TRUE_ANOMALY_INDEX);
+    // for (int i = 0; i < t.size(); i++) {
+    //     size_t e = ecs.request_entity();
 
-        ecs.set_TLE(e, t[i]);
-    }
+    //     ecs.set_component(e, POSITION);
+    //     ecs.set_component(e, ROTATION);
+    //     ecs.set_component(e, TWO_LINE_ELEMENT);
+    //     ecs.set_component(e, ORBIT);
+    //     ecs.set_component(e, EPOCH);
+    //     ecs.set_component(e, TRUE_ANOMALY_INDEX);
 
-    systems::orbit::compute_orbit_from_tle(ecs);
-    systems::orbit::index_true_anomalies(ecs);
-    systems::orbit::compute_true_anomalies(ecs, (double) get_time().time_since_epoch().count() / 1e9);
-    systems::orbit::compute_pos_along_orbit(ecs);
+    //     ecs.set_TLE(e, t[i]);
+    // }
 
-    objects.push_back(new Sphere(this, 10));
-    objects.push_back(new Sphere(this, 199));
-    objects.push_back(new Sphere(this, 299));
-    objects.push_back((new Sphere(this, 399))
-        // ->add_child(new Orbits(this, t))
-    );
-    objects.push_back(new Sphere(this, 301));
-    objects.push_back(new Sphere(this, 499));
-    objects.push_back((new Sphere(this, 599))
-        ->add_child(new Ring(this, "jupiter"))
-    );
-    objects.push_back(new Sphere(this, 501));
-    objects.push_back(new Sphere(this, 502));
-    objects.push_back(new Sphere(this, 503));
-    objects.push_back(new Sphere(this, 504));
-    objects.push_back((new Sphere(this, 699))
-        ->add_child(new Ring(this, "saturn"))
-    );
-    objects.push_back(new Sphere(this, 606));
-    objects.push_back((new Sphere(this, 799))
-        ->add_child(new Ring(this, "uranus"))
-    );
-    objects.push_back((new Sphere(this, 899))
-        ->add_child(new Ring(this, "neptune"))
-    );
+    // systems::orbit::compute_orbit_from_tle(ecs);
+    // systems::orbit::index_true_anomalies(ecs);
+    // systems::orbit::compute_true_anomalies(ecs, (double) get_time().time_since_epoch().count() / 1e9);
+    // systems::orbit::compute_pos_along_orbit(ecs);
+
+    // objects.push_back(new Sphere(this, 10));
+    // objects.push_back(new Sphere(this, 199));
+    // objects.push_back(new Sphere(this, 299));
+    // objects.push_back((new Sphere(this, 399))
+    //     // ->add_child(new Orbits(this, t))
+    // );
+    // objects.push_back(new Sphere(this, 301));
+    // objects.push_back(new Sphere(this, 499));
+    // objects.push_back((new Sphere(this, 599))
+    //     ->add_child(new Ring(this, "jupiter"))
+    // );
+    // objects.push_back(new Sphere(this, 501));
+    // objects.push_back(new Sphere(this, 502));
+    // objects.push_back(new Sphere(this, 503));
+    // objects.push_back(new Sphere(this, 504));
+    // objects.push_back((new Sphere(this, 699))
+    //     ->add_child(new Ring(this, "saturn"))
+    // );
+    // objects.push_back(new Sphere(this, 606));
+    // objects.push_back((new Sphere(this, 799))
+    //     ->add_child(new Ring(this, "uranus"))
+    // );
+    // objects.push_back((new Sphere(this, 899))
+    //     ->add_child(new Ring(this, "neptune"))
+    // );
 }
 
 void Scene::debug() {

@@ -5,9 +5,13 @@
 #include "ecs/ecs.hpp"
 #include "scene/scene.hpp"
 #include "render/objects/orbits.hpp"
+#include "render/objects/sphere.hpp"
 
 namespace systems::sphere {
-
+    void init(Scene *scene, ECSTable &ecs);
+    void compute_pos(Scene *scene, ECSTable &ecs);
+    void compute_rota(Scene *scene, ECSTable &ecs);
+    void draw_spheres(Scene *scene, ECSTable &ecs);
 } // namespace systems::sphere
 
 namespace systems::orbit {

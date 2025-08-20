@@ -58,6 +58,11 @@ class Shader {
             use();
             glUniform1i(glGetUniformLocation(program_id, name.c_str()), data);
         }
+
+        void set_float(std::string name, float &data) {
+            use();
+            glUniform1f(glGetUniformLocation(program_id, name.c_str()), data);
+        }
 };
 
 static std::unordered_map<std::string, int> glsl_types = {

@@ -143,6 +143,7 @@ void Sphere::debug() {
         ImGui::Text("\t%f\t%f\t%f", rota[0][1], rota[1][1], rota[2][1]);
         ImGui::Text("\t%f\t%f\t%f", rota[0][2], rota[1][2], rota[2][2]);
         ImGui::Text("Rotation angle (deg): %f", acos(rota[0][0]) * (180 / M_PI)); 
+        ImGui::DragFloat3("   ", &pos[0]);
         for (auto c : children) c->debug();
         ImGui::TreePop();
     }

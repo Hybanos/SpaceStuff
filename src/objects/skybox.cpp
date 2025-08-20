@@ -58,8 +58,6 @@ SkyBox::SkyBox(Scene *s) : Object(s), mesh(scene->texture_shader) {
         glm::vec3(1.0f, -1.0f,  1.0f)
     };
 
-    for (auto &v : triangles) v = v * 100.0f;
-
     rota = glm::mat3(
         glm::vec3(1, 0, 0),
         glm::vec3(0, 1, 0),
@@ -75,9 +73,9 @@ void SkyBox::draw() {
     if (d_draw) {
         glDepthMask(GL_FALSE);
         mesh.set_mat4("MVP", mvp);
-        mesh.set_mat4("transform", glm::mat4(1));
         mesh.set_mat3("rota", rota);
         mesh.set_int("flip", 1);
+        mesh.set_float("scale", 100.0f);
         mesh.set_vec3("pos", glm::vec3(0));
 
         mesh.draw_cubemap(GL_TRIANGLES, 0, triangles.size() * 3);

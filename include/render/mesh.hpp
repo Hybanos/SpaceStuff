@@ -22,13 +22,13 @@ class Mesh {
         std::vector<int> loc_to_buffer_override;
 
         std::vector<GLuint> buffers;
-        GLuint texture;
+        std::vector<GLuint> texture;
     public:
         Mesh(Shader s);
 
-        void draw(GLenum type, int first, size_t count);
-        void draw_instanced(GLenum type, int first, size_t count, size_t total);
-        void draw_cubemap(GLenum type, int first, size_t count);
+        void draw(GLenum type, int first, size_t count, int tex = 0);
+        void draw_instanced(GLenum type, int first, size_t count, size_t total, int tex = 0);
+        void draw_cubemap(GLenum type, int first, size_t count, int tex = 0);
 
         template<typename T> 
         void set_location(int loc, T *data, size_t count, int div = 0);
@@ -39,14 +39,15 @@ class Mesh {
         // TODO: that's ugly
         void fuse_loc_buffers(int first, int last);
 
-        void gen_cubemap(std::string path);
-        void gen_texture(std::string path);
+        int gen_cubemap(std::string path);
+        int gen_texture(std::string path);
 
         void set_mat4(std::string name, glm::mat4 data) {shader.set_mat4(name, data);}
         void set_mat3(std::string name, glm::mat3 data) {shader.set_mat3(name, data);}
         void set_vec3(std::string name, glm::vec3 data) {shader.set_vec3(name, data);}
         void set_vec2(std::string name, glm::vec2 data) {shader.set_vec2(name, data);}
         void set_int(std::string name, int data) {shader.set_int(name, data);}
+        void set_float(std::string name, float data) {shader.set_float(name, data);}
 };
 
 template<typename T>

@@ -1,5 +1,36 @@
 #include "ecs/systems.hpp"
 
+void debug_json(nlohmann::ordered_json obj) {
+    if (obj.is_array()) {
+        int i = 0;
+        for (auto it = obj.begin(); it != obj.end(); it++) {
+            if (ImGui::TreeNode(fmt::format("{}", i).c_str())) {
+                debug_json(it.value());
+                ImGui::TreePop();
+            }
+            i++;
+        }
+    }
+
+    if (obj.is_object()) {
+        for (auto it = obj.begin(); it != obj.end(); it++) {
+            if (ImGui::TreeNode(it.key().c_str())) {
+                debug_json(it.value());
+                ImGui::TreePop();
+            }
+        }
+    }
+
+    std::string fmt;
+    if (obj.is_null()) fmt = fmt::format("NULL");
+    if (obj.is_boolean()) fmt = fmt::format("{}", (bool) obj);
+    if (obj.is_number_integer()) fmt = fmt::format("{}", (int) obj);
+    if (obj.is_number_float()) fmt = fmt::format("{}", (float) obj);
+    if (obj.is_string()) fmt = fmt::format("{}", (std::string) obj);
+
+    ImGui::Text(fmt.c_str());
+}
+
 namespace systems {
 
 void debug_entity(Scene *scene, ECSTable &ecs, size_t entity_id) {
@@ -13,9 +44,13 @@ void debug_entity(Scene *scene, ECSTable &ecs, size_t entity_id) {
         if (bits & (1 << ROTATION)) {
             ImGui::Spacing();
             ImGui::SeparatorText("Rotation");
-            ImGui::DragFloat3("##2", &((glm::mat3 *) ecs.component_table[ROTATION])[entity_id][0][0]);
-            ImGui::DragFloat3("##3", &((glm::mat3 *) ecs.component_table[ROTATION])[entity_id][1][0]);
-            ImGui::DragFloat3("##4", &((glm::mat3 *) ecs.component_table[ROTATION])[entity_id][2][0]);
+            glm::mat3 &rota = ((glm::mat3 *) ecs.component_table[ROTATION])[entity_id];
+            ImGui::Text("\t%f\t%f\t%f", rota[0][0], rota[1][0], rota[2][0]);
+            ImGui::Text("\t%f\t%f\t%f", rota[0][1], rota[1][1], rota[2][1]);
+            ImGui::Text("\t%f\t%f\t%f", rota[0][2], rota[1][2], rota[2][2]);
+            // ImGui::DragFloat3("##3", &rota[0][0]);
+            // ImGui::DragFloat3("##3", &rota[1][0]);
+            // ImGui::DragFloat3("##4", &rota[2][0]);
         }
 
         if (bits & (1 << SCALE)) {
@@ -146,6 +181,14 @@ void debug_entity(Scene *scene, ECSTable &ecs, size_t entity_id) {
             ImGui::PlotLines("haha", index.begin(), 360, 0, NULL, 0, M_PI * 2, ImVec2(0, 80));
         }
 
+        if (bits & (1 << ROTATION_INFO)) {
+            ImGui::Spacing();
+            ImGui::SeparatorText("Rotation Info");
+
+            RotationInfo &info = ((RotationInfo *) ecs.component_table[ROTATION_INFO])[entity_id];
+
+            debug_json(info);
+        }
 }
 
 void debug_entities(Scene *scene, ECSTable &ecs) {
