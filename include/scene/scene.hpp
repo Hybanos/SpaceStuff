@@ -42,6 +42,7 @@ class Scene {
         size_t triangles_drawn = 0;
         size_t triangles_t_drawn = 0;
         size_t frames = 0;
+        size_t follow_entity = -1;
 
         Shader orbits_shader = Shader("src/shaders/orbits.vs", "src/shaders/orbits.fs");
         Shader base_shader = Shader("src/shaders/base.vs", "src/shaders/base.fs");

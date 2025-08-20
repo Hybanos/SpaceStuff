@@ -45,6 +45,11 @@ void Scene::render() {
     frame_time = time.get();
     // fmt::print("current time: {}\n", frame_time.time_since_epoch().count());
 
+    if (follow_entity != -1) {
+        Position tmp = ((Position *) ecs.component_table[POSITION])[follow_entity];
+        camera->look_at(tmp);
+    }
+
     while (db.signals.size()) {
         fmt::print("scene: {} signals\n", db.signals.size());
         Signal s = db.signals[db.signals.size() - 1]; 
@@ -67,13 +72,13 @@ void Scene::render() {
 
         obj->draw();
     }
-    
-    systems::orbit::compute_true_anomalies(ecs, (double) get_time().time_since_epoch().count() / 1e9);
-    systems::orbit::draw_orbits(this, ecs);
 
     systems::sphere::compute_pos(this, ecs);
     systems::sphere::compute_rota(this, ecs);
     systems::sphere::draw_spheres(this, ecs);
+    
+    systems::orbit::compute_true_anomalies(ecs, (double) get_time().time_since_epoch().count() / 1e9);
+    systems::orbit::draw_orbits(this, ecs);
 
     frames++;
 
@@ -103,23 +108,23 @@ void Scene::build_solar_system() {
 
     systems::sphere::init(this, ecs);
 
-    // for (int i = 0; i < t.size(); i++) {
-    //     size_t e = ecs.request_entity();
+    for (int i = 0; i < t.size(); i++) {
+        size_t e = ecs.request_entity();
 
-    //     ecs.set_component(e, POSITION);
-    //     ecs.set_component(e, ROTATION);
-    //     ecs.set_component(e, TWO_LINE_ELEMENT);
-    //     ecs.set_component(e, ORBIT);
-    //     ecs.set_component(e, EPOCH);
-    //     ecs.set_component(e, TRUE_ANOMALY_INDEX);
+        ecs.set_component(e, POSITION);
+        ecs.set_component(e, ROTATION);
+        ecs.set_component(e, TWO_LINE_ELEMENT);
+        ecs.set_component(e, ORBIT);
+        ecs.set_component(e, EPOCH);
+        ecs.set_component(e, TRUE_ANOMALY_INDEX);
 
-    //     ecs.set_TLE(e, t[i]);
-    // }
+        ecs.set_TLE(e, t[i]);
+    }
 
-    // systems::orbit::compute_orbit_from_tle(ecs);
-    // systems::orbit::index_true_anomalies(ecs);
-    // systems::orbit::compute_true_anomalies(ecs, (double) get_time().time_since_epoch().count() / 1e9);
-    // systems::orbit::compute_pos_along_orbit(ecs);
+    systems::orbit::compute_orbit_from_tle(ecs);
+    systems::orbit::index_true_anomalies(ecs);
+    systems::orbit::compute_true_anomalies(ecs, (double) get_time().time_since_epoch().count() / 1e9);
+    systems::orbit::compute_pos_along_orbit(ecs);
 
     // objects.push_back(new Sphere(this, 10));
     // objects.push_back(new Sphere(this, 199));
