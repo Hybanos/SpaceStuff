@@ -157,7 +157,7 @@ void filter_orbits(Scene *scene, ECSTable &ecs) {
     for (size_t i = 0; i < ecs.size; i++) {
         if ((ecs.bits[i] & DRAWABLE_ORBIT) != DRAWABLE_ORBIT) continue;
 
-        TLE &tle ecs.getTLE(i);
+        TLE &tle = ecs.get_TLE(i);
         Orbit &orbit = ecs.get_Orbit(i);
 
         if (filter.PassFilter(tle.name.c_str())) {

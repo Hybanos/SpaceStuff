@@ -2,10 +2,8 @@
 
 #include "scene/time.hpp"
 #include "scene/camera.hpp"
-#include "objects/sphere.hpp"
 #include "objects/skybox.hpp"
 #include "objects/grid.hpp"
-#include "objects/orbits.hpp"
 #include "objects/ring.hpp"
 #include "data/db_manager.hpp"
 #include "render/shader.hpp"

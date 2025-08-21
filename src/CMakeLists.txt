@@ -2,9 +2,7 @@ add_executable(main)
 
 target_sources(main PRIVATE
     objects/grid.cpp
-    objects/orbits.cpp
     objects/skybox.cpp
-    objects/sphere.cpp
     objects/particle.cpp
     objects/ring.cpp
 
@@ -34,9 +32,7 @@ target_sources(main PUBLIC
     FILES
 
         ${PROJECT_SOURCE_DIR}/include/objects/grid.hpp
-        ${PROJECT_SOURCE_DIR}/include/objects/orbits.hpp
         ${PROJECT_SOURCE_DIR}/include/objects/skybox.hpp
-        ${PROJECT_SOURCE_DIR}/include/objects/sphere.hpp
         ${PROJECT_SOURCE_DIR}/include/objects/particle.hpp
         ${PROJECT_SOURCE_DIR}/include/objects/ring.hpp
 
