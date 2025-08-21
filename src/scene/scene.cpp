@@ -10,7 +10,7 @@ Scene::Scene(SDL_Window *_window) {
     window = _window;
     frame_time = time.get();
 
-    objects.push_back(new SkyBox(this));
+    // objects.push_back(new SkyBox(this));
     objects.push_back(new Grid(this));
     build_solar_system();
     
@@ -67,11 +67,14 @@ void Scene::render() {
     triangles_drawn = 0;
     triangles_t_drawn = 0;
 
+    render::skybox::draw(this);
+
     for (Object * obj : objects) {
        
 
         obj->draw();
     }
+
 
     systems::sphere::compute_pos(this, ecs);
     systems::sphere::compute_rota(this, ecs);

@@ -2,7 +2,6 @@ add_executable(main)
 
 target_sources(main PRIVATE
     objects/grid.cpp
-    objects/skybox.cpp
     objects/particle.cpp
     objects/ring.cpp
 
@@ -17,6 +16,7 @@ target_sources(main PRIVATE
     render/mesh.cpp
     render/objects/orbit.cpp
     render/objects/sphere.cpp
+    render/objects/skybox.cpp
 
     ecs/ecs.cpp
     ecs/systems/systems.cpp
@@ -32,7 +32,6 @@ target_sources(main PUBLIC
     FILES
 
         ${PROJECT_SOURCE_DIR}/include/objects/grid.hpp
-        ${PROJECT_SOURCE_DIR}/include/objects/skybox.hpp
         ${PROJECT_SOURCE_DIR}/include/objects/particle.hpp
         ${PROJECT_SOURCE_DIR}/include/objects/ring.hpp
 
@@ -51,6 +50,7 @@ target_sources(main PUBLIC
         ${PROJECT_SOURCE_DIR}/include/render/mesh.hpp
         ${PROJECT_SOURCE_DIR}/include/render/objects/orbit.hpp
         ${PROJECT_SOURCE_DIR}/include/render/objects/sphere.hpp
+        ${PROJECT_SOURCE_DIR}/include/render/objects/skybox.hpp
 
         ${PROJECT_SOURCE_DIR}/include/ecs/ecs.hpp
         ${PROJECT_SOURCE_DIR}/include/ecs/components.hpp
