@@ -63,6 +63,7 @@ void Camera::debug() {
     ImGui::InputFloat3("Camera center", (float *) &c);
     ImGui::InputFloat3("Camera position", (float*)&position);
     if (ImGui::Button("RESET")) {
+        scene->follow_entity = -1;
         def.look_at(glm::vec3(0));
         anchor = &def;
         distance = 10000;
