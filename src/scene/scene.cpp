@@ -10,8 +10,6 @@ Scene::Scene(SDL_Window *_window) {
     window = _window;
     frame_time = time.get();
 
-    // objects.push_back(new SkyBox(this));
-    objects.push_back(new Grid(this));
     build_solar_system();
     
     camera->look_at(glm::vec3(0, 0, 0));
@@ -68,6 +66,7 @@ void Scene::render() {
     triangles_t_drawn = 0;
 
     render::skybox::draw(this);
+    render::grid::draw(this);
 
     for (Object * obj : objects) {
        

@@ -7,6 +7,7 @@
 #include "render/objects/orbit.hpp"
 #include "render/objects/sphere.hpp"
 #include "render/objects/skybox.hpp"
+#include "render/objects/grid.hpp"
 
 namespace systems::sphere {
     void init(Scene *scene, ECSTable &ecs);
