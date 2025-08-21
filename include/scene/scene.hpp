@@ -1,5 +1,4 @@
-#ifndef SPACESTUFF_SCENE_HPP
-#define SPACESTUFF_SCENE_HPP
+#pragma once
 
 #include "scene/time.hpp"
 #include "scene/camera.hpp"
@@ -66,5 +65,3 @@ class Scene {
         void render();
         void debug();
 };
-
-#endif

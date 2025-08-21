@@ -37,4 +37,9 @@ class ECSTable {
         void set_##TYPE(size_t entity_id, TYPE value); 
         COMPONENTS
         #undef X
+
+        #define X(ENUM, TYPE) \
+        TYPE &get_##TYPE(size_t entity_id); 
+        COMPONENTS
+        #undef X
 };

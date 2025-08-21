@@ -4,7 +4,7 @@
 
 #include "ecs/ecs.hpp"
 #include "scene/scene.hpp"
-#include "render/objects/orbits.hpp"
+#include "render/objects/orbit.hpp"
 #include "render/objects/sphere.hpp"
 
 namespace systems::sphere {
@@ -25,6 +25,7 @@ namespace systems::orbit {
 } // namespace systems::orbit
 
 namespace systems {
+    void propagate_parent_pos(ECSTable &ecs);
     void debug_entity(Scene *scene, ECSTable &ecs, size_t entity_id);
     void debug_entities(Scene *scene, ECSTable &ecs);
 } // namespace systems

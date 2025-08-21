@@ -12,6 +12,7 @@
 
 // Thanks github.com/natsu-anon/ecs-demo for the macro work
 #define COMPONENTS \
+    X(PARENT, Parent) \
     X(POSITION, Position) \
     X(ROTATION, Rotation) \
     X(SCALE, Scale) \
@@ -34,6 +35,7 @@ typedef enum Component {
 #define DRAWABLE_ORBIT ((1 << POSITION) | (1 << ROTATION) | (1 << TWO_LINE_ELEMENT) | (1 << ORBIT) | (1 << EPOCH) | (1 << TRUE_ANOMALY_INDEX))
 #define DRAWABLE_SPHERE ((1 << POSITION) | (1 << ROTATION) | (1 << SCALE) | (1 << MAJOR_BODY) | (1 << EPHEMERIS) | (1 << ROTATION_INFO))
 
+typedef size_t Parent;
 typedef glm::vec3 Position;
 typedef glm::mat3 Rotation;
 typedef float Scale;

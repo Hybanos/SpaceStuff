@@ -36,10 +36,22 @@ namespace systems {
 void debug_entity(Scene *scene, ECSTable &ecs, size_t entity_id) {
     int bits = ecs.bits[entity_id];
 
+    if (bits & (1 << PARENT)) {
+        ImGui::Spacing();
+        ImGui::SeparatorText("Position");
+        Parent &parent = ecs.get_Parent(entity_id);
+
+        ImGui::DragScalar("Parent", ImGuiDataType_U64, &parent);
+        if (ImGui::TreeNode("Show Parent:")) {
+            debug_entity(scene, ecs, parent);
+            ImGui::TreePop();
+        }
+    }
+
     if (bits & (1 << POSITION)) {
         ImGui::Spacing();
         ImGui::SeparatorText("Position");
-        ImGui::DragFloat3("##1", &((Position *) ecs.component_table[POSITION])[entity_id].x);
+        ImGui::DragFloat3("##1", &ecs.get_Position(entity_id).x);
         if (ImGui::Button("Follow")) {
             scene->follow_entity = entity_id; 
         }
@@ -48,7 +60,7 @@ void debug_entity(Scene *scene, ECSTable &ecs, size_t entity_id) {
     if (bits & (1 << ROTATION)) {
         ImGui::Spacing();
         ImGui::SeparatorText("Rotation");
-        glm::mat3 &rota = ((glm::mat3 *) ecs.component_table[ROTATION])[entity_id];
+        Rotation &rota = ecs.get_Rotation(entity_id);
         ImGui::Text("\t%f\t%f\t%f", rota[0][0], rota[1][0], rota[2][0]);
         ImGui::Text("\t%f\t%f\t%f", rota[0][1], rota[1][1], rota[2][1]);
         ImGui::Text("\t%f\t%f\t%f", rota[0][2], rota[1][2], rota[2][2]);
@@ -57,35 +69,29 @@ void debug_entity(Scene *scene, ECSTable &ecs, size_t entity_id) {
     if (bits & (1 << SCALE)) {
         ImGui::Spacing();
         ImGui::SeparatorText("Scale");
-        ImGui::DragFloat("##5", &((float *)ecs.component_table[SCALE])[entity_id]);
+        ImGui::DragFloat("##5", &ecs.get_Scale(entity_id));
     }
 
     if (bits & (1 << MAJOR_BODY)) {
         ImGui::Spacing();
         ImGui::SeparatorText("Major Body");
 
-        MajorBody &mb = ((MajorBody *)ecs.component_table[MAJOR_BODY])[entity_id];
+        MajorBody &mb = ecs.get_MajorBody(entity_id);
 
         ImGui::DragInt("Major Body ID", &mb.major_body_id);
         ImGui::Text("Body name: %s", mb.name);
         ImGui::Text("Designation: %s", mb.designation);
         ImGui::Text("Alias: %s", mb.alias);
-        float tmp = mb.mass;
-        ImGui::DragFloat("Mass", &tmp);
-        mb.mass = tmp;
-        tmp = mb.heliocentric_gravitaional_constant;
-        ImGui::DragFloat("Gravitational Constant", &tmp);
-        mb.heliocentric_gravitaional_constant = tmp;
-        tmp = mb.radius;
-        ImGui::DragFloat("Radius", &tmp);
-        mb.radius = tmp;
+        ImGui::DragScalar("Mass", ImGuiDataType_Double, &mb.mass);
+        ImGui::DragScalar("Gravitational Constant", ImGuiDataType_Double, &mb.heliocentric_gravitaional_constant);
+        ImGui::DragScalar("Radius", ImGuiDataType_Double, &mb.radius);
     }
     
     if (bits & (1 << EPHEMERIS)) {
         ImGui::Spacing();
         ImGui::SeparatorText("Ephemeris lines");
 
-        Ephemeris &ephemeris = ((Ephemeris *)ecs.component_table[EPHEMERIS])[entity_id];
+        Ephemeris &ephemeris = ecs.get_Ephemeris(entity_id);
         int line_count = sizeof(Ephemeris) / sizeof(EphemerisLine);
 
         if (ImGui::BeginTable("Lines", 9,  ImGuiTableFlags_ScrollX | ImGuiTableFlags_Borders | ImGuiTableFlags_ScrollY | ImGuiTableFlags_Resizable, ImVec2(0, 300))) {
@@ -129,7 +135,7 @@ void debug_entity(Scene *scene, ECSTable &ecs, size_t entity_id) {
         ImGui::Spacing();
         ImGui::SeparatorText("TLE");
 
-        TLE &tle = ((TLE *)ecs.component_table[TWO_LINE_ELEMENT])[entity_id];
+        TLE &tle = ecs.get_TLE(entity_id);
 
         ImGui::Text(tle.name.c_str());
         ImGui::Text("Catalog number: %d", tle.cat_number);
@@ -152,7 +158,7 @@ void debug_entity(Scene *scene, ECSTable &ecs, size_t entity_id) {
         ImGui::Spacing();
         ImGui::SeparatorText("Orbit");
 
-        Orbit &orbit = ((Orbit *)ecs.component_table[ORBIT])[entity_id];
+        Orbit &orbit = ecs.get_Orbit(entity_id);
 
         ImGui::DragFloat("Semi major axis", &orbit.semi_major_axis);
         ImGui::DragFloat("Semi minor axis", &orbit.semi_minor_axis);
@@ -166,18 +172,16 @@ void debug_entity(Scene *scene, ECSTable &ecs, size_t entity_id) {
         ImGui::Spacing();
         ImGui::SeparatorText("Epoch");
 
-        Epoch &epoch = ((Epoch *) ecs.component_table[EPOCH])[entity_id];
+        Epoch &epoch = ecs.get_Epoch(entity_id);
 
-        float tmp = epoch;
-        ImGui::DragFloat("Epoch", &tmp);
-        epoch = tmp;
+        ImGui::DragScalar("Epoch", ImGuiDataType_Double, &epoch);
     }
 
     if (bits & (1 << TRUE_ANOMALY_INDEX)) {
         ImGui::Spacing();
         ImGui::SeparatorText("True anomaly index");
 
-        AnomalyIndex &index = ((AnomalyIndex *) ecs.component_table[TRUE_ANOMALY_INDEX])[entity_id];
+        AnomalyIndex &index = ecs.get_AnomalyIndex(entity_id);
 
         ImGui::PlotLines("haha", index.begin(), 360, 0, NULL, 0, M_PI * 2, ImVec2(0, 80));
     }
@@ -186,7 +190,7 @@ void debug_entity(Scene *scene, ECSTable &ecs, size_t entity_id) {
         ImGui::Spacing();
         ImGui::SeparatorText("Rotation Info");
 
-        RotationInfo &info = ((RotationInfo *) ecs.component_table[ROTATION_INFO])[entity_id];
+        RotationInfo &info = ecs.get_RotationInfo(entity_id);
 
         debug_json(info);
     }

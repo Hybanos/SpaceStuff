@@ -15,14 +15,14 @@ namespace systems::sphere {
 
 void init(Scene *scene, ECSTable &ecs) {
     for (size_t i = 0; i < ecs.size; i++) {
-        if (ecs.bits[i] != DRAWABLE_SPHERE) continue;
+        if ((ecs.bits[i] & DRAWABLE_SPHERE)  != DRAWABLE_SPHERE) continue;
 
-        Position &position = ((Position *) ecs.component_table[POSITION])[i];
-        Rotation &rotation = ((Rotation *) ecs.component_table[ROTATION])[i];
-        Scale &scale = ((Scale *) ecs.component_table[SCALE])[i];
-        MajorBody &mb = ((MajorBody *) ecs.component_table[MAJOR_BODY])[i];
-        Ephemeris &ephemeris = ((Ephemeris *) ecs.component_table[EPHEMERIS])[i];
-        RotationInfo &rotation_info = ((RotationInfo *) ecs.component_table[ROTATION_INFO])[i];
+        Position &position = ecs.get_Position(i);
+        Rotation &rotation = ecs.get_Rotation(i);
+        Scale &scale = ecs.get_Scale(i);
+        MajorBody &mb = ecs.get_MajorBody(i);
+        Ephemeris &ephemeris = ecs.get_Ephemeris(i);
+        RotationInfo &rotation_info = ecs.get_RotationInfo(i);
 
         std::string name(mb.name);
         std::transform(name.begin(), name.end(), name.begin(), [](unsigned char c){return std::tolower(c);}); 
@@ -37,14 +37,14 @@ void init(Scene *scene, ECSTable &ecs) {
 
 void compute_pos(Scene *scene, ECSTable &ecs) {
     for (size_t i = 0; i < ecs.size; i++) {
-        if (ecs.bits[i] != DRAWABLE_SPHERE) continue;
+        if ((ecs.bits[i] & DRAWABLE_SPHERE)  != DRAWABLE_SPHERE) continue;
 
-        Position &position = ((Position *) ecs.component_table[POSITION])[i];
-        Rotation &rotation = ((Rotation *) ecs.component_table[ROTATION])[i];
-        Scale &scale = ((Scale *) ecs.component_table[SCALE])[i];
-        MajorBody &mb = ((MajorBody *) ecs.component_table[MAJOR_BODY])[i];
-        Ephemeris &ephemeris = ((Ephemeris *) ecs.component_table[EPHEMERIS])[i];
-        RotationInfo &rotation_info = ((RotationInfo *) ecs.component_table[ROTATION_INFO])[i];
+        Position &position = ecs.get_Position(i);
+        Rotation &rotation = ecs.get_Rotation(i);
+        Scale &scale = ecs.get_Scale(i);
+        MajorBody &mb = ecs.get_MajorBody(i);
+        Ephemeris &ephemeris = ecs.get_Ephemeris(i);
+        RotationInfo &rotation_info = ecs.get_RotationInfo(i);
 
         long timestamp = scene->get_time().time_since_epoch().count(); 
         long diff = timestamp - ephemeris[0].timestamp;
@@ -63,14 +63,14 @@ void compute_pos(Scene *scene, ECSTable &ecs) {
 
 void compute_rota(Scene *scene, ECSTable &ecs) {
     for (size_t i = 0; i < ecs.size; i++) {
-        if (ecs.bits[i] != DRAWABLE_SPHERE) continue;
+        if ((ecs.bits[i] & DRAWABLE_SPHERE)  != DRAWABLE_SPHERE) continue;
 
-        Position &position = ((Position *) ecs.component_table[POSITION])[i];
-        Rotation &rotation = ((Rotation *) ecs.component_table[ROTATION])[i];
-        Scale &scale = ((Scale *) ecs.component_table[SCALE])[i];
-        MajorBody &mb = ((MajorBody *) ecs.component_table[MAJOR_BODY])[i];
-        Ephemeris &ephemeris = ((Ephemeris *) ecs.component_table[EPHEMERIS])[i];
-        RotationInfo &rotation_info = ((RotationInfo *) ecs.component_table[ROTATION_INFO])[i];
+        Position &position = ecs.get_Position(i);
+        Rotation &rotation = ecs.get_Rotation(i);
+        Scale &scale = ecs.get_Scale(i);
+        MajorBody &mb = ecs.get_MajorBody(i);
+        Ephemeris &ephemeris = ecs.get_Ephemeris(i);
+        RotationInfo &rotation_info = ecs.get_RotationInfo(i);
 
         double julian_day = scene->time.get_julian() - 2451545.0;
         double julian_year = julian_day / 36525;

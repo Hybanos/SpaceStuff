@@ -4,12 +4,12 @@ namespace systems::orbit {
 
 void compute_orbit_from_tle(ECSTable &ecs) {
     for (size_t i = 0; i < ecs.size; i++) {
-        if (ecs.bits[i] != DRAWABLE_ORBIT) continue;
+        if ((ecs.bits[i] & DRAWABLE_ORBIT) != DRAWABLE_ORBIT) continue;
 
-        TLE &tle = ((TLE *) ecs.component_table[TWO_LINE_ELEMENT])[i];
-        Orbit &orbit = ((Orbit *) ecs.component_table[ORBIT])[i];
-        Rotation &rotation = ((Rotation *) ecs.component_table[ROTATION])[i];
-        Epoch &epoch = ((Epoch *) ecs.component_table[EPOCH])[i];
+        TLE &tle = ecs.get_TLE(i);
+        Orbit &orbit = ecs.get_Orbit(i);
+        Rotation &rotation = ecs.get_Rotation(i);
+        Epoch &epoch = ecs.get_Epoch(i);
 
         // ref: https://en.wikipedia.org/wiki/Orbital_elements#Euler_angle_transformations
         // note: Y and Z axis are swapped (we are in Y-up right-handed geometry, wikipedia is Z-up)
@@ -39,9 +39,6 @@ void compute_orbit_from_tle(ECSTable &ecs) {
         // thanks https://space.stackexchange.com/questions/18289/how-to-get-semi-major-axis-from-tle
         orbit.semi_major_axis = glm::pow(3.986004418*1e14, 1.0f / 3) / glm::pow(2.0f * tle.revloutions_per_day * M_PI / 86400.0f, 2.0f / 3.0f) / 1000.0f;
         orbit.semi_minor_axis = orbit.semi_major_axis * sqrt(1.0f - tle.eccentricity * tle.eccentricity);
-
-        float linear_eccentricity = sqrt(orbit.semi_major_axis * orbit.semi_major_axis - orbit.semi_minor_axis * orbit.semi_minor_axis);
-        orbit.offset = glm::vec3(-linear_eccentricity, 0, 0) * rotation;
         orbit.flag = 1;
 
         // jan 1 of epoch year (seconds per year isn't uniform)
@@ -61,11 +58,11 @@ void index_true_anomalies(ECSTable &ecs) {
     double e = 0.0001;
 
     for (size_t i = 0; i < ecs.size; i++) {
-        if (ecs.bits[i] != DRAWABLE_ORBIT) continue;
+        if ((ecs.bits[i] & DRAWABLE_ORBIT) != DRAWABLE_ORBIT) continue;
 
-        TLE &tle = ((TLE *) ecs.component_table[TWO_LINE_ELEMENT])[i];
-        Orbit &orbit = ((Orbit *) ecs.component_table[ORBIT])[i];
-        AnomalyIndex &anomaly_index = ((AnomalyIndex *) ecs.component_table[TRUE_ANOMALY_INDEX])[i];
+        TLE &tle = ecs.get_TLE(i);
+        Orbit &orbit = ecs.get_Orbit(i);
+        AnomalyIndex &anomaly_index = ecs.get_AnomalyIndex(i);
 
         for (int angle = 0; angle < 360; angle++) {
             float tmp_mean_anomaly = glm::radians((float) angle);
@@ -93,12 +90,12 @@ void index_true_anomalies(ECSTable &ecs) {
 
 void compute_true_anomalies(ECSTable &ecs, double t) {
     for (size_t i = 0; i < ecs.size; i++) {
-        if (ecs.bits[i] != DRAWABLE_ORBIT) continue;
+        if ((ecs.bits[i] & DRAWABLE_ORBIT) != DRAWABLE_ORBIT) continue;
 
-        TLE &tle = ((TLE *) ecs.component_table[TWO_LINE_ELEMENT])[i];
-        Orbit &orbit = ((Orbit *) ecs.component_table[ORBIT])[i];
-        Epoch &epoch = ((Epoch *) ecs.component_table[EPOCH])[i];
-        AnomalyIndex &anomaly_index = ((AnomalyIndex *) ecs.component_table[TRUE_ANOMALY_INDEX])[i];
+        TLE &tle = ecs.get_TLE(i);
+        Orbit &orbit = ecs.get_Orbit(i);
+        Epoch &epoch = ecs.get_Epoch(i);
+        AnomalyIndex &anomaly_index = ecs.get_AnomalyIndex(i);
 
         double days_since_epoch = (t - epoch) / (24 * 3600);
 
@@ -118,11 +115,19 @@ void compute_true_anomalies(ECSTable &ecs, double t) {
 
 void compute_pos_along_orbit(ECSTable &ecs) {
     for (size_t i = 0; i < ecs.size; i++) {
-        if (ecs.bits[i] != DRAWABLE_ORBIT) continue;
+        if ((ecs.bits[i] & DRAWABLE_ORBIT) != DRAWABLE_ORBIT) continue;
 
-        Orbit &orbit = ((Orbit *) ecs.component_table[ORBIT])[i];
-        Rotation &rota = ((Rotation *) ecs.component_table[ROTATION])[i];
-        Position &position = ((Position *) ecs.component_table[POSITION])[i];
+        Orbit &orbit = ecs.get_Orbit(i);
+        Rotation &rota = ecs.get_Rotation(i);
+        Position &position = ecs.get_Position(i);
+        Rotation &rotation = ecs.get_Rotation(i);
+        Parent &parent = ecs.get_Parent(i);
+
+        if (ecs.bits[i] & (1 << PARENT)) {
+
+            float linear_eccentricity = sqrt(orbit.semi_major_axis * orbit.semi_major_axis - orbit.semi_minor_axis * orbit.semi_minor_axis);
+            orbit.offset = glm::vec3(-linear_eccentricity, 0, 0) * rotation + ecs.get_Position(parent);
+        }
 
         int pos_index = (int) (orbit.true_anomaly / (M_PI * 2) * 360);
         float inter = (orbit.true_anomaly / (M_PI * 2) * 360) - floor(orbit.true_anomaly / (M_PI * 2) * 360);
@@ -139,7 +144,7 @@ void compute_pos_along_orbit(ECSTable &ecs) {
 void draw_orbits(Scene *scene, ECSTable &ecs) {
     size_t first = ecs.get_first(DRAWABLE_ORBIT);
     size_t last = ecs.get_last(DRAWABLE_ORBIT);
-    render::orbits::draw(scene, ecs, first, last);
+    render::orbit::draw(scene, ecs, first, last);
 }
 
 void filter_orbits(Scene *scene, ECSTable &ecs) {
@@ -150,10 +155,10 @@ void filter_orbits(Scene *scene, ECSTable &ecs) {
     }
 
     for (size_t i = 0; i < ecs.size; i++) {
-        if (ecs.bits[i] != DRAWABLE_ORBIT) continue;
+        if ((ecs.bits[i] & DRAWABLE_ORBIT) != DRAWABLE_ORBIT) continue;
 
-        TLE &tle = ((TLE *) ecs.component_table[TWO_LINE_ELEMENT])[i];
-        Orbit &orbit = ((Orbit *) ecs.component_table[ORBIT])[i];
+        TLE &tle ecs.getTLE(i);
+        Orbit &orbit = ecs.get_Orbit(i);
 
         if (filter.PassFilter(tle.name.c_str())) {
             orbit.flag = 1;

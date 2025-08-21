@@ -7,7 +7,7 @@
 
 #include <vector>
 
-namespace render::orbits {
+namespace render::orbit {
     static Mesh *mesh = nullptr;
 
     static std::vector<glm::vec3> vertices;

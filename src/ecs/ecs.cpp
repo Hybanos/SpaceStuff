@@ -54,7 +54,7 @@ void ECSTable::set_component(size_t entity_id, Component component) {
 size_t ECSTable::get_first(int b) {
     size_t i = 0;
     while (1) {
-        if (bits[i] == b) return i;
+        if ((bits[i] & b) == b) return i;
         i++;
     }
 }
@@ -62,7 +62,7 @@ size_t ECSTable::get_first(int b) {
 size_t ECSTable::get_last(int b) {
     size_t i = size;
     while (1) {
-        if (bits[i-1] == b) return i;
+        if ((bits[i-1] & b) == b) return i;
         i--;
     }
 }
@@ -74,6 +74,13 @@ size_t ECSTable::get_last(int b) {
 #define X(ENUM, TYPE) \
 void ECSTable::set_##TYPE(size_t entity_id, TYPE value) { \
     ((TYPE *) component_table[ENUM])[entity_id] = value; \
+}
+COMPONENTS
+#undef X
+
+#define X(ENUM, TYPE) \
+TYPE &ECSTable::get_##TYPE(size_t entity_id) { \
+    return ((TYPE *) component_table[ENUM])[entity_id]; \
 }
 COMPONENTS
 #undef X

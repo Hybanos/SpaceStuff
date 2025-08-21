@@ -57,12 +57,12 @@ void draw(Scene *scene, ECSTable &ecs, size_t first, size_t n) {
     for (size_t i = 0; i < ecs.size; i++) {
         if (ecs.bits[i] != DRAWABLE_SPHERE) continue;
 
-        Position &position = ((Position *) ecs.component_table[POSITION])[i];
-        Rotation &rotation = ((Rotation *) ecs.component_table[ROTATION])[i];
-        Scale &scale = ((Scale *) ecs.component_table[SCALE])[i];
-        MajorBody &mb = ((MajorBody *) ecs.component_table[MAJOR_BODY])[i];
-        Ephemeris &ephemeris = ((Ephemeris *) ecs.component_table[EPHEMERIS])[i];
-        RotationInfo &rotation_info = ((RotationInfo *) ecs.component_table[ROTATION_INFO])[i];
+        Position &position = ecs.get_Position(i);
+        Rotation &rotation = ecs.get_Rotation(i);
+        Scale &scale = ecs.get_Scale(i);
+        MajorBody &mb = ecs.get_MajorBody(i);
+        Ephemeris &ephemeris = ecs.get_Ephemeris(i);
+        RotationInfo &rotation_info = ecs.get_RotationInfo(i);
 
         int tex;
         if (!id_to_texture.contains(mb.major_body_id)) {

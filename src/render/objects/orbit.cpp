@@ -1,6 +1,6 @@
-#include "render/objects/orbits.hpp"
+#include "render/objects/orbit.hpp"
 
-namespace render::orbits {
+namespace render::orbit {
 
 void init() {
     mesh = new Mesh(Shader("src/shaders/orbits.vs", "src/shaders/orbits.fs"));
@@ -25,20 +25,20 @@ void draw(Scene *scene, ECSTable &ecs, size_t first, size_t n) {
     mesh->set_location(1, colors.data(), colors.size());
     mesh->set_location(2, (Rotation *) ecs.component_table[ROTATION] + first, n, 1);
     mesh->fill_buffer(5, (Orbit *) ecs.component_table[ORBIT] + first, n);
-    void *offset = 0;
-    mesh->set_attrib_pointer(5, 3, sizeof(Orbit), offset);
+    size_t offset = 0;
+    mesh->set_attrib_pointer(5, 3, sizeof(Orbit), (void *) offset);
     mesh->set_attrib_divisor(5, 1);
     offset += sizeof(glm::vec3);
-    mesh->set_attrib_pointer(6, 1, sizeof(Orbit), offset);
+    mesh->set_attrib_pointer(6, 1, sizeof(Orbit), (void *) offset);
     mesh->set_attrib_divisor(6, 1);
     offset += sizeof(float);
-    mesh->set_attrib_pointer(7, 1, sizeof(Orbit), offset);
+    mesh->set_attrib_pointer(7, 1, sizeof(Orbit), (void *) offset);
     mesh->set_attrib_divisor(7, 1);
     offset += sizeof(float);
-    mesh->set_attrib_pointer(8, 1, sizeof(Orbit), offset);
+    mesh->set_attrib_pointer(8, 1, sizeof(Orbit), (void *) offset);
     mesh->set_attrib_divisor(8, 1);
     offset += sizeof(float);
-    mesh->set_attrib_pointer(9, 1, sizeof(Orbit), offset);
+    mesh->set_attrib_pointer(9, 1, sizeof(Orbit), (void *) offset);
     mesh->set_attrib_divisor(9, 1);
 
     mesh->set_mat4("MVP", scene->mvp);
@@ -48,4 +48,4 @@ void draw(Scene *scene, ECSTable &ecs, size_t first, size_t n) {
     // std::cout << glGetError() << std::endl;
 }
 
-} // namespace render::orbits
+} // namespace render::orbit

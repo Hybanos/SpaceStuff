@@ -46,7 +46,7 @@ void Scene::render() {
     // fmt::print("current time: {}\n", frame_time.time_since_epoch().count());
 
     if (follow_entity != -1) {
-        Position tmp = ((Position *) ecs.component_table[POSITION])[follow_entity];
+        Position tmp = ecs.get_Position(follow_entity);
         camera->look_at(tmp);
     }
 
@@ -78,6 +78,7 @@ void Scene::render() {
     systems::sphere::draw_spheres(this, ecs);
     
     systems::orbit::compute_true_anomalies(ecs, (double) get_time().time_since_epoch().count() / 1e9);
+    systems::orbit::compute_pos_along_orbit(ecs);
     systems::orbit::draw_orbits(this, ecs);
 
     frames++;
@@ -111,6 +112,7 @@ void Scene::build_solar_system() {
     for (int i = 0; i < t.size(); i++) {
         size_t e = ecs.request_entity();
 
+        ecs.set_component(e, PARENT);
         ecs.set_component(e, POSITION);
         ecs.set_component(e, ROTATION);
         ecs.set_component(e, TWO_LINE_ELEMENT);
@@ -119,6 +121,7 @@ void Scene::build_solar_system() {
         ecs.set_component(e, TRUE_ANOMALY_INDEX);
 
         ecs.set_TLE(e, t[i]);
+        ecs.set_Parent(e, 3);
     }
 
     systems::orbit::compute_orbit_from_tle(ecs);
