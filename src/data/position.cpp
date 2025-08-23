@@ -6,7 +6,7 @@ MajorBody_simu::MajorBody_simu(int _id, DBManager &_db) : id{_id}, db{_db} {
 
     std::string lower_name = name;
     std::transform(lower_name.begin(), lower_name.end(), lower_name.begin(), [](unsigned char c){return std::tolower(c);}); 
-    rotation_info = json::parse(std::ifstream("assets/data/bodies.json"))[lower_name]; 
+    rotation_info = nlohmann::json::parse(std::ifstream("assets/data/bodies.json"))[lower_name]; 
 
     compute_transforms(2025);
 }
@@ -42,7 +42,7 @@ glm::vec3 MajorBody_simu::get_pos(long timestamp) {
     return (curr + next);
 }
 
-static double get_angle(json o, double julian_date, double f(double)) {
+static double get_angle(nlohmann::ordered_json o, double julian_date, double f(double)) {
     if (!o.size()) return 0.0f;
     double angle;
     for (auto &j : o) {

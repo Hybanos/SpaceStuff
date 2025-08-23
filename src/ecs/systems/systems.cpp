@@ -36,6 +36,17 @@ namespace systems {
 void debug_entity(Scene *scene, ECSTable &ecs, size_t entity_id) {
     int bits = ecs.bits[entity_id];
 
+    if (bits & (1 << DISPLAY_NAME)) {
+        ImGui::Spacing();
+        ImGui::SeparatorText("Name");
+        DisplayName &name = ecs.get_DisplayName(entity_id);
+
+        char buf[256];
+        strcpy(buf, name.c_str());
+        ImGui::InputText("Name", buf, 256);
+        name = buf;
+    }
+
     if (bits & (1 << PARENT)) {
         ImGui::Spacing();
         ImGui::SeparatorText("Position");
@@ -194,6 +205,27 @@ void debug_entity(Scene *scene, ECSTable &ecs, size_t entity_id) {
 
         debug_json(info);
     }
+
+    if (bits & (1 << RING)) {
+        ImGui::Spacing();
+        ImGui::SeparatorText("Ring");
+
+        Ring &ring = ecs.get_Ring(entity_id);
+
+        ImGui::DragFloat2("Range", &ring.range[0], 10.0);
+        ImGui::DragFloat("Transmittance", &ring.transmittance, 0.01f, 0, 1);
+        ImGui::Checkbox("Selected", (bool *) &ring.selected);
+
+        ImGui::BeginChild("Bitset", ImVec2(0, 100), ImGuiChildFlags_Borders, ImGuiWindowFlags_HorizontalScrollbar);
+        for (int i = 0; i < ring.bits.size(); i++) {
+            bool tmp = ring.bits.test(i);
+            if (ImGui::Selectable(fmt::format("##{}", i).c_str(), &tmp, 0, ImVec2(0.1, 50))) {
+                ring.bits.set(i, tmp);
+            }
+            ImGui::SameLine();
+        }
+        ImGui::EndChild();
+    }
 }
 
 void debug_entities(Scene *scene, ECSTable &ecs) {
@@ -232,6 +264,20 @@ void debug_entities(Scene *scene, ECSTable &ecs) {
 
     ImGui::EndTabBar();
     ImGui::End();
+}
+
+size_t get_major_body_by_name(ECSTable &ecs, std::string name) {
+    for (size_t i = 0; i < ecs.size; i++) {
+        if (!(ecs.bits[i] & (1 << MAJOR_BODY))) continue;
+
+        MajorBody &mb = ecs.get_MajorBody(i);
+
+        std::string tmp = mb.name;
+        std::transform(tmp.begin(), tmp.end(), tmp.begin(), [](unsigned char c){return std::tolower(c);}); 
+        if (tmp == name) return i;
+    }
+
+    return -1;
 }
 
 } // namespace systems

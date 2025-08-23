@@ -35,7 +35,7 @@
         {
             "name": "C Ring",
             "body_distance": 74658,
-            "width": 17500,
+            "width": 17342,
             "thickness": 5,
             "transmittance": 0.2,
             "gaps": [
@@ -70,7 +70,7 @@
         {
             "name": "Cassini Division",
             "body_distance": 117580,
-            "width": 4700,
+            "width": 4590,
             "transmittance": 0.4,
             "gaps": [
                 {
@@ -139,48 +139,6 @@
             "body_distance": 140180,
             "width": 500,
             "transmittance": 0.75
-        }
-    ],
-    "saturn_bad": [
-        {
-            "name": "Roche Division",
-            "body_distance": 136775,
-            "width": 2600
-        },
-        {
-            "name": "E Ring",
-            "body_distance": 480000,
-            "width": 300000,
-            "thickness": 2000000
-        },
-        {
-            "name": "Phoebe Ring",
-            "body_distance": 13000000,
-            "width": 12800000,
-            "thickness": 2330000
-        },
-        {
-            "name": "Janus/Epimetheus Ring",
-            "body_distance": 149000,
-            "width": 5000
-        },
-        {
-            "name": "G Ring",
-            "body_distance": 166000,
-            "width": 9000
-        },
-        {
-            "name": "Methone Ring Arc",
-            "body_distance": 194230
-        },
-        {
-            "name": "Anthe Ring Arc",
-            "body_distance": 197665
-        },
-        {
-            "name": "Pallene Ring",
-            "body_distance": 211000,
-            "width": 2500
         }
     ],
     "uranus": [

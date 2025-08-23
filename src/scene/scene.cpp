@@ -1,4 +1,6 @@
 #include "scene/scene.hpp"
+#include "objects/object.hpp"
+#include "ecs/systems.hpp"
 
 using std::chrono::nanoseconds;
 using std::chrono::high_resolution_clock;
@@ -83,6 +85,8 @@ void Scene::render() {
     systems::orbit::compute_pos_along_orbit(ecs);
     systems::orbit::draw_orbits(this, ecs);
 
+    systems::ring::draw_rings(this, ecs);
+
     frames++;
 
     auto t2 = high_resolution_clock::now();
@@ -130,6 +134,9 @@ void Scene::build_solar_system() {
     systems::orbit::index_true_anomalies(ecs);
     systems::orbit::compute_true_anomalies(ecs, (double) get_time().time_since_epoch().count() / 1e9);
     systems::orbit::compute_pos_along_orbit(ecs);
+
+    nlohmann::ordered_json ring_info = nlohmann::ordered_json::parse(std::ifstream("assets/data/rings.json"));
+    systems::ring::build_rings_from_json(ecs, ring_info);
 
     // objects.push_back(new Sphere(this, 10));
     // objects.push_back(new Sphere(this, 199));

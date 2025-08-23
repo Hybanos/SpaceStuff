@@ -26,7 +26,7 @@ void init(Scene *scene, ECSTable &ecs) {
 
         std::string name(mb.name);
         std::transform(name.begin(), name.end(), name.begin(), [](unsigned char c){return std::tolower(c);}); 
-        rotation_info = json::parse(std::ifstream("assets/data/bodies.json"))[name]; 
+        rotation_info = nlohmann::ordered_json::parse(std::ifstream("assets/data/bodies.json"))[name]; 
 
         std::vector<EphemerisLine> tmp = scene->db.get_ephemeris_year(mb.major_body_id, 2025);
         memcpy(&ephemeris, &tmp[0], tmp.size() * sizeof(EphemerisLine));

@@ -48,6 +48,7 @@ class Mesh {
         void set_vec2(std::string name, glm::vec2 data) {shader.set_vec2(name, data);}
         void set_int(std::string name, int data) {shader.set_int(name, data);}
         void set_float(std::string name, float data) {shader.set_float(name, data);}
+        void set_bitset(std::string name, int *data, int count) {shader.set_bitset(name, data, count);}
 };
 
 template<typename T>
