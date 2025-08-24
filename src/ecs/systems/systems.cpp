@@ -233,6 +233,9 @@ void debug_entities(Scene *scene, ECSTable &ecs) {
     ImGui::BeginTabBar("ECS tabs");
 
     if (ImGui::BeginTabItem("ECS table")) {
+        ImGui::SeparatorText("Table infos");
+        ImGui::Text("Total alloc size: %fGB", (float) ecs.bytes / 1e9);
+
         static size_t selected = 0;
         if (ImGui::BeginTable("ecs_entity_table", 2, ImGuiTableFlags_Borders | ImGuiTableFlags_ScrollY | ImGuiTableFlags_Resizable, ImVec2(0, 300))) {
             ImGui::TableSetupColumn("ID");

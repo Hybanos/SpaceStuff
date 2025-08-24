@@ -1,8 +1,6 @@
 add_executable(main)
 
 target_sources(main PRIVATE
-    objects/particle.cpp
-
     scene/camera.cpp
     scene/scene.cpp
     scene/time.cpp
@@ -31,9 +29,6 @@ target_sources(main PUBLIC
     FILE_SET HEADERS
     BASE_DIRS ${PROJECT_SOURCE_DIR}/include
     FILES
-
-        ${PROJECT_SOURCE_DIR}/include/objects/object.hpp
-        ${PROJECT_SOURCE_DIR}/include/objects/particle.hpp
 
         ${PROJECT_SOURCE_DIR}/include/scene/camera.hpp
         ${PROJECT_SOURCE_DIR}/include/scene/camera_anchor.hpp

@@ -1,5 +1,4 @@
 #include "scene/scene.hpp"
-#include "objects/object.hpp"
 #include "ecs/systems.hpp"
 
 using std::chrono::nanoseconds;
@@ -55,7 +54,6 @@ void Scene::render() {
         Signal s = db.signals[db.signals.size() - 1]; 
         db.signals.pop_back();
         fmt::print("scene: {} signals\n", db.signals.size());
-        for (Object *obj : objects) obj->on_signal(s);
     }
 
     projection = glm::perspective(glm::radians(60.0f), get_ratio(), 10.0f, 10000000000.0f);
@@ -69,13 +67,6 @@ void Scene::render() {
 
     render::skybox::draw(this);
     render::grid::draw(this);
-
-    for (Object * obj : objects) {
-       
-
-        obj->draw();
-    }
-
 
     systems::sphere::compute_pos(this, ecs);
     systems::sphere::compute_rota(this, ecs);
@@ -137,38 +128,11 @@ void Scene::build_solar_system() {
 
     nlohmann::ordered_json ring_info = nlohmann::ordered_json::parse(std::ifstream("assets/data/rings.json"));
     systems::ring::build_rings_from_json(ecs, ring_info);
-
-    // objects.push_back(new Sphere(this, 10));
-    // objects.push_back(new Sphere(this, 199));
-    // objects.push_back(new Sphere(this, 299));
-    // objects.push_back((new Sphere(this, 399))
-    //     // ->add_child(new Orbits(this, t))
-    // );
-    // objects.push_back(new Sphere(this, 301));
-    // objects.push_back(new Sphere(this, 499));
-    // objects.push_back((new Sphere(this, 599))
-    //     ->add_child(new Ring(this, "jupiter"))
-    // );
-    // objects.push_back(new Sphere(this, 501));
-    // objects.push_back(new Sphere(this, 502));
-    // objects.push_back(new Sphere(this, 503));
-    // objects.push_back(new Sphere(this, 504));
-    // objects.push_back((new Sphere(this, 699))
-    //     ->add_child(new Ring(this, "saturn"))
-    // );
-    // objects.push_back(new Sphere(this, 606));
-    // objects.push_back((new Sphere(this, 799))
-    //     ->add_child(new Ring(this, "uranus"))
-    // );
-    // objects.push_back((new Sphere(this, 899))
-    //     ->add_child(new Ring(this, "neptune"))
-    // );
 }
 
 void Scene::debug() {
     int id = 0;
     ImGui::Begin("Scene debug");
-    // if (ImGui::Button("HAHAHAHAHA")) db.get_ephemeris(399);
     ImGui::SeparatorText("SCENE");
     ImGui::Text("Time to render: %fms", ttr / 1e6);
     ImGui::Text("Frames: %ld.", frames);
@@ -178,12 +142,6 @@ void Scene::debug() {
     ImGui::Text("Texture triangles drawn %ld.", triangles_t_drawn);
     ImGui::SeparatorText("CAMERA");
     camera->debug();
-    ImGui::SeparatorText("OBJECTS");
-    for (auto &o : objects) {
-        ImGui::PushID(id++);
-        o->debug();
-        ImGui::PopID();
-    }
     ImGui::End();
     time.debug();
     db.debug();

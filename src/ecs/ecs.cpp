@@ -2,11 +2,16 @@
 
 ECSTable::ECSTable() {
     component_table = (void **) malloc(sizeof(void *) * NUM_COMPONENT);
+    bytes += sizeof(void *) * NUM_COMPONENT;
+
     #define X(ENUM, TYPE) \
-    component_table[ENUM] = (TYPE *) malloc(sizeof(TYPE) * max);
+    component_table[ENUM] = (TYPE *) malloc(sizeof(TYPE) * max); \
+    bytes += sizeof(TYPE) * max;
     COMPONENTS
     #undef X
+
     bits = (int *) malloc(sizeof(int) * max);
+    bytes += sizeof(int) * max;
 }
 
 ECSTable::~ECSTable() {

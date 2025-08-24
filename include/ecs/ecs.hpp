@@ -13,6 +13,8 @@ typedef std::function<void (void)> system_function_t;
 class ECSTable {
     private:
     public:
+        size_t bytes = 0;
+
         void **component_table;
         int *bits;
         // size_t component_sizes[NUM_COMPONENT];
