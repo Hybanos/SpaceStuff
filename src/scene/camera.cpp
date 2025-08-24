@@ -4,13 +4,8 @@ void Camera::translate(glm::vec3 vec) {
     position += vec;
 }
 
-// void Camera::go_to(glm::vec3 _position) {
-//     position = _position;
-// }
-
 void Camera::look_at(glm::vec3 _center) {
-    def.look_at(_center);
-    anchor = &def;
+    center = _center;
 }
 
 glm::mat4 Camera::get_view() {
@@ -53,19 +48,12 @@ void Camera::update_pos() {
     // position += anchor->get_camera_center();
 }
 
-void Camera::set_anchor(CameraAnchor *a) {
-    anchor = a;
-    update_pos();
-}
-
 void Camera::debug() {
-    glm::vec3 c = anchor->get_camera_center();
-    ImGui::InputFloat3("Camera center", (float *) &c);
-    ImGui::InputFloat3("Camera position", (float*)&position);
+    ImGui::InputFloat3("Camera center", (float *) &center);
+    ImGui::InputFloat3("Camera position", (float*) &position);
     if (ImGui::Button("RESET")) {
         scene->follow_entity = -1;
-        def.look_at(glm::vec3(0));
-        anchor = &def;
+        look_at(glm::vec3(0));
         distance = 10000;
     }
     ImGui::Checkbox("clicked", &enable_move);
