@@ -142,6 +142,9 @@ void Scene::debug() {
     ImGui::Text("Texture triangles drawn %ld.", triangles_t_drawn);
     ImGui::SeparatorText("CAMERA");
     camera->debug();
+    for (int i = 0; i < ImGuiCol_COUNT; i++) {
+        ImGui::ColorPicker4(fmt::format("{}", i).c_str(), (float *) &ImGui::GetStyle().Colors[i]);
+    }
     ImGui::End();
     time.debug();
     db.debug();

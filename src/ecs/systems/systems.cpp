@@ -41,10 +41,8 @@ void debug_entity(Scene *scene, ECSTable &ecs, size_t entity_id) {
         ImGui::SeparatorText("Name");
         DisplayName &name = ecs.get_DisplayName(entity_id);
 
-        char buf[256];
-        strcpy(buf, name.c_str());
-        ImGui::InputText("Name", buf, 256);
-        name = buf;
+        if (name.size() == 0) name = "None";
+        ImGui::InputText("Name", (char *)name.c_str(), name.capacity() + 1);
     }
 
     if (bits & (1 << PARENT)) {
@@ -148,6 +146,7 @@ void debug_entity(Scene *scene, ECSTable &ecs, size_t entity_id) {
 
         TLE &tle = ecs.get_TLE(entity_id);
 
+        if (tle.name.size() == 0) tle.name = "None";
         ImGui::Text(tle.name.c_str());
         ImGui::Text("Catalog number: %d", tle.cat_number);
         ImGui::Text("Catalog class: %c", tle.classification);
@@ -235,21 +234,48 @@ void debug_entities(Scene *scene, ECSTable &ecs) {
     if (ImGui::BeginTabItem("ECS table")) {
         ImGui::SeparatorText("Table infos");
         ImGui::Text("Total alloc size: %fGB", (float) ecs.bytes / 1e9);
+        ImGui::Spacing();
 
         static size_t selected = 0;
-        if (ImGui::BeginTable("ecs_entity_table", 2, ImGuiTableFlags_Borders | ImGuiTableFlags_ScrollY | ImGuiTableFlags_Resizable, ImVec2(0, 300))) {
-            ImGui::TableSetupColumn("ID");
-            ImGui::TableSetupColumn("bits");
+        static ImGuiTableFlags table_flags =  ImGuiTableFlags_Borders | ImGuiTableFlags_ScrollY | ImGuiTableFlags_ScrollX | ImGuiTableFlags_Resizable | ImGuiTableFlags_SizingFixedFit;
+        if (ImGui::BeginTable("ecs_entity_table", NUM_COMPONENT + 1, table_flags, ImVec2(0, 600))) {
+
+            // make checkbox background transparent and checkmark white
+            ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0, 0, 0, 0));
+            ImGui::PushStyleColor(ImGuiCol_CheckMark, ImVec4(1, 1, 1, 1));
+
+            ImGui::TableSetupColumn("Entity");
+            #define X(ENUM, TYPE) \
+            ImGui::TableSetupColumn(#TYPE, ImGuiTableColumnFlags_AngledHeader | ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize);
+            COMPONENTS
+            #undef X
+
+            ImGui::TableSetupScrollFreeze(1, 2);
+            ImGui::TableAngledHeadersRow();
             ImGui::TableHeadersRow();
-            for (size_t i = 0; i < ecs.size; i++) {
-                ImGui::TableNextRow();
-                ImGui::TableNextColumn();
-                bool sel = (selected == i);
-                ImGui::Selectable(fmt::format("{}", i).c_str(), &sel, ImGuiSelectableFlags_SpanAllColumns);
-                if (sel) selected = i;
-                ImGui::TableNextColumn();
-                ImGui::Text("%d", ecs.bits[i]);
+
+            // i stg this lib is amazing
+            ImGuiListClipper clipper;
+            clipper.Begin(ecs.size);
+            while (clipper.Step()) {
+                for (size_t i = clipper.DisplayStart; i < clipper.DisplayEnd; i++) {
+                    ImGui::TableNextRow();
+                    ImGui::TableNextColumn(); 
+
+                    bool sel = (selected == i);
+                    ImGui::Selectable(fmt::format("{}", i).c_str(), &sel, 0, ImVec2(0, 26));
+                    if (sel) selected = i;
+
+                    for (int c = 0; c < NUM_COMPONENT; c++) {
+                        ImGui::TableNextColumn();
+                        bool tmp = ecs.bits[i] & (1 << c);
+                        ImGui::Checkbox(fmt::format("##{}{}", i, c).c_str(), &tmp);
+                        if (tmp) ecs.bits[i] |= (1 << c);
+                        else ecs.bits[i] &= ~ (1 << c);
+                    }
+                }
             }
+            ImGui::PopStyleColor(2);
             ImGui::EndTable();
         };
 
