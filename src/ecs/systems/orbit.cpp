@@ -3,8 +3,8 @@
 namespace systems::orbit {
 
 void compute_orbit_from_tle(ECSTable &ecs) {
-    for (size_t i = 0; i < ecs.size; i++) {
-        if ((ecs.bits[i] & DRAWABLE_ORBIT) != DRAWABLE_ORBIT) continue;
+    for (size_t i = 0; i < ecs.size(); i++) {
+        if ((ecs.bits[i].to_ulong() & DRAWABLE_ORBIT) != DRAWABLE_ORBIT) continue;
 
         TLE &tle = ecs.get_TLE(i);
         Orbit &orbit = ecs.get_Orbit(i);
@@ -57,8 +57,8 @@ void index_true_anomalies(ECSTable &ecs) {
     int max_iter = 20;
     double e = 0.0001;
 
-    for (size_t i = 0; i < ecs.size; i++) {
-        if ((ecs.bits[i] & DRAWABLE_ORBIT) != DRAWABLE_ORBIT) continue;
+    for (size_t i = 0; i < ecs.size(); i++) {
+        if ((ecs.bits[i].to_ulong() & DRAWABLE_ORBIT) != DRAWABLE_ORBIT) continue;
 
         TLE &tle = ecs.get_TLE(i);
         Orbit &orbit = ecs.get_Orbit(i);
@@ -89,8 +89,8 @@ void index_true_anomalies(ECSTable &ecs) {
 }
 
 void compute_true_anomalies(ECSTable &ecs, double t) {
-    for (size_t i = 0; i < ecs.size; i++) {
-        if ((ecs.bits[i] & DRAWABLE_ORBIT) != DRAWABLE_ORBIT) continue;
+    for (size_t i = 0; i < ecs.size(); i++) {
+        if ((ecs.bits[i].to_ulong() & DRAWABLE_ORBIT) != DRAWABLE_ORBIT) continue;
 
         TLE &tle = ecs.get_TLE(i);
         Orbit &orbit = ecs.get_Orbit(i);
@@ -114,8 +114,8 @@ void compute_true_anomalies(ECSTable &ecs, double t) {
 }
 
 void compute_pos_along_orbit(ECSTable &ecs) {
-    for (size_t i = 0; i < ecs.size; i++) {
-        if ((ecs.bits[i] & DRAWABLE_ORBIT) != DRAWABLE_ORBIT) continue;
+    for (size_t i = 0; i < ecs.size(); i++) {
+        if ((ecs.bits[i].to_ulong() & DRAWABLE_ORBIT) != DRAWABLE_ORBIT) continue;
 
         Orbit &orbit = ecs.get_Orbit(i);
         Rotation &rota = ecs.get_Rotation(i);
@@ -123,7 +123,7 @@ void compute_pos_along_orbit(ECSTable &ecs) {
         Rotation &rotation = ecs.get_Rotation(i);
         Parent &parent = ecs.get_Parent(i);
 
-        if (ecs.bits[i] & (1 << PARENT)) {
+        if (ecs.bits[i].to_ulong() & (1 << PARENT)) {
 
             float linear_eccentricity = sqrt(orbit.semi_major_axis * orbit.semi_major_axis - orbit.semi_minor_axis * orbit.semi_minor_axis);
             orbit.offset = glm::vec3(-linear_eccentricity, 0, 0) * rotation + ecs.get_Position(parent);
@@ -154,8 +154,8 @@ void filter_orbits(Scene *scene, ECSTable &ecs) {
         filter.Build();
     }
 
-    for (size_t i = 0; i < ecs.size; i++) {
-        if ((ecs.bits[i] & DRAWABLE_ORBIT) != DRAWABLE_ORBIT) continue;
+    for (size_t i = 0; i < ecs.size(); i++) {
+        if ((ecs.bits[i].to_ulong() & DRAWABLE_ORBIT) != DRAWABLE_ORBIT) continue;
 
         TLE &tle = ecs.get_TLE(i);
         Orbit &orbit = ecs.get_Orbit(i);

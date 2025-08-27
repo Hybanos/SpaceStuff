@@ -23,8 +23,9 @@ void draw(Scene *scene, ECSTable &ecs, size_t first, size_t n) {
 
     mesh->set_location(0, vertices.data(), vertices.size());
     mesh->set_location(1, colors.data(), colors.size());
-    mesh->set_location(2, (Rotation *) ecs.component_table[ROTATION] + first, n, 1);
-    mesh->fill_buffer(5, (Orbit *) ecs.component_table[ORBIT] + first, n);
+    // TODO: make a proper way to render either a single entity or a whole archetype
+    // mesh->set_location(2, (Rotation *) ecs.component_table[ROTATION] + first, n, 1);
+    // mesh->fill_buffer(5, (Orbit *) ecs.component_table[ORBIT] + first, n);
     size_t offset = 0;
     mesh->set_attrib_pointer(5, 3, sizeof(Orbit), (void *) offset);
     mesh->set_attrib_divisor(5, 1);

@@ -24,7 +24,7 @@ void draw(Scene *scene, ECSTable &ecs, size_t first, size_t n) {
         init();
     }
 
-    for (size_t i = 0; i < ecs.size; i++) {
+    for (size_t i = 0; i < ecs.size(); i++) {
         if (ecs.bits[i] != DRAWABLE_RING) continue;
 
         DisplayName &name = ecs.get_DisplayName(i);

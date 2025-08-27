@@ -1,4 +1,4 @@
-#include "archetype.hpp"
+#include "ecs/archetype.hpp"
 
 #define X(ENUM, TYPE) \
 TYPE &Archetype::get_##TYPE(size_t entity_id) { \
@@ -19,4 +19,5 @@ size_t Archetype::request_entity() {
     if (bits & (1 << ENUM)) TYPE##_v.push_back(TYPE{});
     COMPONENTS
     #undef X
+    return Position_v.size() - 1;
 }

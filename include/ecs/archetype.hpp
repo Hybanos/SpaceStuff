@@ -15,7 +15,7 @@ class Archetype {
         COMPONENTS
         #undef X
     public:
-        Archetype(int b) : bits{b} {}
+        Archetype(int b = 0) : bits{b} {}
 
         #define X(ENUM, TYPE) \
         TYPE &get_##TYPE(size_t entity_id);

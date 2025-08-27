@@ -16,4 +16,5 @@ cmake --build build --config Release || exit
 # ALL
 # curl "https://celestrak.org/norad/elements/gp.php?group=active&format=tle" > haha.tle
 
+build/tests/tests || exit
 build/src/main

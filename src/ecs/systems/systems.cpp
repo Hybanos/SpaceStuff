@@ -34,9 +34,9 @@ void debug_json(nlohmann::ordered_json obj) {
 namespace systems {
 
 void debug_entity(Scene *scene, ECSTable &ecs, size_t entity_id) {
-    int bits = ecs.bits[entity_id];
+    bitset bits = ecs.bits[entity_id];
 
-    if (bits & (1 << DISPLAY_NAME)) {
+    if (bits.test(DISPLAY_NAME)) {
         ImGui::Spacing();
         ImGui::SeparatorText("Name");
         DisplayName &name = ecs.get_DisplayName(entity_id);
@@ -45,7 +45,7 @@ void debug_entity(Scene *scene, ECSTable &ecs, size_t entity_id) {
         ImGui::InputText("Name", (char *)name.c_str(), name.capacity() + 1);
     }
 
-    if (bits & (1 << PARENT)) {
+    if (bits.test(PARENT)) {
         ImGui::Spacing();
         ImGui::SeparatorText("Position");
         Parent &parent = ecs.get_Parent(entity_id);
@@ -57,7 +57,7 @@ void debug_entity(Scene *scene, ECSTable &ecs, size_t entity_id) {
         }
     }
 
-    if (bits & (1 << POSITION)) {
+    if (bits.test(POSITION)) {
         ImGui::Spacing();
         ImGui::SeparatorText("Position");
         ImGui::DragFloat3("##1", &ecs.get_Position(entity_id).x);
@@ -66,7 +66,7 @@ void debug_entity(Scene *scene, ECSTable &ecs, size_t entity_id) {
         }
     }
 
-    if (bits & (1 << ROTATION)) {
+    if (bits.test(ROTATION)) {
         ImGui::Spacing();
         ImGui::SeparatorText("Rotation");
         Rotation &rota = ecs.get_Rotation(entity_id);
@@ -75,13 +75,13 @@ void debug_entity(Scene *scene, ECSTable &ecs, size_t entity_id) {
         ImGui::Text("\t%f\t%f\t%f", rota[0][2], rota[1][2], rota[2][2]);
     }
 
-    if (bits & (1 << SCALE)) {
+    if (bits.test(SCALE)) {
         ImGui::Spacing();
         ImGui::SeparatorText("Scale");
         ImGui::DragFloat("##5", &ecs.get_Scale(entity_id));
     }
 
-    if (bits & (1 << MAJOR_BODY)) {
+    if (bits.test(MAJOR_BODY)) {
         ImGui::Spacing();
         ImGui::SeparatorText("Major Body");
 
@@ -96,7 +96,7 @@ void debug_entity(Scene *scene, ECSTable &ecs, size_t entity_id) {
         ImGui::DragScalar("Radius", ImGuiDataType_Double, &mb.radius);
     }
     
-    if (bits & (1 << EPHEMERIS)) {
+    if (bits.test(EPHEMERIS)) {
         ImGui::Spacing();
         ImGui::SeparatorText("Ephemeris lines");
 
@@ -140,7 +140,7 @@ void debug_entity(Scene *scene, ECSTable &ecs, size_t entity_id) {
         }
     }
 
-    if (bits & (1 << TWO_LINE_ELEMENT)) {
+    if (bits.test(TWO_LINE_ELEMENT)) {
         ImGui::Spacing();
         ImGui::SeparatorText("TLE");
 
@@ -164,7 +164,7 @@ void debug_entity(Scene *scene, ECSTable &ecs, size_t entity_id) {
         ImGui::DragInt("Revs at epoch", &tle.revolutions_at_epoch);
     }
 
-    if (bits & (1 << ORBIT)) {
+    if (bits.test(ORBIT)) {
         ImGui::Spacing();
         ImGui::SeparatorText("Orbit");
 
@@ -178,7 +178,7 @@ void debug_entity(Scene *scene, ECSTable &ecs, size_t entity_id) {
         ImGui::InputFloat("Flag", &orbit.flag);
     }
 
-    if (bits & (1 << EPOCH)) {
+    if (bits.test(EPOCH)) {
         ImGui::Spacing();
         ImGui::SeparatorText("Epoch");
 
@@ -187,7 +187,7 @@ void debug_entity(Scene *scene, ECSTable &ecs, size_t entity_id) {
         ImGui::DragScalar("Epoch", ImGuiDataType_Double, &epoch);
     }
 
-    if (bits & (1 << TRUE_ANOMALY_INDEX)) {
+    if (bits.test(TRUE_ANOMALY_INDEX)) {
         ImGui::Spacing();
         ImGui::SeparatorText("True anomaly index");
 
@@ -196,7 +196,7 @@ void debug_entity(Scene *scene, ECSTable &ecs, size_t entity_id) {
         ImGui::PlotLines("haha", index.begin(), 360, 0, NULL, 0, M_PI * 2, ImVec2(0, 80));
     }
 
-    if (bits & (1 << ROTATION_INFO)) {
+    if (bits.test(ROTATION_INFO)) {
         ImGui::Spacing();
         ImGui::SeparatorText("Rotation Info");
 
@@ -205,7 +205,7 @@ void debug_entity(Scene *scene, ECSTable &ecs, size_t entity_id) {
         debug_json(info);
     }
 
-    if (bits & (1 << RING)) {
+    if (bits.test(RING)) {
         ImGui::Spacing();
         ImGui::SeparatorText("Ring");
 
@@ -233,7 +233,7 @@ void debug_entities(Scene *scene, ECSTable &ecs) {
 
     if (ImGui::BeginTabItem("ECS table")) {
         ImGui::SeparatorText("Table infos");
-        ImGui::Text("Total alloc size: %fGB", (float) ecs.bytes / 1e9);
+        // ImGui::Text("Total alloc size: %fGB", (float) ecs.bytes / 1e9);
         ImGui::Spacing();
 
         static size_t selected = 0;
@@ -256,7 +256,7 @@ void debug_entities(Scene *scene, ECSTable &ecs) {
 
             // i stg this lib is amazing
             ImGuiListClipper clipper;
-            clipper.Begin(ecs.size);
+            clipper.Begin(ecs.size());
             while (clipper.Step()) {
                 for (size_t i = clipper.DisplayStart; i < clipper.DisplayEnd; i++) {
                     ImGui::TableNextRow();
@@ -268,7 +268,7 @@ void debug_entities(Scene *scene, ECSTable &ecs) {
 
                     for (int c = 0; c < NUM_COMPONENT; c++) {
                         ImGui::TableNextColumn();
-                        bool tmp = ecs.bits[i] & (1 << c);
+                        bool tmp = ecs.bits[i].test(c);
                         ImGui::Checkbox(fmt::format("##{}{}", i, c).c_str(), &tmp);
                         if (tmp) ecs.bits[i] |= (1 << c);
                         else ecs.bits[i] &= ~ (1 << c);
@@ -296,8 +296,8 @@ void debug_entities(Scene *scene, ECSTable &ecs) {
 }
 
 size_t get_major_body_by_name(ECSTable &ecs, std::string name) {
-    for (size_t i = 0; i < ecs.size; i++) {
-        if (!(ecs.bits[i] & (1 << MAJOR_BODY))) continue;
+    for (size_t i = 0; i < ecs.size(); i++) {
+        if (!(ecs.bits[i].test(MAJOR_BODY))) continue;
 
         MajorBody &mb = ecs.get_MajorBody(i);
 

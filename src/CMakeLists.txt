@@ -16,6 +16,7 @@ target_sources(main PRIVATE
     render/objects/ring.cpp
 
     ecs/ecs.cpp
+    ecs/archetype.cpp
     ecs/systems/systems.cpp
     ecs/systems/sphere.cpp
     ecs/systems/orbit.cpp
@@ -47,6 +48,7 @@ target_sources(main PUBLIC
         ${PROJECT_SOURCE_DIR}/include/render/objects/ring.hpp
 
         ${PROJECT_SOURCE_DIR}/include/ecs/ecs.hpp
+        ${PROJECT_SOURCE_DIR}/include/ecs/archetype.hpp
         ${PROJECT_SOURCE_DIR}/include/ecs/components.hpp
         ${PROJECT_SOURCE_DIR}/include/ecs/systems.hpp
 )

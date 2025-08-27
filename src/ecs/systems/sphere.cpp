@@ -14,8 +14,8 @@ static double get_angle(nlohmann::json o, double julian_date, double f(double)) 
 namespace systems::sphere {
 
 void init(Scene *scene, ECSTable &ecs) {
-    for (size_t i = 0; i < ecs.size; i++) {
-        if ((ecs.bits[i] & DRAWABLE_SPHERE)  != DRAWABLE_SPHERE) continue;
+    for (size_t i = 0; i < ecs.size(); i++) {
+        if ((ecs.bits[i].to_ulong() & DRAWABLE_SPHERE)  != DRAWABLE_SPHERE) continue;
 
         Position &position = ecs.get_Position(i);
         Rotation &rotation = ecs.get_Rotation(i);
@@ -36,8 +36,8 @@ void init(Scene *scene, ECSTable &ecs) {
 }
 
 void compute_pos(Scene *scene, ECSTable &ecs) {
-    for (size_t i = 0; i < ecs.size; i++) {
-        if ((ecs.bits[i] & DRAWABLE_SPHERE)  != DRAWABLE_SPHERE) continue;
+    for (size_t i = 0; i < ecs.size(); i++) {
+        if ((ecs.bits[i].to_ulong() & DRAWABLE_SPHERE)  != DRAWABLE_SPHERE) continue;
 
         Position &position = ecs.get_Position(i);
         Rotation &rotation = ecs.get_Rotation(i);
@@ -62,8 +62,8 @@ void compute_pos(Scene *scene, ECSTable &ecs) {
 }
 
 void compute_rota(Scene *scene, ECSTable &ecs) {
-    for (size_t i = 0; i < ecs.size; i++) {
-        if ((ecs.bits[i] & DRAWABLE_SPHERE)  != DRAWABLE_SPHERE) continue;
+    for (size_t i = 0; i < ecs.size(); i++) {
+        if ((ecs.bits[i].to_ulong() & DRAWABLE_SPHERE)  != DRAWABLE_SPHERE) continue;
 
         Position &position = ecs.get_Position(i);
         Rotation &rotation = ecs.get_Rotation(i);

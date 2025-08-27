@@ -54,8 +54,8 @@ void draw(Scene *scene, ECSTable &ecs, size_t first, size_t n) {
         init();
     }
 
-    for (size_t i = 0; i < ecs.size; i++) {
-        if ((ecs.bits[i] & DRAWABLE_SPHERE) != DRAWABLE_SPHERE) continue;
+    for (size_t i = 0; i < ecs.size(); i++) {
+        if ((ecs.bits[i].to_ulong() & DRAWABLE_SPHERE) != DRAWABLE_SPHERE) continue;
 
         Position &position = ecs.get_Position(i);
         Rotation &rotation = ecs.get_Rotation(i);
