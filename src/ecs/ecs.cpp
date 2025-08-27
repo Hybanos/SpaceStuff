@@ -1,50 +1,17 @@
 #include <ecs/ecs.hpp>
 
 ECSTable::ECSTable() {
-    component_table = (void **) malloc(sizeof(void *) * NUM_COMPONENT);
-    bytes += sizeof(void *) * NUM_COMPONENT;
-
-    #define X(ENUM, TYPE) \
-    component_table[ENUM] = (TYPE *) malloc(sizeof(TYPE) * max); \
-    bytes += sizeof(TYPE) * max;
-    COMPONENTS
-    #undef X
-
-    bits = (int *) malloc(sizeof(int) * max);
-    bytes += sizeof(int) * max;
 }
-
-ECSTable::~ECSTable() {
-    for (int i = 0; i < NUM_COMPONENT; i++) {
-        free(component_table[i]);
-    }
-    free(component_table);
-    free(bits);
-}
-
-// void ECSTable::sort() {
-//     size_t first, last;
-
-    // remove free entities first
-    // while (bits[first] & ~(1 << FREE_ENTITY)) {
-    //     first++;
-    // }
-
-    // last = first + 1;
-    // while (bits[last] & (1 << FREE_ENTITY)) {
-    //     last++;
-    // }
-// }
 
 size_t ECSTable::request_entity() {
-    if (size == max) {
-        fmt::print("Entity limit reached!");
-        exit(1);
-    }
+    bits.push_back(0);
 
-    bits[size] = 0;
-     
-    return size++;
+    if (!archetype_map.contains(0)) archetype_map[0] = Archetype(0);
+    size_t id = archetype_map[0].request_entity();
+    // virtual_to_local_ids.emplace(bits.size(), id);
+    virtual_to_local_ids.push_back(id);
+
+    return bits.size() - 1;
 }
 
 void ECSTable::remove_entity(size_t entity_id) {
@@ -53,10 +20,15 @@ void ECSTable::remove_entity(size_t entity_id) {
 
 void ECSTable::set_component(size_t entity_id, Component component) {
     bits[entity_id] |= (1 << component);
-    // component_sizes[component]++;
 }
 
-size_t ECSTable::get_first(int b) {
+void ECSTable::set_bits(size_t entity_id, bitset b) {
+    if (b == bits[entity_id]) return;
+
+
+}
+
+size_t ECSTable::get_first(bitset b) {
     size_t i = 0;
     while (1) {
         if ((bits[i] & b) == b) return i;
@@ -64,28 +36,24 @@ size_t ECSTable::get_first(int b) {
     }
 }
 
-size_t ECSTable::get_last(int b) {
-    size_t i = size;
+size_t ECSTable::get_last(bitset b) {
+    size_t i = bits.size();
     while (1) {
         if ((bits[i-1] & b) == b) return i;
         i--;
     }
 }
 
-// void ECSTable::request_system(int bits, system_function_t fn) {
-//     systems.emplace(bits, fn);
-// }
-
 #define X(ENUM, TYPE) \
 void ECSTable::set_##TYPE(size_t entity_id, TYPE value) { \
-    ((TYPE *) component_table[ENUM])[entity_id] = value; \
+    archetype_map[bits[entity_id]].set_##TYPE(virtual_to_local_ids[entity_id], value); \
 }
 COMPONENTS
 #undef X
 
 #define X(ENUM, TYPE) \
 TYPE &ECSTable::get_##TYPE(size_t entity_id) { \
-    return ((TYPE *) component_table[ENUM])[entity_id]; \
+    return archetype_map[bits[entity_id]].get_##TYPE(virtual_to_local_ids[entity_id]); \
 }
 COMPONENTS
 #undef X
