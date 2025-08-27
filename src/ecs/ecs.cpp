@@ -8,24 +8,56 @@ size_t ECSTable::request_entity() {
 
     if (!archetype_map.contains(0)) archetype_map[0] = Archetype(0);
     size_t id = archetype_map[0].request_entity();
-    // virtual_to_local_ids.emplace(bits.size(), id);
     virtual_to_local_ids.push_back(id);
 
     return bits.size() - 1;
 }
 
 void ECSTable::remove_entity(size_t entity_id) {
-    bits[entity_id] = ~(1 << FREE_ENTITY);
+    archetype_map[bits[entity_id]].remove_entity(virtual_to_local_ids[entity_id]);
+    
+    bits.erase(bits.begin() + entity_id);
+    virtual_to_local_ids.erase(virtual_to_local_ids.begin() + entity_id);
+}
+
+void ECSTable::copy_entity(bitset old_arch, size_t old_arch_id, bitset new_arch, size_t new_arch_id) {
+
+    #define X(ENUM, TYPE) \
+    if (old_arch.test(ENUM) && new_arch.test(ENUM)) { \
+        TYPE old_val = archetype_map[old_arch].get_##TYPE(old_arch_id); \
+        archetype_map[new_arch].set_##TYPE(new_arch_id, old_val); \
+    }
+    COMPONENTS
+    #undef X
+
 }
 
 void ECSTable::set_component(size_t entity_id, Component component) {
-    bits[entity_id] |= (1 << component);
+    bitset b = bits[entity_id];
+    b.set(component, true);
+    set_bits(entity_id, b);
+}
+
+void ECSTable::remove_component(size_t entity_id, Component component) {
+    bitset b = bits[entity_id];
+    b.set(component, false);
+    set_bits(entity_id, b);
 }
 
 void ECSTable::set_bits(size_t entity_id, bitset b) {
-    if (b == bits[entity_id]) return;
+    bitset old_arch = bits[entity_id];
+    size_t old_id = virtual_to_local_ids[entity_id];
+    // bits[entity_id].set(component, val);
+    bits[entity_id] = b;
+    bitset new_arch = bits[entity_id];
 
+    if (!archetype_map.contains(new_arch)) archetype_map[new_arch] = Archetype(new_arch);
+    size_t new_id = archetype_map[new_arch].request_entity();
 
+    copy_entity(old_arch, old_id, new_arch, new_id);
+    virtual_to_local_ids[entity_id] = new_id;
+
+    archetype_map[old_arch].remove_entity(old_id);
 }
 
 size_t ECSTable::get_first(bitset b) {

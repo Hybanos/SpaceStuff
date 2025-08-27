@@ -7,15 +7,19 @@
 
 #include "components.hpp"
 
+typedef std::bitset<NUM_COMPONENT> bitset;
+
 class Archetype {
     private:
-        int bits;
+        bitset bits;
+        size_t _size = 0;
         #define X(ENUM, TYPE) \
         std::vector<TYPE> TYPE##_v;
         COMPONENTS
         #undef X
     public:
-        Archetype(int b = 0) : bits{b} {}
+        Archetype(bitset b = 0) : bits{b} {}
+        size_t size() {return _size;}
 
         #define X(ENUM, TYPE) \
         TYPE &get_##TYPE(size_t entity_id);
@@ -28,4 +32,5 @@ class Archetype {
         #undef X
 
         size_t request_entity();
-};
+        void remove_entity(size_t entity_id);
+    };

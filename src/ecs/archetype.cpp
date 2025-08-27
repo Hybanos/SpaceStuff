@@ -16,8 +16,17 @@ COMPONENTS
 
 size_t Archetype::request_entity() {
     #define X(ENUM, TYPE) \
-    if (bits & (1 << ENUM)) TYPE##_v.push_back(TYPE{});
+    if (bits.test(ENUM)) TYPE##_v.push_back(TYPE{});
     COMPONENTS
     #undef X
-    return Position_v.size() - 1;
+    return _size++;
+}
+
+void Archetype::remove_entity(size_t entity_id) {
+    #define X(ENUM, TYPE) \
+    if (bits.test(ENUM)) TYPE##_v.erase(TYPE##_v.begin() + entity_id);
+    COMPONENTS
+    #undef X
+
+    _size--;
 }

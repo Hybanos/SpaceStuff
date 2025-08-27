@@ -14,6 +14,8 @@ typedef std::bitset<NUM_COMPONENT> bitset;
 class ECSTable {
     private:
         std::unordered_map<bitset, Archetype> archetype_map;
+
+        void copy_entity(bitset old_arch, size_t old_arch_id, bitset new_arch, size_t new_arch_id);
     public:
         std::vector<bitset> bits;
         // maps the "virtual" entity ids given once at entity creation
@@ -26,10 +28,12 @@ class ECSTable {
         size_t request_entity();
         void remove_entity(size_t entity_id);
         void set_component(size_t entity_id, Component component);
+        void remove_component(size_t entity_id, Component component);
         void set_bits(size_t entity, bitset b);
         size_t get_first(bitset b);
         size_t get_last(bitset b);
         size_t size() {return bits.size();}
+        size_t get_archetype_size(bitset b) {return archetype_map[b].size();}
 
         #define X(ENUM, TYPE) \
         void set_##TYPE(size_t entity_id, TYPE value); 
