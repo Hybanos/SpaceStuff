@@ -266,13 +266,14 @@ void debug_entities(Scene *scene, ECSTable &ecs) {
                     ImGui::Selectable(fmt::format("{}", i).c_str(), &sel, 0, ImVec2(0, 26));
                     if (sel) selected = i;
 
+                    bitset b = ecs.bits[i];
                     for (int c = 0; c < NUM_COMPONENT; c++) {
                         ImGui::TableNextColumn();
                         bool tmp = ecs.bits[i].test(c);
                         ImGui::Checkbox(fmt::format("##{}{}", i, c).c_str(), &tmp);
-                        if (tmp) ecs.bits[i] |= (1 << c);
-                        else ecs.bits[i] &= ~ (1 << c);
+                        b.set(c, tmp);
                     }
+                    if (ecs.bits[i] != b) ecs.set_bits(i, b);
                 }
             }
             ImGui::PopStyleColor(2);

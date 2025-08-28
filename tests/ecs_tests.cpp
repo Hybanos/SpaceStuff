@@ -86,5 +86,23 @@ TEST(ECS_tests, data_persist_mult_entities) {
 
     EXPECT_EQ(table.get_Position(e1), p1 * 1.0f);
     EXPECT_EQ(table.get_Position(e3), p1 * 3.0f);
+}
 
+TEST(ECS_tests, rotation_infos_keep_crashing_sadface) {
+    ECSTable table;
+    nlohmann::ordered_json j = nlohmann::json::object();
+    j["haha"] = "hehe";
+    j["hoho"] = 123;
+    j["hehe"] = nlohmann::json::object();
+    j["hehe"]["haha"] = "plop";
+    j["hehe"]["hoho"] = 456;
+
+    size_t e = table.request_entity();
+
+    table.set_component(e, ROTATION_INFO);
+    table.set_RotationInfo(e, j);
+
+    EXPECT_EQ(table.get_RotationInfo(e), j);
+    table.set_component(e, POSITION);
+    EXPECT_EQ(table.get_RotationInfo(e), j);
 }

@@ -16,6 +16,7 @@ class ECSTable {
         std::unordered_map<bitset, Archetype> archetype_map;
 
         void copy_entity(bitset old_arch, size_t old_arch_id, bitset new_arch, size_t new_arch_id);
+        void collapse_local_ids(bitset arch, size_t deleted_entity);
     public:
         std::vector<bitset> bits;
         // maps the "virtual" entity ids given once at entity creation

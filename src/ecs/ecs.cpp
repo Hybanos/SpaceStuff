@@ -15,9 +15,18 @@ size_t ECSTable::request_entity() {
 
 void ECSTable::remove_entity(size_t entity_id) {
     archetype_map[bits[entity_id]].remove_entity(virtual_to_local_ids[entity_id]);
+    collapse_local_ids(bits[entity_id], virtual_to_local_ids[entity_id]);
     
     bits.erase(bits.begin() + entity_id);
     virtual_to_local_ids.erase(virtual_to_local_ids.begin() + entity_id);
+}
+
+void ECSTable::collapse_local_ids(bitset arch, size_t deleted_entity_id) {
+    for (size_t i = 0; i < size(); i++) {
+        if (bits[i] == arch && virtual_to_local_ids[i] > deleted_entity_id) {
+            virtual_to_local_ids[i]--;
+        }
+    }
 }
 
 void ECSTable::copy_entity(bitset old_arch, size_t old_arch_id, bitset new_arch, size_t new_arch_id) {
@@ -47,7 +56,6 @@ void ECSTable::remove_component(size_t entity_id, Component component) {
 void ECSTable::set_bits(size_t entity_id, bitset b) {
     bitset old_arch = bits[entity_id];
     size_t old_id = virtual_to_local_ids[entity_id];
-    // bits[entity_id].set(component, val);
     bits[entity_id] = b;
     bitset new_arch = bits[entity_id];
 
@@ -58,6 +66,7 @@ void ECSTable::set_bits(size_t entity_id, bitset b) {
     virtual_to_local_ids[entity_id] = new_id;
 
     archetype_map[old_arch].remove_entity(old_id);
+    collapse_local_ids(old_arch, old_id);
 }
 
 size_t ECSTable::get_first(bitset b) {
