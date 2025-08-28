@@ -19,5 +19,5 @@ namespace render::sphere {
     static std::unordered_map<int, int> id_to_texture;
 
     void init();
-    void draw(Scene *scene, ECSTable &ecs, size_t first, size_t n);
+    void draw(Scene *scene, ECSTable &ecs);
 }

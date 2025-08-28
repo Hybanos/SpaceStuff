@@ -85,6 +85,25 @@ size_t ECSTable::get_last(bitset b) {
     }
 }
 
+size_t ECSTable::bytes() {
+    size_t b = 0;
+    for (auto i = archetype_map.begin(); i != archetype_map.end(); i++) {
+        b += i->second.bytes();
+    }
+    return b;
+}
+
+std::vector<Archetype *> ECSTable::arch_iter(bitset bits, bool strict) {
+    std::vector<Archetype *> v;
+    if (archetype_map.contains(bits)) v.push_back(&archetype_map[bits]);
+    if (!strict) {
+        for (auto it = archetype_map.begin(); it != archetype_map.end(); it++) {
+            if ((it->first & bits) == bits) v.push_back(&it->second);
+        }
+    }
+    return v;
+}
+
 #define X(ENUM, TYPE) \
 void ECSTable::set_##TYPE(size_t entity_id, TYPE value) { \
     archetype_map[bits[entity_id]].set_##TYPE(virtual_to_local_ids[entity_id], value); \

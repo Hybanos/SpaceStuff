@@ -21,7 +21,6 @@ class ECSTable {
         std::vector<bitset> bits;
         // maps the "virtual" entity ids given once at entity creation
         // with their local ids (meaning index in the archetype vectors)
-        // std::map<size_t, size_t> virtual_to_local_ids;
         std::vector<size_t> virtual_to_local_ids;
 
         ECSTable();
@@ -34,7 +33,11 @@ class ECSTable {
         size_t get_first(bitset b);
         size_t get_last(bitset b);
         size_t size() {return bits.size();}
+        size_t bytes();
         size_t get_archetype_size(bitset b) {return archetype_map[b].size();}
+
+        // strict = true only returns archetypes with a directly matching bitset
+        std::vector<Archetype *> arch_iter(bitset bits, bool strict = true);
 
         #define X(ENUM, TYPE) \
         void set_##TYPE(size_t entity_id, TYPE value); 

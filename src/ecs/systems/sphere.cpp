@@ -14,103 +14,100 @@ static double get_angle(nlohmann::json o, double julian_date, double f(double)) 
 namespace systems::sphere {
 
 void init(Scene *scene, ECSTable &ecs) {
-    for (size_t i = 0; i < ecs.size(); i++) {
-        if ((ecs.bits[i].to_ulong() & DRAWABLE_SPHERE)  != DRAWABLE_SPHERE) continue;
+    for (auto &a : ecs.arch_iter(DRAWABLE_SPHERE, false)) {
+        for (size_t i = 0; i < a->size(); i++) {
 
-        Position &position = ecs.get_Position(i);
-        Rotation &rotation = ecs.get_Rotation(i);
-        Scale &scale = ecs.get_Scale(i);
-        MajorBody &mb = ecs.get_MajorBody(i);
-        Ephemeris &ephemeris = ecs.get_Ephemeris(i);
-        RotationInfo &rotation_info = ecs.get_RotationInfo(i);
+            Position &position = a->get_Position(i);
+            Rotation &rotation = a->get_Rotation(i);
+            Scale &scale = a->get_Scale(i);
+            MajorBody &mb = a->get_MajorBody(i);
+            Ephemeris &ephemeris = a->get_Ephemeris(i);
+            RotationInfo &rotation_info = a->get_RotationInfo(i);
 
-        std::string name(mb.name);
-        std::transform(name.begin(), name.end(), name.begin(), [](unsigned char c){return std::tolower(c);}); 
-        rotation_info = nlohmann::ordered_json::parse(std::ifstream("assets/data/bodies.json"))[name]; 
+            std::string name(mb.name);
+            std::transform(name.begin(), name.end(), name.begin(), [](unsigned char c){return std::tolower(c);}); 
+            rotation_info = nlohmann::ordered_json::parse(std::ifstream("assets/data/bodies.json"))[name]; 
 
-        std::vector<EphemerisLine> tmp = scene->db.get_ephemeris_year(mb.major_body_id, 2025);
-        memcpy(&ephemeris, &tmp[0], tmp.size() * sizeof(EphemerisLine));
+            std::vector<EphemerisLine> tmp = scene->db.get_ephemeris_year(mb.major_body_id, 2025);
+            memcpy(&ephemeris, &tmp[0], tmp.size() * sizeof(EphemerisLine));
 
-        scale = mb.radius;
+            scale = mb.radius;
+        }
     }
 }
 
 void compute_pos(Scene *scene, ECSTable &ecs) {
-    for (size_t i = 0; i < ecs.size(); i++) {
-        if ((ecs.bits[i].to_ulong() & DRAWABLE_SPHERE)  != DRAWABLE_SPHERE) continue;
+    for (auto &a : ecs.arch_iter(DRAWABLE_SPHERE, false)) {
+        for (size_t i = 0; i < a->size(); i++) {
 
-        Position &position = ecs.get_Position(i);
-        Rotation &rotation = ecs.get_Rotation(i);
-        Scale &scale = ecs.get_Scale(i);
-        MajorBody &mb = ecs.get_MajorBody(i);
-        Ephemeris &ephemeris = ecs.get_Ephemeris(i);
-        RotationInfo &rotation_info = ecs.get_RotationInfo(i);
+            Position &position = a->get_Position(i);
+            Rotation &rotation = a->get_Rotation(i);
+            Scale &scale = a->get_Scale(i);
+            MajorBody &mb = a->get_MajorBody(i);
+            Ephemeris &ephemeris = a->get_Ephemeris(i);
+            RotationInfo &rotation_info = a->get_RotationInfo(i);
 
-        long timestamp = scene->get_time().time_since_epoch().count(); 
-        long diff = timestamp - ephemeris[0].timestamp;
-        int days = diff / (24l * 3600 * 1'000'000'000);
-        long s_until_next_day = (timestamp / 1'000'000'000) % (24l * 3600);
-        float day_percent = (float) s_until_next_day / (24l * 3600);
+            long timestamp = scene->get_time().time_since_epoch().count(); 
+            long diff = timestamp - ephemeris[0].timestamp;
+            int days = diff / (24l * 3600 * 1'000'000'000);
+            long s_until_next_day = (timestamp / 1'000'000'000) % (24l * 3600);
+            float day_percent = (float) s_until_next_day / (24l * 3600);
 
-        EphemerisLine curr = ephemeris[days % ephemeris.size()];
-        EphemerisLine next = ephemeris[(days+1) % ephemeris.size()];
+            EphemerisLine curr = ephemeris[days % ephemeris.size()];
+            EphemerisLine next = ephemeris[(days+1) % ephemeris.size()];
 
-        position.x = curr.x * (1 - day_percent) + next.x * (day_percent);
-        position.y = curr.y * (1 - day_percent) + next.y * (day_percent);
-        position.z = curr.z * (1 - day_percent) + next.z * (day_percent);
+            position.x = curr.x * (1 - day_percent) + next.x * (day_percent);
+            position.y = curr.y * (1 - day_percent) + next.y * (day_percent);
+            position.z = curr.z * (1 - day_percent) + next.z * (day_percent);
+        }
     }
 }
 
 void compute_rota(Scene *scene, ECSTable &ecs) {
-    for (size_t i = 0; i < ecs.size(); i++) {
-        if ((ecs.bits[i].to_ulong() & DRAWABLE_SPHERE)  != DRAWABLE_SPHERE) continue;
+    for (auto &a : ecs.arch_iter(DRAWABLE_SPHERE, false)) {
+        for (size_t i = 0; i < a->size(); i++) {
 
-        Position &position = ecs.get_Position(i);
-        Rotation &rotation = ecs.get_Rotation(i);
-        Scale &scale = ecs.get_Scale(i);
-        MajorBody &mb = ecs.get_MajorBody(i);
-        Ephemeris &ephemeris = ecs.get_Ephemeris(i);
-        RotationInfo &rotation_info = ecs.get_RotationInfo(i);
+            Position &position = a->get_Position(i);
+            Rotation &rotation = a->get_Rotation(i);
+            Scale &scale = a->get_Scale(i);
+            MajorBody &mb = a->get_MajorBody(i);
+            Ephemeris &ephemeris = a->get_Ephemeris(i);
+            RotationInfo &rotation_info = a->get_RotationInfo(i);
 
-        double julian_day = scene->time.get_julian() - 2451545.0;
-        double julian_year = julian_day / 36525;
+            double julian_day = scene->time.get_julian() - 2451545.0;
+            double julian_year = julian_day / 36525;
 
-        double a0 = 90.0f + (double) rotation_info["a0"];
-        double d0 = 90.0f - (double) rotation_info["d0"];
-        double W = rotation_info["W"];
+            double a0 = 90.0f + (double) rotation_info["a0"];
+            double d0 = 90.0f - (double) rotation_info["d0"];
+            double W = rotation_info["W"];
 
-        a0 += get_angle(rotation_info["a0_d"], julian_day, glm::sin);
-        a0 += get_angle(rotation_info["a0_T"], julian_year, glm::sin);
-        d0 += get_angle(rotation_info["d0_d"], julian_day, glm::cos);
-        d0 += get_angle(rotation_info["d0_T"], julian_year, glm::cos);
-        W += get_angle(rotation_info["W_d"], julian_day, glm::sin);
-        W += get_angle(rotation_info["W_T"], julian_year, glm::sin);
+            a0 += get_angle(rotation_info["a0_d"], julian_day, glm::sin);
+            a0 += get_angle(rotation_info["a0_T"], julian_year, glm::sin);
+            d0 += get_angle(rotation_info["d0_d"], julian_day, glm::cos);
+            d0 += get_angle(rotation_info["d0_T"], julian_year, glm::cos);
+            W += get_angle(rotation_info["W_d"], julian_day, glm::sin);
+            W += get_angle(rotation_info["W_T"], julian_year, glm::sin);
 
-        a0 = glm::radians(fmod(a0, 360));
-        d0 = glm::radians(fmod(d0, 360));
-        W = glm::radians(fmod(W, 360));
-        a0 += W;
+            a0 = glm::radians(fmod(a0, 360));
+            d0 = glm::radians(fmod(d0, 360));
+            W = glm::radians(fmod(W, 360));
+            a0 += W;
 
-        glm::mat3 y(
-            glm::cos(a0), 0, -glm::sin(a0),
-            0, 1, 0,
-            glm::sin(a0), 0, glm::cos(a0)
-        );
+            glm::mat3 y(
+                glm::cos(a0), 0, -glm::sin(a0),
+                0, 1, 0,
+                glm::sin(a0), 0, glm::cos(a0)
+            );
 
-        glm::mat3 z(
-            glm::cos(d0), glm::sin(d0), 0,
-            -glm::sin(d0), glm::cos(d0), 0,
-            0, 0, 1
-        );
+            glm::mat3 z(
+                glm::cos(d0), glm::sin(d0), 0,
+                -glm::sin(d0), glm::cos(d0), 0,
+                0, 0, 1
+            );
 
-        rotation = z * y;
+            rotation = z * y;
+        }
     }
-}
-
-void draw_spheres(Scene *scene, ECSTable &ecs) {
-    size_t first = ecs.get_first(DRAWABLE_SPHERE);
-    size_t last = ecs.get_last(DRAWABLE_SPHERE);
-    render::sphere::draw(scene, ecs, first, last);
 }
 
 } // namespace systems::sphere

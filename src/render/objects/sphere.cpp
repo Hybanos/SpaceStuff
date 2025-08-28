@@ -49,7 +49,7 @@ void init() {
     }
 }
 
-void draw(Scene *scene, ECSTable &ecs, size_t first, size_t n) {
+void draw(Scene *scene, ECSTable &ecs) {
     if (vertices.size() == 0) {
         init();
     }

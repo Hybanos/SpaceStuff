@@ -1,5 +1,14 @@
 #include "ecs/archetype.hpp"
 
+size_t Archetype::bytes() {
+    size_t mult = 0;
+    #define X(ENUM, TYPE) \
+    if (bits.test(ENUM)) mult += sizeof(TYPE);
+    COMPONENTS
+    #undef X
+    return _size * mult;
+}
+
 #define X(ENUM, TYPE) \
 TYPE &Archetype::get_##TYPE(size_t entity_id) { \
 return TYPE##_v[entity_id]; \

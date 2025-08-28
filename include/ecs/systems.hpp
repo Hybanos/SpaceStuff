@@ -14,21 +14,18 @@ namespace systems::sphere {
     void init(Scene *scene, ECSTable &ecs);
     void compute_pos(Scene *scene, ECSTable &ecs);
     void compute_rota(Scene *scene, ECSTable &ecs);
-    void draw_spheres(Scene *scene, ECSTable &ecs);
 } // namespace systems::sphere
 
 namespace systems::orbit {
-    void compute_orbit_from_tle(ECSTable &ecs);
-    void index_true_anomalies(ECSTable &ecs);
-    void compute_true_anomalies(ECSTable &ecs, double t);
-    void compute_pos_along_orbit(ECSTable &ecs);
+    void compute_orbit_from_tle(Scene *scene, ECSTable &ecs);
+    void index_true_anomalies(Scene *scene, ECSTable &ecs);
+    void compute_true_anomalies(Scene *scene, ECSTable &ecs);
+    void compute_pos_along_orbit(Scene *scene, ECSTable &ecs);
     void filter_orbits(Scene *scene, ECSTable &ecs);
-    void draw_orbits(Scene *scene, ECSTable &ecs);
 } // namespace systems::orbit
 
 namespace systems::ring {
     void build_rings_from_json(ECSTable &ecs, nlohmann::ordered_json json);
-    void draw_rings(Scene *scene, ECSTable &ecs);
 } // namespace systems::ring
 
 namespace systems {

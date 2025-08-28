@@ -17,5 +17,5 @@ namespace render::ring {
     static std::vector<glm::vec3> vertices;
 
     void init();
-    void draw(Scene *scene, ECSTable &ecs, size_t first, size_t n);
+    void draw(Scene *scene, ECSTable &ecs);
 }

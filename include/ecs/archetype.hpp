@@ -20,6 +20,7 @@ class Archetype {
     public:
         Archetype(bitset b = 0) : bits{b} {}
         size_t size() {return _size;}
+        size_t bytes();
 
         #define X(ENUM, TYPE) \
         TYPE &get_##TYPE(size_t entity_id);

@@ -233,7 +233,7 @@ void debug_entities(Scene *scene, ECSTable &ecs) {
 
     if (ImGui::BeginTabItem("ECS table")) {
         ImGui::SeparatorText("Table infos");
-        // ImGui::Text("Total alloc size: %fGB", (float) ecs.bytes / 1e9);
+        ImGui::Text("Total alloc size: %fGB", ecs.bytes() / 1e9);
         ImGui::Spacing();
 
         static size_t selected = 0;

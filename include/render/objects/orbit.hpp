@@ -16,5 +16,5 @@ namespace render::orbit {
     // static Scene *scene;
 
     void init();
-    void draw(Scene *scene, ECSTable &ecs, size_t first, size_t n);
+    void draw(Scene *scene, ECSTable &ecs);
 }

@@ -55,11 +55,4 @@ void build_rings_from_json(ECSTable &ecs, nlohmann::ordered_json json) {
         }
     }
 }
-
-void draw_rings(Scene *scene, ECSTable &ecs) {
-    size_t first = ecs.get_first(DRAWABLE_RING);
-    size_t last = ecs.get_last(DRAWABLE_RING);
-
-    render::ring::draw(scene, ecs, first, last);
-}
 } // namespace systems::ring

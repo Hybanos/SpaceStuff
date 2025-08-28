@@ -35,7 +35,7 @@ typedef enum Component {
 } Component;
 #undef X
 
-#define DRAWABLE_ORBIT ((1 << POSITION) | (1 << ROTATION) | (1 << TWO_LINE_ELEMENT) | (1 << ORBIT) | (1 << EPOCH) | (1 << TRUE_ANOMALY_INDEX))
+#define DRAWABLE_ORBIT ((1 << PARENT) | (1 << POSITION) | (1 << ROTATION) | (1 << TWO_LINE_ELEMENT) | (1 << ORBIT) | (1 << EPOCH) | (1 << TRUE_ANOMALY_INDEX))
 #define DRAWABLE_SPHERE ((1 << POSITION) | (1 << ROTATION) | (1 << SCALE) | (1 << MAJOR_BODY) | (1 << EPHEMERIS) | (1 << ROTATION_INFO))
 #define DRAWABLE_RING ((1 << DISPLAY_NAME) | (1 << RING) | (1 << PARENT))
 
