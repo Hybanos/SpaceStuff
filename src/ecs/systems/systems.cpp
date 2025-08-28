@@ -276,6 +276,10 @@ void debug_entities(Scene *scene, ECSTable &ecs) {
                     if (ecs.bits[i] != b) ecs.set_bits(i, b);
                 }
             }
+            ImGui::TableNextRow();
+            if (ImGui::Button("Request new entity")) {
+                ecs.request_entity();
+            }
             ImGui::PopStyleColor(2);
             ImGui::EndTable();
         };

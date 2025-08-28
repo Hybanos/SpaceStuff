@@ -65,22 +65,24 @@ void Scene::render() {
     triangles_drawn = 0;
     triangles_t_drawn = 0;
 
-    render::skybox::draw(this);
-    render::grid::draw(this);
-
     systems::sphere::compute_pos(this, ecs);
     systems::sphere::compute_rota(this, ecs);
-    render::sphere::draw(this, ecs);
     
     systems::orbit::compute_true_anomalies(this, ecs);
     systems::orbit::compute_pos_along_orbit(this, ecs);
-    render::orbit::draw(this, ecs);
+    auto t2 = high_resolution_clock::now();
+    ttc = (t2 - t1).count();
 
+    t1 = high_resolution_clock::now();
+    render::skybox::draw(this);
+    render::grid::draw(this);
+    render::sphere::draw(this, ecs);
+    render::orbit::draw(this, ecs);
     render::ring::draw(this, ecs);
 
     frames++;
 
-    auto t2 = high_resolution_clock::now();
+    t2 = high_resolution_clock::now();
     ttr = (t2 - t1).count();
 }
 
@@ -131,10 +133,13 @@ void Scene::build_solar_system() {
 }
 
 void Scene::debug() {
+    auto t1 = high_resolution_clock::now();
     int id = 0;
     ImGui::Begin("Scene debug");
     ImGui::SeparatorText("SCENE");
+    ImGui::Text("Time to compute: %fms", ttc / 1e6);
     ImGui::Text("Time to render: %fms", ttr / 1e6);
+    ImGui::Text("Time to debug: %fms", ttd / 1e6);
     ImGui::Text("Frames: %ld.", frames);
     ImGui::Text("Ratio: %.3f.", get_ratio());
     ImGui::Text("Lines drawn %ld.", lines_drawn);
@@ -142,11 +147,10 @@ void Scene::debug() {
     ImGui::Text("Texture triangles drawn %ld.", triangles_t_drawn);
     ImGui::SeparatorText("CAMERA");
     camera->debug();
-    for (int i = 0; i < ImGuiCol_COUNT; i++) {
-        ImGui::ColorPicker4(fmt::format("{}", i).c_str(), (float *) &ImGui::GetStyle().Colors[i]);
-    }
     ImGui::End();
     time.debug();
     db.debug();
     systems::debug_entities(this, ecs); 
+    auto t2 = high_resolution_clock::now();
+    ttd = (t2 - t1).count();
 }

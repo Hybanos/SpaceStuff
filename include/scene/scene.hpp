@@ -16,6 +16,9 @@ class Scene {
     private:
         ECSTable ecs;
 
+        size_t ttc;
+        size_t ttr;
+        size_t ttd;
     public:
         Scene(SDL_Window *);
         DBManager db;
@@ -35,7 +38,6 @@ class Scene {
         size_t frames = 0;
         size_t follow_entity = -1;
 
-        size_t ttr;
         bool imgui_hover;
 
         std::chrono::high_resolution_clock::time_point frame_time;
