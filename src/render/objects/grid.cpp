@@ -45,6 +45,7 @@ void draw(Scene *scene) {
     mesh->set_vec3("pos", glm::vec3(0));
 
     mesh->draw(GL_TRIANGLES, 0, vertices.size() * 3);
+    scene->triangles_drawn += vertices.size() / 3;
 }
 
 } // namespace render::grid

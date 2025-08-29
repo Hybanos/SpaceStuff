@@ -44,6 +44,7 @@ void draw(Scene *scene, ECSTable &ecs) {
         mesh->set_vec3("pos", glm::vec3(0) - scene->camera->get_center());
 
         mesh->draw_instanced(GL_LINE_STRIP, 0, vertices.size(), a->size());
+        scene->lines_drawn += vertices.size() * a->size();
     }
 }
 

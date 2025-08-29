@@ -40,6 +40,7 @@ void draw(Scene *scene, ECSTable &ecs) {
             mesh->set_bitset("bitset", (int *) &ring.bits, 16);
 
             mesh->draw(GL_TRIANGLES, 0, vertices.size() * 3);
+            scene->triangles_drawn += vertices.size() / 3;
         }
     }
 }

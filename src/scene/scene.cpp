@@ -44,11 +44,6 @@ void Scene::render() {
     frame_time = time.get();
     // fmt::print("current time: {}\n", frame_time.time_since_epoch().count());
 
-    if (follow_entity != -1) {
-        Position tmp = ecs.get_Position(follow_entity);
-        camera->look_at(tmp);
-    }
-
     while (db.signals.size()) {
         fmt::print("scene: {} signals\n", db.signals.size());
         Signal s = db.signals[db.signals.size() - 1]; 
@@ -56,20 +51,31 @@ void Scene::render() {
         fmt::print("scene: {} signals\n", db.signals.size());
     }
 
-    projection = glm::perspective(glm::radians(60.0f), get_ratio(), 10.0f, 10000000000.0f);
-    view = camera->get_view();
-    model = glm::mat4(1.0);
-    mvp = projection * view * model;
-
     lines_drawn = 0;
     triangles_drawn = 0;
     triangles_t_drawn = 0;
+
+    // TODO: find a better solution for that
+    if (frames % 1000 == 0) {
+        systems::orbit::compute_orbit_from_tle(this, ecs);
+    }
 
     systems::sphere::compute_pos(this, ecs);
     systems::sphere::compute_rota(this, ecs);
     
     systems::orbit::compute_true_anomalies(this, ecs);
     systems::orbit::compute_pos_along_orbit(this, ecs);
+
+    if (follow_entity != -1) {
+        Position tmp = ecs.get_Position(follow_entity);
+        camera->look_at(tmp);
+    }
+
+    projection = glm::perspective(glm::radians(60.0f), get_ratio(), 10.0f, 10000000000.0f);
+    view = camera->get_view();
+    model = glm::mat4(1.0);
+    mvp = projection * view * model;
+
     auto t2 = high_resolution_clock::now();
     ttc = (t2 - t1).count();
 

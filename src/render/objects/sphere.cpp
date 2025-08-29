@@ -81,6 +81,7 @@ void draw(Scene *scene, ECSTable &ecs) {
         mesh->set_vec3("pos", position - scene->camera->get_center());
 
         mesh->draw_cubemap(GL_TRIANGLES, 0, vertices.size() * 3, tex);
+        scene->triangles_drawn += vertices.size() / 3;
     }
 }
 } // namespace render::sphere

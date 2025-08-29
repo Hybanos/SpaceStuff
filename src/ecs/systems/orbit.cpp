@@ -6,10 +6,15 @@ void compute_orbit_from_tle(Scene *scene, ECSTable &ecs) {
     for (auto &a : ecs.arch_iter(DRAWABLE_ORBIT, false)) {
         for (size_t i = 0; i < a->size(); i++) {
 
+            Parent &parent = a->get_Parent(i);
             TLE &tle = a->get_TLE(i);
             Orbit &orbit = a->get_Orbit(i);
             Rotation &rotation = a->get_Rotation(i);
             Epoch &epoch = a->get_Epoch(i);
+
+            // defaults to earth
+            double hgc = 3.986004418*1e14;
+            if (ecs.bits[parent].test(MAJOR_BODY)) hgc = ecs.get_MajorBody(parent).heliocentric_gravitaional_constant;
 
             // ref: https://en.wikipedia.org/wiki/Orbital_elements#Euler_angle_transformations
             // note: Y and Z axis are swapped (we are in Y-up right-handed geometry, wikipedia is Z-up)
@@ -37,7 +42,7 @@ void compute_orbit_from_tle(Scene *scene, ECSTable &ecs) {
             std::swap(rotation[2], rotation[1]);
 
             // thanks https://space.stackexchange.com/questions/18289/how-to-get-semi-major-axis-from-tle
-            orbit.semi_major_axis = glm::pow(3.986004418*1e14, 1.0f / 3) / glm::pow(2.0f * tle.revloutions_per_day * M_PI / 86400.0f, 2.0f / 3.0f) / 1000.0f;
+            orbit.semi_major_axis = glm::pow(hgc, 1.0f / 3) / glm::pow(2.0f * tle.revloutions_per_day * M_PI / 86400.0f, 2.0f / 3.0f) / 1000.0f;
             orbit.semi_minor_axis = orbit.semi_major_axis * sqrt(1.0f - tle.eccentricity * tle.eccentricity);
             orbit.flag = 1;
 
