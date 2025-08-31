@@ -33,7 +33,7 @@ void draw(Scene *scene, ECSTable &ecs) {
 
             mesh->set_mat4("MVP", scene->mvp);
             mesh->set_vec3("pos", pos - scene->camera->get_center());
-            mesh->set_mat3("rota", rota);
+            mesh->set_mat3("rota", glm::transpose(rota));
             mesh->set_vec2("range", ring.range);
             mesh->set_float("transmittance", ring.transmittance);
             mesh->set_int("selected", ring.selected);

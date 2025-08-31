@@ -112,7 +112,7 @@ void compute_true_anomalies(Scene *scene, ECSTable &ecs) {
             int index =  (int) glm::degrees(real_time_mean_anomaly);
             float delta = floor(glm::degrees(real_time_mean_anomaly)) - glm::degrees(real_time_mean_anomaly);
 
-            float ta_i = anomaly_index[index];
+            float ta_i = anomaly_index[index % 360];
             float ta_ip1 = index != 359 ? anomaly_index[(index+1) % 360] : M_PI * 2;
 
             orbit.true_anomaly = delta * ta_i + (1 - delta) * ta_ip1;

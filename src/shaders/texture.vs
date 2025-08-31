@@ -10,5 +10,5 @@ out vec3 vertex_coords;
 
 void main() {
     gl_Position = MVP * vec4(vertexPosition_modelspace * scale + pos, 1);
-    vertex_coords = (vertexPosition_modelspace * scale);
+    vertex_coords = (vertexPosition_modelspace * rota * scale);
 }

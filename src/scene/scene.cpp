@@ -127,7 +127,23 @@ void Scene::build_solar_system() {
 
         ecs.set_TLE(e, t[i]);
         ecs.set_Parent(e, 3);
-    }
+    }   
+
+    MajorBody m;
+    TLE tle;
+    parse_orbital_elements(ONO, m, tle);
+    size_t e = ecs.request_entity();
+
+    ecs.set_component(e, PARENT);
+    ecs.set_component(e, POSITION);
+    ecs.set_component(e, ROTATION);
+    ecs.set_component(e, TWO_LINE_ELEMENT);
+    ecs.set_component(e, ORBIT);
+    ecs.set_component(e, EPOCH);
+    ecs.set_component(e, TRUE_ANOMALY_INDEX);
+
+    ecs.set_TLE(e, tle);
+    ecs.set_Parent(e, 0);
 
     systems::orbit::compute_orbit_from_tle(this, ecs);
     systems::orbit::index_true_anomalies(this, ecs);
@@ -136,6 +152,7 @@ void Scene::build_solar_system() {
 
     nlohmann::ordered_json ring_info = nlohmann::ordered_json::parse(std::ifstream("assets/data/rings.json"));
     systems::ring::build_rings_from_json(ecs, ring_info);
+
 }
 
 void Scene::debug() {

@@ -14,8 +14,8 @@ out vec3 p;
 
 void main() {
     float scale = range.y * 1.1;
-    gl_Position = MVP * vec4(vertexPosition_modelspace * rota * scale + pos, 1);
-    // trans = transmittance;
+    gl_Position = MVP * vec4(vertexPosition_modelspace * scale * rota + pos, 1);
+    // trans = transmittance; 
     // r = radius;
     p = vertexPosition_modelspace * scale;
 }

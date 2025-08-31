@@ -7,7 +7,7 @@ if [ -f "/usr/bin/ninja" ]; then
 fi
 
 if [ ! -d "./build" ]; then
-    cmake -B build $build_tool || exit 
+    cmake -B build $build_tool -DCMAKE_EXPORT_COMPILE_COMMANDS=1 || exit 
 fi
 cmake --build build --config Release || exit
 
