@@ -1,6 +1,6 @@
 # SpaceStuff
 
-SpaceStuff is a work-in-progress visualisation of various solar system objects. It is written in raw c++, openGL and GLSL. This project has a few goals: play around with the solar system dynamics, improve my c++ and learn a bit of grapical programming.
+SpaceStuff is a work-in-progress visualization of various solar system objects. It is written in raw c++, openGL and GLSL. This project has a few goals: play around with the solar system dynamics, improve my c++ and learn a bit of grapical programming.
 
 Currently, the app includes:
  - Accurate major body position
